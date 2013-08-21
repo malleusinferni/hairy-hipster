@@ -5,6 +5,8 @@ data Entity = Entity {
   } deriving (Eq, Ord, Show)
 data ID = Player | EID Int deriving (Eq, Ord, Show)
 
+playerEntity = Entity Player 25 "player"
+
 playTurn (attacker : defender : bystanders) = do
   defender <- takeDamage 5 attacker defender
   let undamaged = bystanders ++ [attacker]
@@ -30,5 +32,5 @@ tellHealth (Entity _ hp _)
   | otherwise = "Your hit points dwindle to zero. You perish!"
 
 main = playTurn [player, enemy]
-  where player = Entity { eid = Player, hp = 25, name = "Player" }
-        enemy = Entity { eid = EID 0, hp = 14, name = "Goblin" }
+  where player = playerEntity
+        enemy = Entity { eid = EID 0, hp = 44, name = "goblin" }
