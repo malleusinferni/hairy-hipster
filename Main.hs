@@ -22,5 +22,6 @@ tellHealth (Entity _ hp _)
   | hp > 0 = "You feel woozy from blood loss."
   | otherwise = "Your hit points dwindle to zero. You perish!"
 
-main = playTurn [player]
+main = playTurn [player, enemy]
   where player = Entity { eid = Player, hp = 25, name = "Player" }
+        enemy = Entity { eid = EID 0, hp = 14, name = "Goblin" }
