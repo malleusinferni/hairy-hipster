@@ -47,11 +47,18 @@ randomEnemy = do
     power = str, species = spc }
 
 newGame = do
-  enemy <- randomEnemy
   putStrLn "You climb down the well."
-  putStrLn $ unwords ["A", name enemy, "with", show (hp enemy),
-    "HP is lurking below."]
-  playTurn [playerEntity, enemy]
+  numEnemies <- randomRIO (1, 5)
+  let getEnemy :: [Entity] -> Int -> IO [Entity]
+      getEnemy xs 0 = return xs
+      getEnemy xs n = do
+        enemy <- randomEnemy
+        putStrLn $ unwords ["A", name enemy, "with", show (hp enemy),
+          "HP is lurking in the darkness."]
+        getEnemy (enemy : xs) (n - 1)
+  enemies <- getEnemy [] numEnemies
+  putStrLn "You bare your sword and leap into the fray."
+  playTurn (playerEntity : enemies)
 
 prompt str = do
   putStr str
