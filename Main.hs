@@ -6,7 +6,7 @@ import Entity
 playerEntity = Entity Player 25 Merovingian 8 "player"
 
 playTurn (attacker : defender : bystanders) = do
-  defender <- takeDamage attacker defender
+  defender <- dealDamage attacker defender
   let undamaged = bystanders ++ [attacker]
       survivors
         | hp defender > 0 = defender : undamaged
@@ -19,7 +19,7 @@ playTurn (attacker : defender : bystanders) = do
     [npc] -> putStrLn $ unwords ["The", name npc, "has defeated you..."]
     multiple -> playTurn survivors
 
-takeDamage attacker defender = do
+dealDamage attacker defender = do
   amount <- randomRIO (power attacker, power attacker + 3)
   putStrLn $ unwords ["The", name attacker, "hits the", name defender,
                       "for", show amount, "damage!"]
