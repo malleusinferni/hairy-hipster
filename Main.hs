@@ -7,8 +7,13 @@ import Control.Monad.Reader
 import Data.IORef
 
 import Entity
+import Room
 
-data World = World { getID :: IO ID, entities :: IORef [Entity] }
+data World = World {
+    getID :: IO ID,
+    entities :: IORef [Entity],
+    locations :: [Room]
+  }
 
 type Game a = ReaderT World IO a
 
@@ -60,7 +65,11 @@ makeWorld :: IO World
 makeWorld = do
   stream <- streamIDs 0
   ref <- newIORef []
-  return World { getID = stream, entities = ref }
+  let well = Door { doortype = "well", doordir = Down }
+      outside = Room { placename = "outside", doors = [(well, inside)] }
+      inside = Room { placename = "inside", doors = [] }
+  return World { getID = stream, entities = ref,
+    locations = [outside, inside] }
 
 (%=) :: (World -> IORef a) -> (a -> a) -> Game ()
 sel %= action = do
