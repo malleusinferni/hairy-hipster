@@ -8,7 +8,7 @@ data Entity = Entity {
   } deriving (Eq, Ord, Show)
 
 data Species = Shoggoth | Goblin | Merovingian
-  deriving (Eq, Show, Ord, Enum)
+  deriving (Eq, Show, Ord, Enum, Bounded)
 
 data ID = Player | EID Int deriving (Eq, Ord, Show)
 
@@ -39,9 +39,11 @@ tellHealth (Entity { hp = hp })
   | otherwise = "Your hit points dwindle to zero. You perish!"
 
 randomEnemy = do
+  let minSpecies = fromEnum (minBound :: Species)
+      maxSpecies = fromEnum (maxBound :: Species)
   rid <- randomRIO (0, maxBound)
   rhp <- randomRIO (5, 35)
-  idx <- randomRIO (fromEnum Shoggoth, fromEnum Merovingian)
+  idx <- randomRIO (minSpecies, maxSpecies)
   let spc = toEnum idx :: Species
       nam = show spc
   return Entity { eid = EID rid, hp = rhp, name = nam, species = spc }
