@@ -1,5 +1,6 @@
 import System.IO (stdout, hFlush)
 import System.Random (randomRIO)
+import Control.Monad (replicateM)
 
 import Entity
 
@@ -49,14 +50,11 @@ randomEnemy = do
 newGame = do
   putStrLn "You climb down the well."
   numEnemies <- randomRIO (1, 5)
-  let getEnemy :: [Entity] -> Int -> IO [Entity]
-      getEnemy xs 0 = return xs
-      getEnemy xs n = do
-        enemy <- randomEnemy
-        putStrLn $ unwords ["A", name enemy, "with", show (hp enemy),
-          "HP is lurking in the darkness."]
-        getEnemy (enemy : xs) (n - 1)
-  enemies <- getEnemy [] numEnemies
+  enemies <- replicateM numEnemies $ do
+    enemy <- randomEnemy
+    putStrLn $ unwords ["A", name enemy, "with", show (hp enemy),
+      "HP is lurking in the darkness."]
+    return enemy
   putStrLn "You bare your sword and leap into the fray."
   playTurn (playerEntity : enemies)
 
