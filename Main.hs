@@ -50,11 +50,14 @@ newGame = do
     "HP is lurking below."]
   playTurn [playerEntity, enemy]
 
+prompt str = do
+  putStr str
+  hFlush stdout
+  getLine
+
 main = do
   newGame
-  putStr "Play again? [yn] "
-  hFlush stdout
-  response <- getLine
+  response <- prompt "Play again? [yn] "
   case response of
     [] -> main
     ('y':_) -> main
