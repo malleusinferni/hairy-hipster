@@ -1,4 +1,8 @@
-data Entity = Entity { eid :: ID, hp :: Int } deriving (Eq, Ord, Show)
+data Entity = Entity {
+    eid :: ID,
+    hp :: Int,
+    name :: String
+  } deriving (Eq, Ord, Show)
 data ID = Player | EID Int deriving (Eq, Ord, Show)
 
 playTurn entities = do
@@ -10,13 +14,13 @@ playTurn entities = do
      else return ()
 
 takeDamage amount e = do
-  putStrLn ("Ouch! " ++ show (eid e) ++ " takes " ++ show amount ++ " damage.")
+  putStrLn ("Ouch! " ++ name e ++ " takes " ++ show amount ++ " damage.")
   return (e { hp = hp e - amount })
 
-tellHealth (Entity _ hp)
+tellHealth (Entity _ hp _)
   | hp > 10 = "You feel fine."
   | hp > 0 = "You feel woozy from blood loss."
   | otherwise = "Your hit points dwindle to zero. You perish!"
 
 main = playTurn [player]
-  where player = Entity { eid = Player, hp = 25 }
+  where player = Entity { eid = Player, hp = 25, name = "Player" }
