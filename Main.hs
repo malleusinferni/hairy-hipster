@@ -20,9 +20,13 @@ playTurn (attacker : defender : bystanders) = do
       survivors
         | hp defender > 0 = defender : undamaged
         | otherwise = undamaged
-  if length survivors > 1
-     then playTurn survivors
-     else putStrLn $ unwords ["The", name (head survivors), "wins!"]
+  case survivors of
+    [] -> putStrLn "Nobody survives..."
+    [Entity { eid = Player }] -> do
+      putStrLn $ unwords ["The", name defender, "falls in combat!"]
+      putStrLn "You escape with your life..."
+    [npc] -> putStrLn $ unwords ["The", name npc, "has defeated you..."]
+    multiple -> playTurn survivors
 
 takeDamage amount attacker defender = do
   putStrLn $ unwords ["The", name attacker, "hits the", name defender,
