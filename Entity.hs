@@ -4,6 +4,7 @@ data Entity = Entity {
     eid :: ID,
     hp :: Int,
     species :: Species,
+    power :: Int,
     name :: String
   } deriving (Eq, Ord, Show)
 

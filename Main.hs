@@ -3,10 +3,10 @@ import System.Random (randomRIO)
 
 import Entity
 
-playerEntity = Entity Player 25 Merovingian "player"
+playerEntity = Entity Player 25 Merovingian 8 "player"
 
 playTurn (attacker : defender : bystanders) = do
-  defender <- takeDamage 5 attacker defender
+  defender <- takeDamage attacker defender
   let undamaged = bystanders ++ [attacker]
       survivors
         | hp defender > 0 = defender : undamaged
@@ -19,7 +19,8 @@ playTurn (attacker : defender : bystanders) = do
     [npc] -> putStrLn $ unwords ["The", name npc, "has defeated you..."]
     multiple -> playTurn survivors
 
-takeDamage amount attacker defender = do
+takeDamage attacker defender = do
+  let amount = power attacker
   putStrLn $ unwords ["The", name attacker, "hits the", name defender,
                       "for", show amount, "damage!"]
   let def = defender { hp = hp defender - amount }
@@ -38,10 +39,12 @@ randomEnemy = do
       maxSpecies = fromEnum (maxBound :: Species)
   rid <- randomRIO (0, maxBound)
   rhp <- randomRIO (5, 35)
+  str <- randomRIO (1, 12)
   idx <- randomRIO (minSpecies, maxSpecies)
   let spc = toEnum idx :: Species
       nam = show spc
-  return Entity { eid = EID rid, hp = rhp, name = nam, species = spc }
+  return Entity { eid = EID rid, hp = rhp, name = nam,
+    power = str, species = spc }
 
 newGame = do
   enemy <- randomEnemy
