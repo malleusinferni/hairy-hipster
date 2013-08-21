@@ -1,8 +1,12 @@
 import System.IO (stdout, hFlush)
 import System.Random (randomRIO)
+import Control.Concurrent (forkIO)
+import Control.Concurrent.MVar
 import Control.Monad (replicateM)
 
 import Entity
+
+data World = World { nextID :: IO ID, entities :: MVar [Entity] }
 
 playerEntity = Entity Player 25 Merovingian 8 "player"
 
@@ -35,23 +39,39 @@ tellHealth (Entity { hp = hp })
   | hp > 0 = "You feel woozy from blood loss."
   | otherwise = "Your hit points dwindle to zero. You perish!"
 
-randomEnemy = do
-  let minSpecies = fromEnum (minBound :: Species)
-      maxSpecies = fromEnum (maxBound :: Species)
-  rid <- randomRIO (0, maxBound)
-  rhp <- randomRIO (5, 35)
-  str <- randomRIO (5, 15)
-  idx <- randomRIO (minSpecies, maxSpecies)
-  let spc = toEnum idx :: Species
-      nam = show spc
-  return Entity { eid = EID rid, hp = rhp, name = nam,
-    power = str, species = spc }
+streamIDs :: Int -> IO (IO ID)
+streamIDs n = do
+  ref <- newEmptyMVar
+  forkIO (mapM_ (putMVar ref) [n ..])
+  return (fmap EID $ takeMVar ref)
+
+makeWorld = do
+  stream <- streamIDs 0
+  ref <- newMVar []
+  return World { nextID = stream, entities = ref }
+
+(%=) = modifyMVar
+
+makeEnemy world = do
+  eid <- nextID world
+  entities world %= \es -> do
+    species <- randomSpecies
+    hp <- randomRIO (5, 35)
+    str <- randomRIO (5, 15)
+    let enemy = Entity { eid = eid, hp = hp, power = str,
+          name = show species, species = species }
+    return (enemy : es, enemy)
+
+randomSpecies = toEnum `fmap` randomRIO (low, high)
+  where [low, high] = map fromEnum range
+        range = [minBound, maxBound] :: [Species]
 
 newGame = do
+  world <- makeWorld
   putStrLn "You climb down the well."
   numEnemies <- randomRIO (1, 5)
   enemies <- replicateM numEnemies $ do
-    enemy <- randomEnemy
+    enemy <- makeEnemy world
     putStrLn $ unwords ["A", name enemy, "with", show (hp enemy),
       "HP is lurking in the darkness."]
     return enemy
