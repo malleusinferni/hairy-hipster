@@ -7,7 +7,7 @@ import Control.Monad.Reader
 
 import Entity
 
-data World = World { nextID :: Game ID, entities :: MVar [Entity] }
+data World = World { getID :: IO ID, entities :: MVar [Entity] }
 
 type Game a = ReaderT World IO a
 
@@ -44,24 +44,26 @@ tellHealth (Entity { hp = hp })
   | hp > 0 = "You feel woozy from blood loss."
   | otherwise = "Your hit points dwindle to zero. You perish!"
 
-streamIDs :: Int -> IO (Game ID)
+streamIDs :: Int -> IO (IO ID)
 streamIDs n = do
   ref <- newEmptyMVar
   forkIO (mapM_ (putMVar ref) [n ..])
-  return (liftIO . fmap EID $ takeMVar ref)
+  return (fmap EID $ takeMVar ref)
+
+nextID :: Game ID
+nextID = liftIO =<< asks getID
 
 makeWorld = do
   stream <- streamIDs 0
   ref <- newMVar []
-  return World { nextID = stream, entities = ref }
+  return World { getID = stream, entities = ref }
 
 sel %= action = do
   ref <- asks sel
   liftIO (modifyMVar ref action)
 
 makeEnemy = do
-  ids <- asks nextID
-  eid <- ids
+  eid <- nextID
   entities %= \es -> do
     species <- randomSpecies
     hp <- randomRIO (5, 35)
