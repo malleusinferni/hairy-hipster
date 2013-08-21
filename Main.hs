@@ -12,8 +12,6 @@ data World = World { getID :: IO ID, entities :: IORef [Entity] }
 
 type Game a = ReaderT World IO a
 
-playerEntity = Entity Player 25 Merovingian 8 "player"
-
 say = liftIO . putStrLn
 saywords = say . unwords
 
@@ -69,6 +67,17 @@ sel %= action = do
   ref <- asks sel
   liftIO $ modifyIORef' ref action
 
+makePlayer :: Game Entity
+makePlayer = do
+  eid <- nextID
+  return Entity {
+      eid = Player, -- FIXME
+      species = Merovingian,
+      power = 8,
+      hp = 30,
+      name = "player"
+    }
+
 makeEnemy :: Game Entity
 makeEnemy = do
   eid <- nextID
@@ -92,6 +101,7 @@ newGame = makeWorld >>= runReaderT playGame
 playGame :: Game ()
 playGame = do
   say "You climb down the well."
+  playerEntity <- makePlayer
   numEnemies <- liftIO (randomRIO (1, 5))
   enemies <- replicateM numEnemies $ do
     enemy <- makeEnemy
