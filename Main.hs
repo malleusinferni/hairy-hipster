@@ -3,12 +3,17 @@ import System.Random (randomRIO)
 import Control.Concurrent (forkIO)
 import Control.Concurrent.MVar
 import Control.Monad (replicateM)
+import Control.Monad.Reader
 
 import Entity
 
-data World = World { nextID :: IO ID, entities :: MVar [Entity] }
+data World = World { nextID :: Game ID, entities :: MVar [Entity] }
+
+type Game a = ReaderT World IO a
 
 playerEntity = Entity Player 25 Merovingian 8 "player"
+
+say = liftIO . putStrLn
 
 playTurn (attacker : defender : bystanders) = do
   defender <- dealDamage attacker defender
@@ -39,22 +44,25 @@ tellHealth (Entity { hp = hp })
   | hp > 0 = "You feel woozy from blood loss."
   | otherwise = "Your hit points dwindle to zero. You perish!"
 
-streamIDs :: Int -> IO (IO ID)
+streamIDs :: Int -> IO (Game ID)
 streamIDs n = do
   ref <- newEmptyMVar
   forkIO (mapM_ (putMVar ref) [n ..])
-  return (fmap EID $ takeMVar ref)
+  return (liftIO . fmap EID $ takeMVar ref)
 
 makeWorld = do
   stream <- streamIDs 0
   ref <- newMVar []
   return World { nextID = stream, entities = ref }
 
-(%=) = modifyMVar
+sel %= action = do
+  ref <- asks sel
+  liftIO (modifyMVar ref action)
 
-makeEnemy world = do
-  eid <- nextID world
-  entities world %= \es -> do
+makeEnemy = do
+  ids <- asks nextID
+  eid <- ids
+  entities %= \es -> do
     species <- randomSpecies
     hp <- randomRIO (5, 35)
     str <- randomRIO (5, 15)
@@ -66,17 +74,18 @@ randomSpecies = toEnum `fmap` randomRIO (low, high)
   where [low, high] = map fromEnum range
         range = [minBound, maxBound] :: [Species]
 
-newGame = do
-  world <- makeWorld
-  putStrLn "You climb down the well."
-  numEnemies <- randomRIO (1, 5)
+newGame = makeWorld >>= runReaderT playGame
+
+playGame = do
+  say "You climb down the well."
+  numEnemies <- liftIO (randomRIO (1, 5))
   enemies <- replicateM numEnemies $ do
-    enemy <- makeEnemy world
-    putStrLn $ unwords ["A", name enemy, "with", show (hp enemy),
+    enemy <- makeEnemy
+    say $ unwords ["A", name enemy, "with", show (hp enemy),
       "HP is lurking in the darkness."]
     return enemy
-  putStrLn "You bare your sword and leap into the fray."
-  playTurn (playerEntity : enemies)
+  say "You bare your sword and leap into the fray."
+  liftIO $ playTurn (playerEntity : enemies)
 
 prompt str = do
   putStr str
