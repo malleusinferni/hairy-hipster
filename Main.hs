@@ -14,6 +14,7 @@ type Game a = ReaderT World IO a
 playerEntity = Entity Player 25 Merovingian 8 "player"
 
 say = liftIO . putStrLn
+saywords = say . unwords
 
 playTurn (attacker : defender : bystanders) = do
   defender <- dealDamage attacker defender
@@ -83,7 +84,7 @@ playGame = do
   numEnemies <- liftIO (randomRIO (1, 5))
   enemies <- replicateM numEnemies $ do
     enemy <- makeEnemy
-    say $ unwords ["A", name enemy, "with", show (hp enemy),
+    saywords ["A", name enemy, "with", show (hp enemy),
       "HP is lurking in the darkness."]
     return enemy
   say "You bare your sword and leap into the fray."
