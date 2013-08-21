@@ -29,7 +29,7 @@ playTurn (attacker : defender : bystanders) = do
         | otherwise = undamaged
   case survivors of
     [] -> putStrLn "Nobody survives..."
-    [Entity { eid = Player }] -> do
+    [Entity { ai = Player }] -> do
       putStrLn $ unwords ["The", name defender, "falls in combat!"]
       putStrLn "You escape with your life..."
     [npc] -> putStrLn $ unwords ["The", name npc, "has defeated you..."]
@@ -41,7 +41,7 @@ dealDamage attacker defender = do
   putStrLn $ unwords ["The", name attacker, "hits the", name defender,
                       "for", show amount, "damage!"]
   let def = defender { hp = hp defender - amount }
-  if eid def == Player
+  if ai def == Player
      then putStrLn (tellHealth def)
      else return ()
   return def
@@ -80,7 +80,8 @@ makePlayer :: Game Entity
 makePlayer = do
   eid <- nextID
   return Entity {
-      eid = Player, -- FIXME
+      eid = eid,
+      ai = Player,
       species = Merovingian,
       power = 8,
       hp = 30,
@@ -95,7 +96,7 @@ makeEnemy = do
     hp <- randomRIO (hpRangeFor species)
     str <- randomRIO (strRangeFor species)
     return $ Entity { eid = eid, hp = hp, power = str,
-          name = show species, species = species }
+          ai = Monster, name = show species, species = species }
   entities %= \es -> enemy : es
   return enemy
 
