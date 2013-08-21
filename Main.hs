@@ -13,10 +13,10 @@ playTurn (attacker : defender : bystanders) = do
         | otherwise = undamaged
   if length survivors > 1
      then playTurn survivors
-     else putStrLn $ name (head survivors) ++ " wins!"
+     else putStrLn $ unwords ["The", name (head survivors), "wins!"]
 
 takeDamage amount attacker defender = do
-  putStrLn $ unwords ["Ouch!", name attacker, "hits", name defender,
+  putStrLn $ unwords ["Ouch! The", name attacker, "hits the", name defender,
                       "for", show amount, "damage!"]
   let def = defender { hp = hp defender - amount }
   if eid def == Player
