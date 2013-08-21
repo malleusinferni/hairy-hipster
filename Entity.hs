@@ -12,3 +12,6 @@ data Species = Shoggoth | Goblin | Merovingian
   deriving (Eq, Show, Ord, Enum, Bounded)
 
 data ID = Player | EID Int deriving (Eq, Ord, Show)
+
+hpRangeFor _ = (5, 35)
+strRangeFor _ = (5, 15)

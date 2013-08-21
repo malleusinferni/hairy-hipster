@@ -73,8 +73,8 @@ makeEnemy = do
   eid <- nextID
   entities %= \es -> do
     species <- randomSpecies
-    hp <- randomRIO (5, 35)
-    str <- randomRIO (5, 15)
+    hp <- randomRIO (hpRangeFor species)
+    str <- randomRIO (strRangeFor species)
     let enemy = Entity { eid = eid, hp = hp, power = str,
           name = show species, species = species }
     return (enemy : es, enemy)
