@@ -20,7 +20,7 @@ playTurn (attacker : defender : bystanders) = do
     multiple -> playTurn survivors
 
 takeDamage attacker defender = do
-  let amount = power attacker
+  amount <- randomRIO (power attacker, power attacker + 3)
   putStrLn $ unwords ["The", name attacker, "hits the", name defender,
                       "for", show amount, "damage!"]
   let def = defender { hp = hp defender - amount }
@@ -39,7 +39,7 @@ randomEnemy = do
       maxSpecies = fromEnum (maxBound :: Species)
   rid <- randomRIO (0, maxBound)
   rhp <- randomRIO (5, 35)
-  str <- randomRIO (1, 12)
+  str <- randomRIO (5, 15)
   idx <- randomRIO (minSpecies, maxSpecies)
   let spc = toEnum idx :: Species
       nam = show spc
