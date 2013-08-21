@@ -1,16 +1,6 @@
 import System.Random (randomRIO)
 
-data Entity = Entity {
-    eid :: ID,
-    hp :: Int,
-    species :: Species,
-    name :: String
-  } deriving (Eq, Ord, Show)
-
-data Species = Shoggoth | Goblin | Merovingian
-  deriving (Eq, Show, Ord, Enum, Bounded)
-
-data ID = Player | EID Int deriving (Eq, Ord, Show)
+import Entity
 
 playerEntity = Entity Player 25 Merovingian "player"
 
