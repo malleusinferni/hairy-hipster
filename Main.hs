@@ -1,3 +1,4 @@
+import System.IO (stdout, hFlush)
 import System.Random (randomRIO)
 
 import Entity
@@ -42,9 +43,20 @@ randomEnemy = do
       nam = show spc
   return Entity { eid = EID rid, hp = rhp, name = nam, species = spc }
 
-main = do
+newGame = do
   enemy <- randomEnemy
   putStrLn "You climb down the well."
   putStrLn $ unwords ["A", name enemy, "with", show (hp enemy),
     "HP is lurking below."]
   playTurn [playerEntity, enemy]
+
+main = do
+  newGame
+  putStr "Play again? [yn] "
+  hFlush stdout
+  response <- getLine
+  case response of
+    [] -> main
+    ('y':_) -> main
+    ('Y':_) -> main
+    _ -> return ()
