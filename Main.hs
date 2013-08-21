@@ -8,10 +8,11 @@ data ID = Player | EID Int deriving (Eq, Ord, Show)
 playTurn entities = do
   weakEntities <- mapM (takeDamage 5) entities
   let [player] = filter ((== Player) . eid) weakEntities
+      livingEntities = filter ((> 0) . hp) weakEntities
   putStrLn (tellHealth player)
-  if hp player > 0
-     then playTurn weakEntities
-     else return ()
+  if length livingEntities > 1
+     then playTurn livingEntities
+     else putStrLn $ name (head livingEntities) ++ " wins!"
 
 takeDamage amount e = do
   putStrLn ("Ouch! " ++ name e ++ " takes " ++ show amount ++ " damage.")
