@@ -1,15 +1,16 @@
 data Entity = Entity { eid :: ID, hp :: Int } deriving (Eq, Ord, Show)
 data ID = Player | EID Int deriving (Eq, Ord, Show)
 
-playTurn player = do
-  weakenedPlayer <- takeDamage player 5
-  putStrLn (tellHealth weakenedPlayer)
-  if hp weakenedPlayer > 0
-     then playTurn weakenedPlayer
+playTurn entities = do
+  weakEntities <- mapM (takeDamage 5) entities
+  let [player] = filter ((== Player) . eid) weakEntities
+  putStrLn (tellHealth player)
+  if hp player > 0
+     then playTurn weakEntities
      else return ()
 
-takeDamage e amount = do
-  putStrLn ("Ouch! You take " ++ show amount ++ " damage.")
+takeDamage amount e = do
+  putStrLn ("Ouch! " ++ show (eid e) ++ " takes " ++ show amount ++ " damage.")
   return (e { hp = hp e - amount })
 
 tellHealth (Entity _ hp)
@@ -17,5 +18,5 @@ tellHealth (Entity _ hp)
   | hp > 0 = "You feel woozy from blood loss."
   | otherwise = "Your hit points dwindle to zero. You perish!"
 
-main = playTurn player
+main = playTurn [player]
   where player = Entity { eid = Player, hp = 25 }
