@@ -9,6 +9,7 @@ playTurn player = do
      else return ()
 
 takeDamage e amount = do
+  putStrLn ("Ouch! You take " ++ show amount ++ " damage.")
   return (e { hp = hp e - amount })
 
 tellHealth (Entity _ hp)
@@ -17,4 +18,4 @@ tellHealth (Entity _ hp)
   | otherwise = "Your hit points dwindle to zero. You perish!"
 
 main = playTurn player
-  where player = Entity { eid = Player, hp = 0 }
+  where player = Entity { eid = Player, hp = 25 }
