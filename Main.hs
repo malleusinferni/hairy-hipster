@@ -4,10 +4,11 @@ import Control.Concurrent (forkIO)
 import Control.Concurrent.MVar
 import Control.Monad (replicateM)
 import Control.Monad.Reader
+import Data.IORef
 
 import Entity
 
-data World = World { getID :: IO ID, entities :: MVar [Entity] }
+data World = World { getID :: IO ID, entities :: IORef [Entity] }
 
 type Game a = ReaderT World IO a
 
@@ -60,24 +61,25 @@ nextID = liftIO =<< asks getID
 makeWorld :: IO World
 makeWorld = do
   stream <- streamIDs 0
-  ref <- newMVar []
+  ref <- newIORef []
   return World { getID = stream, entities = ref }
 
-(%=) :: (World -> MVar a) -> (a -> IO (a, b)) -> Game b
+(%=) :: (World -> IORef a) -> (a -> a) -> Game ()
 sel %= action = do
   ref <- asks sel
-  liftIO (modifyMVar ref action)
+  liftIO $ modifyIORef' ref action
 
 makeEnemy :: Game Entity
 makeEnemy = do
   eid <- nextID
-  entities %= \es -> do
+  enemy <- liftIO $ do
     species <- randomSpecies
     hp <- randomRIO (hpRangeFor species)
     str <- randomRIO (strRangeFor species)
-    let enemy = Entity { eid = eid, hp = hp, power = str,
+    return $ Entity { eid = eid, hp = hp, power = str,
           name = show species, species = species }
-    return (enemy : es, enemy)
+  entities %= \es -> enemy : es
+  return enemy
 
 randomSpecies :: IO Species
 randomSpecies = toEnum `fmap` randomRIO (low, high)
