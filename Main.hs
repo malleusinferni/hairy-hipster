@@ -25,7 +25,7 @@ playTurn (attacker : defender : bystanders) = do
      else putStrLn $ unwords ["The", name (head survivors), "wins!"]
 
 takeDamage amount attacker defender = do
-  putStrLn $ unwords ["Ouch! The", name attacker, "hits the", name defender,
+  putStrLn $ unwords ["The", name attacker, "hits the", name defender,
                       "for", show amount, "damage!"]
   let def = defender { hp = hp defender - amount }
   if eid def == Player
