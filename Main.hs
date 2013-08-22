@@ -21,29 +21,25 @@ playTurn = getEntities >>= go
              else saywords ["The", name attacker, "has defeated you..."]
 
 makePlayer :: Game Entity
-makePlayer = do
-  eid <- nextID
-  return Entity {
-      eid = eid,
-      ai = Player,
-      species = Merovingian,
-      power = 8,
-      hp = 30,
-      name = "player"
-    }
+makePlayer = makeMob Merovingian Player
 
 makeEnemy :: Game Entity
 makeEnemy = do
-  eid <- nextID
-  liftIO $ do
-    species <- randomSpecies
-    hp <- randomRIO (hpRangeFor species)
-    str <- randomRIO (strRangeFor species)
-    return $ Entity { eid = eid, hp = hp, power = str,
-          ai = Monster, name = show species, species = species }
+  species <- randomSpecies
+  makeMob species Monster
 
-randomSpecies :: IO Species
-randomSpecies = toEnum `fmap` randomRIO (low, high)
+makeMob :: Species -> AI -> Game Entity
+makeMob species ai = do
+  eid <- nextID
+  hp <- liftIO $ randomRIO (hpRangeFor species)
+  str <- liftIO $ randomRIO (strRangeFor species)
+  let name | ai == Player = "player"
+           | otherwise = show species
+  return $ Entity { eid = eid, hp = hp, power = str,
+        ai = ai, name = name, species = species }
+
+randomSpecies :: Game Species
+randomSpecies = liftIO $ toEnum `fmap` randomRIO (low, high)
   where [low, high] = map fromEnum range
         range = [minBound, maxBound] :: [Species]
 
