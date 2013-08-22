@@ -7,7 +7,13 @@ data Entity = Entity {
     species :: Species,
     power :: Int,
     name :: String
-  } deriving (Eq, Ord, Show)
+  } deriving (Show)
+
+instance Eq Entity where
+  Entity { eid = lhs } == Entity { eid = rhs } = lhs == rhs
+
+instance Ord Entity where
+  compare (Entity { eid = lhs }) (Entity { eid = rhs }) = compare lhs rhs
 
 data Species = Shoggoth | Goblin | Merovingian
   deriving (Eq, Show, Ord, Enum, Bounded)
