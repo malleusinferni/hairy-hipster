@@ -1,12 +1,13 @@
 module World (
   World(..), Game(..),
   (%=), ($=), storeEntity, updateEntity, getEntities,
-  anyEntityExcept,
+  anyEntityExcept, getEntitiesWhere, getByID,
   makeWorld, nextID,
   say, saywords,
   asks, liftIO, runReaderT
   ) where
 
+import Data.List (find, delete)
 import Data.IORef
 import Control.Monad.Reader
 import Control.Concurrent (forkIO)
@@ -63,10 +64,16 @@ sel $= value = do
 
 storeEntity e = entities %= (e:)
 
-updateEntity e = entities %= (map $ \i -> if e == i then e else i)
+updateEntity e = entities %= ((e :) . delete e)
 
 getEntities :: Game [Entity]
 getEntities = asks entities >>= liftIO . readIORef
+
+getEntitiesWhere :: (Entity -> Bool) -> Game [Entity]
+getEntitiesWhere test = filter test `fmap` getEntities
+
+getByID :: ID -> Game (Maybe Entity)
+getByID anid = find ((== anid) . eid) `fmap` getEntities
 
 anyEntityExcept :: Entity -> Game (Maybe Entity)
 anyEntityExcept self = getEntities >>= anyOf . filter (/= self)

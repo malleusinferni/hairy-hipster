@@ -7,18 +7,15 @@ import AI
 import UI
 import Rand
 
-playerAmong = any (== Player) . map ai
+playerAmong = elem Player . map ai
 
 playTurn :: Game ()
-playTurn = getEntities >>= go
+playTurn = getEntitiesWhere stillAlive >>= go
   where go [] = say "None survive..."
-        go [Entity { ai = Player }] = say "You emerge victorious!"
-        go (attacker : combatants) = do
-          survivors <- runAI attacker combatants
-          entities $= survivors
-          if playerAmong survivors
-             then playTurn
-             else saywords ["The", name attacker, "has defeated you..."]
+        go [entity] = tellVictory entity
+        go combatants = do
+          mapM_ tick combatants
+          playTurn
 
 makePlayer :: Game Entity
 makePlayer = makeMob Merovingian Player

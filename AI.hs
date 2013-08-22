@@ -8,25 +8,31 @@ import Room
 import UI
 import Rand
 
-runAI player@(Entity { ai = Player }) (defender : bystanders) = do
+tick :: Entity -> Game ()
+tick self = do
+  selves <- getByID (eid self)
+  others <- anyOpponent self
+  case (selves, others) of
+    (Just self, Just other) | hp self > 0 -> runAI self other
+    _ -> return ()
+
+anyOpponent self = getEntitiesWhere test >>= anyOf
+  where test e = hp e > 0 && eid e /= eid self
+
+runAI player@(Entity { ai = Player }) defender = do
   yn <- liftIO . promptYN $ "Attack the " ++ name defender ++ "? [Yn] "
   if yn
-     then do
-       defender <- dealDamage player defender
-       tellHealth defender
-       return $ filter stillAlive ((defender : bystanders) ++ [player])
+     then attack player defender
      else do
        say "Climbing back up the well, you escape with your life..."
-       return [player]
-runAI attacker (_:_) = do
-  Just target <- anyEntityExcept attacker
-  defender <- dealDamage attacker target
+       entities $= [player]
+runAI self other = attack self other
+
+attack attacker defender = do
+  defender <- dealDamage attacker defender
   bystanders <- filter (/= defender) `fmap` getEntities
   tellHealth defender
-  return $ filter stillAlive ((defender : bystanders) ++ [attacker])
-runAI attacker _ = do
-  saywords ["The", name attacker, "emerges victorious!"]
-  return [attacker]
+  updateEntity defender
 
 dealDamage attacker defender = do
   let p = power attacker
@@ -34,6 +40,10 @@ dealDamage attacker defender = do
   saywords ["The", name attacker, "hits the", name defender,
     "for", show amount, "damage!"]
   return defender { hp = hp defender - amount }
+
+tellVictory :: Entity -> Game ()
+tellVictory (Entity { ai = Player }) = say "You emerge victorious!"
+tellVictory npc = saywords ["The", name npc, "emerges victorious!"]
 
 tellHealth :: Entity -> Game ()
 tellHealth (Entity { hp = hp, ai = Player })
