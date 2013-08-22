@@ -35,6 +35,16 @@ playTurn = asks entities >>= liftIO . readIORef >>= go
              then playTurn
              else saywords ["The", name attacker, "has defeated you..."]
 
+runAI player@(Entity { ai = Player }) (defender : bystanders) = do
+  yn <- liftIO . promptYN $ "Attack the " ++ name defender ++ "? [Yn] "
+  if yn
+     then do
+       defender <- dealDamage player defender
+       tellHealth defender
+       return $ filter stillAlive ((defender : bystanders) ++ [player])
+     else do
+       say "Climbing back up the well, you escape with your life..."
+       return [player]
 runAI attacker (defender : bystanders) = do
   defender <- dealDamage attacker defender
   tellHealth defender
