@@ -27,7 +27,7 @@ instance Effable Entity where
   describe e = unwords [subj, "with", show (hp e), "HP"]
     where subj = nominative . noun . An $ species e
 
-data Species = Shoggoth | Goblin | Merovingian
+data Species = Shoggoth | Goblin | Unseelie | Merovingian
   deriving (Eq, Show, Ord, Enum, Bounded)
 
 newtype ID = EID Int
@@ -39,6 +39,7 @@ data AI = Player | Monster
 hpRangeFor Goblin = (5, 25)
 hpRangeFor Merovingian = (15, 35)
 hpRangeFor Shoggoth = (25, 45)
+hpRangeFor _ = (10, 30)
 
 strRangeFor Shoggoth = (10, 20)
 strRangeFor _ = (5, 15)
