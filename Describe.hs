@@ -3,7 +3,7 @@
 
 module Describe where
 
-import Data.Char (toUpper)
+import Data.Char (toUpper, toLower)
 
 data Verb = Verb {
     infinitive :: String,
@@ -65,9 +65,10 @@ conj n
   | plural (name n) = presentPlural
   | otherwise = presentSingular
 
-sentence d end = capitalize (describe d) ++ end
+sentence d end = upcase (describe d) ++ end
 
-capitalize (c:cs) = toUpper c : cs
+upcase (c:cs) = toUpper c : cs
+downcase (c:cs) = toLower c : cs
 
 class Nominable a where
   name :: a -> Noun

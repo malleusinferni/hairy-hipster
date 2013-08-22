@@ -17,7 +17,11 @@ instance Ord Entity where
   compare (Entity { eid = lhs }) (Entity { eid = rhs }) = compare lhs rhs
 
 instance Nominable Species where
-  name s = Noun (show s) (show s) (show s) False
+  name s = Noun (describe s) (describe s ++ "'s") (describe s) False
+
+instance Effable Species where
+  describe Merovingian = "Merovingian"
+  describe s = downcase (show s)
 
 instance Nominable Entity where
   name (Entity { ai = Player }) = noun You
