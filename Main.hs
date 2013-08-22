@@ -16,13 +16,13 @@ playTurn :: Game ()
 playTurn = getEntitiesWhere stillAlive >>= go
   where go [] = say "None survive..."
         go [entity] = tellVictory entity
-        go combatants = playseq $ map tick combatants
+        go combatants = playseq playerSurvives $ map tick combatants
 
-playseq [] = playTurn
-playseq (action : actions) = do
-  test <- playerSurvives
+playseq condition [] = playTurn
+playseq condition (action : actions) = do
+  test <- condition
   if test
-     then do action; playseq actions
+     then do action; playseq condition actions
      else return ()
 
 makePlayer :: Game Entity
