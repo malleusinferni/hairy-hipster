@@ -20,6 +20,10 @@ type Game a = ReaderT World IO a
 say = liftIO . putStrLn
 saywords = say . unwords
 
+stillAlive = (> 0) . hp
+
+playerAmong = any (== Player) . map ai
+
 playTurn :: [Entity] -> IO ()
 playTurn (attacker : defender : bystanders) = do
   defender <- dealDamage attacker defender
@@ -75,6 +79,11 @@ makeWorld = do
 sel %= action = do
   ref <- asks sel
   liftIO $ modifyIORef' ref action
+
+($=) :: (World -> IORef a) -> a -> Game ()
+sel $= value = do
+  ref <- asks sel
+  liftIO $ writeIORef ref value
 
 makePlayer :: Game Entity
 makePlayer = do
