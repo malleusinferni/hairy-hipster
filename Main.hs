@@ -1,4 +1,3 @@
-import System.Random (randomRIO)
 import Control.Monad (replicateM_)
 
 import World
@@ -6,6 +5,7 @@ import Entity
 import Room
 import AI
 import UI
+import Rand
 
 playerAmong = any (== Player) . map ai
 
@@ -31,15 +31,15 @@ makeEnemy = do
 makeMob :: Species -> AI -> Game Entity
 makeMob species ai = do
   eid <- nextID
-  hp <- liftIO $ randomRIO (hpRangeFor species)
-  str <- liftIO $ randomRIO (strRangeFor species)
+  hp <- anyIn (hpRangeFor species)
+  str <- anyIn (strRangeFor species)
   let name | ai == Player = "player"
            | otherwise = show species
   return $ Entity { eid = eid, hp = hp, power = str,
         ai = ai, name = name, species = species }
 
 randomSpecies :: Game Species
-randomSpecies = liftIO $ toEnum `fmap` randomRIO (low, high)
+randomSpecies = toEnum `fmap` anyIn (low, high)
   where [low, high] = map fromEnum range
         range = [minBound, maxBound] :: [Species]
 
@@ -50,7 +50,7 @@ playGame :: Game ()
 playGame = do
   say "You climb down the well."
   playerEntity <- makePlayer
-  numEnemies <- liftIO (randomRIO (1, 5))
+  numEnemies <- anyIn (1, 5)
   replicateM_ numEnemies $ do
     enemy <- makeEnemy
     saywords ["A", name enemy, "with", show (hp enemy),

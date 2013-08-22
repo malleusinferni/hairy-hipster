@@ -6,6 +6,7 @@ import World
 import Entity
 import Room
 import UI
+import Rand
 
 runAI player@(Entity { ai = Player }) (defender : bystanders) = do
   yn <- liftIO . promptYN $ "Attack the " ++ name defender ++ "? [Yn] "
@@ -27,7 +28,7 @@ runAI attacker _ = do
 
 dealDamage attacker defender = do
   let p = power attacker
-  amount <- liftIO $ randomRIO (p, p + 3)
+  amount <- anyIn (p, p + 3)
   saywords ["The", name attacker, "hits the", name defender,
     "for", show amount, "damage!"]
   return defender { hp = hp defender - amount }
