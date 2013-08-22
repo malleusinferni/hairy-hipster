@@ -2,7 +2,7 @@ import System.IO (stdout, hFlush)
 import System.Random (randomRIO)
 import Control.Concurrent (forkIO)
 import Control.Concurrent.MVar
-import Control.Monad (replicateM)
+import Control.Monad (replicateM_)
 import Control.Monad.Reader
 import Data.IORef
 
@@ -85,6 +85,9 @@ sel $= value = do
   ref <- asks sel
   liftIO $ writeIORef ref value
 
+storeEntity e = entities %= (e:)
+updateEntity e = entities %= (map $ \i -> if e == i then e else i)
+
 makePlayer :: Game Entity
 makePlayer = do
   eid <- nextID
@@ -100,14 +103,12 @@ makePlayer = do
 makeEnemy :: Game Entity
 makeEnemy = do
   eid <- nextID
-  enemy <- liftIO $ do
+  liftIO $ do
     species <- randomSpecies
     hp <- randomRIO (hpRangeFor species)
     str <- randomRIO (strRangeFor species)
     return $ Entity { eid = eid, hp = hp, power = str,
           ai = Monster, name = show species, species = species }
-  entities %= (enemy :)
-  return enemy
 
 randomSpecies :: IO Species
 randomSpecies = toEnum `fmap` randomRIO (low, high)
@@ -122,13 +123,13 @@ playGame = do
   say "You climb down the well."
   playerEntity <- makePlayer
   numEnemies <- liftIO (randomRIO (1, 5))
-  enemies <- replicateM numEnemies $ do
+  replicateM_ numEnemies $ do
     enemy <- makeEnemy
     saywords ["A", name enemy, "with", show (hp enemy),
       "HP is lurking in the darkness."]
-    return enemy
+    storeEntity enemy
   say "You bare your sword and leap into the fray."
-  entities %= (playerEntity :)
+  storeEntity playerEntity
   playTurn
 
 prompt :: String -> IO String
