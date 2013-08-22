@@ -32,6 +32,7 @@ verb v =
     "hit" -> reg "hit hits hit hitting"
     "collapse" -> reg "collapse collapses collapsed collapsing"
     "perish" -> reg "perish perishes perished perishing"
+    "wound" -> reg "wound wounds wounded wounding"
     "emerge" -> reg "emerge emerges emerged emerging"
     "lurk" -> reg "lurk lurks lurked lurking"
     "die" -> reg "die dies died dying"

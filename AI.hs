@@ -40,8 +40,9 @@ attack attacker defender = do
 dealDamage attacker defender = do
   let p = power attacker
   amount <- anyIn (p, p + 3)
-  announce $ Damage attacker (verb "hit") defender amount
-  return defender { hp = hp defender - amount }
+  let injured = defender { hp = hp defender - amount }
+  announce $ Damage attacker (verb "hit") injured amount
+  return injured
 
 tellVictory :: Entity -> Game ()
 tellVictory = announce . Win

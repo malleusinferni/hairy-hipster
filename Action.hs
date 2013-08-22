@@ -21,12 +21,12 @@ data Outcome = Damage {
 
 instance Effable Outcome where
   describe (Damage s m d a)
-    | hp d > 0 = unwords [subj, verb, obj, amt]
-    | otherwise = unwords [subj, "mortally", verb, obj]
+    | hp d > 0 = unwords [subj, averb, obj, amt]
+    | otherwise = unwords [subj, "mortally", conj s (verb "wound"), obj]
     where subj = nominative (name s)
           obj = accusative (name d)
           amt = unwords ["for", show a, "damage"]
-          verb = conj s m
+          averb = conj s m
   describe (Perish s) = unwords [nominative (name s), conj s (verb "perish")]
   describe (Win s) = unwords [nominative (name s), conj s (verb "emerge"),
     "victorious"]
