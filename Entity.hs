@@ -30,3 +30,5 @@ hpRangeFor Shoggoth = (25, 45)
 
 strRangeFor Shoggoth = (10, 20)
 strRangeFor _ = (5, 15)
+
+stillAlive = (> 0) . hp
