@@ -28,15 +28,20 @@ playTurn :: Game ()
 playTurn = asks entities >>= liftIO . readIORef >>= go
   where go [] = say "None survive..."
         go [Entity { ai = Player }] = say "You emerge victorious!"
-        go (attacker : defender : bystanders) = do
-          defender' <- dealDamage attacker defender
-          tellHealth defender'
-          let rotated = concat [[defender'], bystanders, [attacker]]
-              survivors = filter stillAlive rotated
+        go (attacker : combatants) = do
+          survivors <- runAI attacker combatants
           entities $= survivors
           if playerAmong survivors
              then playTurn
              else saywords ["The", name attacker, "has defeated you..."]
+
+runAI attacker (defender : bystanders) = do
+  defender <- dealDamage attacker defender
+  tellHealth defender
+  return $ filter stillAlive ((defender : bystanders) ++ [attacker])
+runAI attacker _ = do
+  saywords ["The", name attacker, "emerges victorious!"]
+  return [attacker]
 
 dealDamage attacker defender = do
   let p = power attacker
