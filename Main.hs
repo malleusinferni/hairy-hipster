@@ -30,6 +30,7 @@ playTurn = asks entities >>= liftIO . readIORef >>= go
         go [Entity { ai = Player }] = say "You emerge victorious!"
         go (attacker : defender : bystanders) = do
           defender' <- dealDamage attacker defender
+          tellHealth defender'
           let rotated = concat [[defender'], bystanders, [attacker]]
               survivors = filter stillAlive rotated
           entities $= survivors
@@ -42,17 +43,16 @@ dealDamage attacker defender = do
   amount <- liftIO $ randomRIO (p, p + 3)
   saywords ["The", name attacker, "hits the", name defender,
     "for", show amount, "damage!"]
-  let def = defender { hp = hp defender - amount }
-  if ai def == Player
-     then say (tellHealth def)
-     else return ()
-  return def
+  return defender { hp = hp defender - amount }
 
-tellHealth :: Entity -> String
-tellHealth (Entity { hp = hp })
-  | hp > 10 = "You feel fine."
-  | hp > 0 = "You feel woozy from blood loss."
-  | otherwise = "Your hit points dwindle to zero. You perish!"
+tellHealth :: Entity -> Game ()
+tellHealth (Entity { hp = hp, ai = Player })
+  | hp > 10 = say "You feel fine."
+  | hp > 0 = say "You feel woozy from blood loss."
+  | otherwise = say "Your hit points dwindle to zero. You perish!"
+tellHealth npc@(Entity { hp = hp })
+  | hp <= 0 = saywords ["The", name npc, "collapses in a pool of blood."]
+tellHealth _ = return ()
 
 streamIDs :: Int -> IO (IO ID)
 streamIDs n = do
