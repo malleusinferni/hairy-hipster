@@ -13,9 +13,14 @@ playTurn :: Game ()
 playTurn = getEntitiesWhere stillAlive >>= go
   where go [] = say "None survive..."
         go [entity] = tellVictory entity
-        go combatants = do
-          mapM_ tick combatants
-          playTurn
+        go combatants = playseq $ map tick combatants
+
+playseq [] = playTurn
+playseq (action : actions) = do
+  survivors <- getEntitiesWhere stillAlive
+  if playerAmong survivors
+     then do action; playseq actions
+     else return ()
 
 makePlayer :: Game Entity
 makePlayer = makeMob Merovingian Player
