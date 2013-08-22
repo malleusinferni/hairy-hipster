@@ -143,12 +143,16 @@ prompt str = do
   hFlush stdout
   getLine
 
+promptYN str = do
+  r <- prompt str
+  case r of
+    [] -> return True
+    ('y':_) -> return True
+    ('Y':_) -> return True
+    _ -> return False
+
 main :: IO ()
 main = do
   newGame
-  response <- prompt "Play again? [yn] "
-  case response of
-    [] -> main
-    ('y':_) -> main
-    ('Y':_) -> main
-    _ -> return ()
+  retry <- promptYN "Play again? [Yn] "
+  if retry then main else return ()
