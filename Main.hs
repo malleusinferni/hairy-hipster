@@ -10,6 +10,8 @@ import Action
 
 playerAmong = elem Player . map ai
 
+playerSurvives = playerAmong `fmap` getEntitiesWhere stillAlive
+
 playTurn :: Game ()
 playTurn = getEntitiesWhere stillAlive >>= go
   where go [] = say "None survive..."
@@ -18,8 +20,8 @@ playTurn = getEntitiesWhere stillAlive >>= go
 
 playseq [] = playTurn
 playseq (action : actions) = do
-  survivors <- getEntitiesWhere stillAlive
-  if playerAmong survivors
+  test <- playerSurvives
+  if test
      then do action; playseq actions
      else return ()
 
