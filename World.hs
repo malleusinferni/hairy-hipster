@@ -1,6 +1,7 @@
 module World (
   World(..), Game(..),
   (%=), ($=), storeEntity, updateEntity, getEntities,
+  anyEntityExcept,
   makeWorld, nextID,
   say, saywords,
   asks, liftIO, runReaderT
@@ -13,6 +14,7 @@ import Control.Concurrent.MVar
 
 import Entity
 import Room
+import Rand
 
 data World = World {
     getID :: IO ID,
@@ -65,3 +67,6 @@ updateEntity e = entities %= (map $ \i -> if e == i then e else i)
 
 getEntities :: Game [Entity]
 getEntities = asks entities >>= liftIO . readIORef
+
+anyEntityExcept :: Entity -> Game (Maybe Entity)
+anyEntityExcept self = getEntities >>= anyOf . filter (/= self)

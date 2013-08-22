@@ -18,8 +18,10 @@ runAI player@(Entity { ai = Player }) (defender : bystanders) = do
      else do
        say "Climbing back up the well, you escape with your life..."
        return [player]
-runAI attacker (defender : bystanders) = do
-  defender <- dealDamage attacker defender
+runAI attacker (_:_) = do
+  Just target <- anyEntityExcept attacker
+  defender <- dealDamage attacker target
+  bystanders <- filter (/= defender) `fmap` getEntities
   tellHealth defender
   return $ filter stillAlive ((defender : bystanders) ++ [attacker])
 runAI attacker _ = do
