@@ -73,12 +73,14 @@ makeWorld = do
   return World { getID = stream, entities = ref,
     locations = [outside, inside] }
 
-(%=) :: (World -> IORef a) -> (a -> a) -> Game ()
+type Selector a = World -> IORef a
+
+(%=) :: Selector a -> (a -> a) -> Game ()
 sel %= action = do
   ref <- asks sel
   liftIO $ modifyIORef' ref action
 
-($=) :: (World -> IORef a) -> a -> Game ()
+($=) :: Selector a -> a -> Game ()
 sel $= value = do
   ref <- asks sel
   liftIO $ writeIORef ref value
