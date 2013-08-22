@@ -3,7 +3,7 @@ module World (
   (%=), ($=), storeEntity, updateEntity, getEntities,
   anyEntityExcept, getEntitiesWhere, getByID,
   makeWorld, nextID,
-  say, saywords,
+  say, saywords, announce,
   asks, liftIO, runReaderT
   ) where
 
@@ -16,6 +16,7 @@ import Control.Concurrent.MVar
 import Entity
 import Room
 import Rand
+import Describe
 
 data World = World {
     getID :: IO ID,
@@ -30,6 +31,9 @@ say = liftIO . putStrLn
 
 saywords :: [String] -> Game ()
 saywords = say . unwords
+
+announce :: (Effable a) => a -> Game ()
+announce d = say (sentence d ".")
 
 streamIDs :: Int -> IO (IO ID)
 streamIDs n = do

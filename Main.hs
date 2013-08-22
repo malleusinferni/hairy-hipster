@@ -6,6 +6,7 @@ import Room
 import AI
 import UI
 import Rand
+import Action
 
 playerAmong = elem Player . map ai
 
@@ -38,7 +39,7 @@ makeMob species ai = do
   let name | ai == Player = "player"
            | otherwise = show species
   return $ Entity { eid = eid, hp = hp, power = str,
-        ai = ai, name = name, species = species }
+        ai = ai, species = species }
 
 randomSpecies :: Game Species
 randomSpecies = toEnum `fmap` anyIn (low, high)
@@ -55,8 +56,7 @@ playGame = do
   numEnemies <- anyIn (1, 5)
   replicateM_ numEnemies $ do
     enemy <- makeEnemy
-    saywords ["A", name enemy, "with", show (hp enemy),
-      "HP is lurking in the darkness."]
+    announce (Lurk enemy)
     storeEntity enemy
   say "You bare your sword and leap into the fray."
   storeEntity playerEntity

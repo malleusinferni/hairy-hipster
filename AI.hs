@@ -7,6 +7,8 @@ import Entity
 import Room
 import UI
 import Rand
+import Describe
+import Action
 
 tick :: Entity -> Game ()
 tick self = do
@@ -20,7 +22,8 @@ anyOpponent self = getEntitiesWhere test >>= anyOf
   where test e = hp e > 0 && eid e /= eid self
 
 runAI player@(Entity { ai = Player }) defender = do
-  yn <- liftIO . promptYN $ "Attack the " ++ name defender ++ "? [Yn] "
+  let ask = concat ["Attack ", accusative (name defender), "? [Yn] "]
+  yn <- liftIO (promptYN ask)
   if yn
      then attack player defender
      else do
@@ -37,13 +40,11 @@ attack attacker defender = do
 dealDamage attacker defender = do
   let p = power attacker
   amount <- anyIn (p, p + 3)
-  saywords ["The", name attacker, "hits the", name defender,
-    "for", show amount, "damage!"]
+  announce $ Damage attacker (verb "hit") defender amount
   return defender { hp = hp defender - amount }
 
 tellVictory :: Entity -> Game ()
-tellVictory (Entity { ai = Player }) = say "You emerge victorious!"
-tellVictory npc = saywords ["The", name npc, "emerges victorious!"]
+tellVictory = announce . Win
 
 tellHealth :: Entity -> Game ()
 tellHealth (Entity { hp = hp, ai = Player })
@@ -51,5 +52,5 @@ tellHealth (Entity { hp = hp, ai = Player })
   | hp > 0 = say "You feel woozy from blood loss."
   | otherwise = say "Your hit points dwindle to zero. You perish!"
 tellHealth npc@(Entity { hp = hp })
-  | hp <= 0 = saywords ["The", name npc, "collapses in a pool of blood."]
+  | hp <= 0 = announce (Perish npc)
 tellHealth _ = return ()
