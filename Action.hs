@@ -3,8 +3,23 @@ module Action where
 import Describe
 import Entity
 
-data Intent = FIGHT | ESCAPE
-  deriving (Eq, Show, Read)
+data Action = Melee | Ranged -- Damage another entity
+            | Eat -- Consume an entity (dead or living!)
+            | Goto -- Actor goes to a different location
+            | Take | Put -- Move stuff between world and inventory
+            | Open | Close -- Door, chest, portal...?
+            | Ask | Tell -- Includes reading and writing
+            | Copulate -- Laying eggs???
+            | Rest -- Do nothing (recuperate if possible)
+            -- NOTE: Looking around doesn't consume a turn!
+
+data ActionEvent = Evt {
+    verbType :: Action,
+    agent :: Entity,
+    patient :: Maybe Entity,
+    theme :: Maybe Entity,
+    instrument :: Maybe Entity
+  }
 
 data Outcome = Damage {
     subject :: Entity,
@@ -19,6 +34,14 @@ data Outcome = Damage {
     subject :: Entity
   } deriving (Eq, Show)
 
+data EventReport = Report ActionEvent [Outcome]
+
+{-
+  example = Report (Evt Melee shoggoth player Nothing Nothing) -- tentacles
+                   [TakeDamage 4000, Die player]
+-}
+
+-- TODO Rewrite all of this to use randomness, vocabulary, etc.
 instance Effable Outcome where
   describe (Damage s m d a)
     | hp d > 0 = unwords [subj, averb, obj, amt]
