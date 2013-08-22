@@ -24,29 +24,27 @@ stillAlive = (> 0) . hp
 
 playerAmong = any (== Player) . map ai
 
-playTurn :: [Entity] -> IO ()
-playTurn (attacker : defender : bystanders) = do
-  defender <- dealDamage attacker defender
-  let undamaged = bystanders ++ [attacker]
-      survivors
-        | hp defender > 0 = defender : undamaged
-        | otherwise = undamaged
-  case survivors of
-    [] -> putStrLn "Nobody survives..."
-    [Entity { ai = Player }] -> do
-      putStrLn $ unwords ["The", name defender, "falls in combat!"]
-      putStrLn "You escape with your life..."
-    [npc] -> putStrLn $ unwords ["The", name npc, "has defeated you..."]
-    multiple -> playTurn survivors
+playTurn :: Game ()
+playTurn = asks entities >>= liftIO . readIORef >>= go
+  where go [] = say "None survive..."
+        go [Entity { ai = Player }] = say "You emerge victorious!"
+        go (attacker : defender : bystanders) = do
+          defender' <- dealDamage attacker defender
+          let rotated = concat [[defender'], bystanders, [attacker]]
+              survivors = filter stillAlive rotated
+          entities $= survivors
+          if playerAmong survivors
+             then playTurn
+             else saywords ["The", name attacker, "has defeated you..."]
 
-dealDamage :: Entity -> Entity -> IO Entity
 dealDamage attacker defender = do
-  amount <- randomRIO (power attacker, power attacker + 3)
-  putStrLn $ unwords ["The", name attacker, "hits the", name defender,
-                      "for", show amount, "damage!"]
+  let p = power attacker
+  amount <- liftIO $ randomRIO (p, p + 3)
+  saywords ["The", name attacker, "hits the", name defender,
+    "for", show amount, "damage!"]
   let def = defender { hp = hp defender - amount }
   if ai def == Player
-     then putStrLn (tellHealth def)
+     then say (tellHealth def)
      else return ()
   return def
 
@@ -106,7 +104,7 @@ makeEnemy = do
     str <- randomRIO (strRangeFor species)
     return $ Entity { eid = eid, hp = hp, power = str,
           ai = Monster, name = show species, species = species }
-  entities %= \es -> enemy : es
+  entities %= (enemy :)
   return enemy
 
 randomSpecies :: IO Species
@@ -128,7 +126,8 @@ playGame = do
       "HP is lurking in the darkness."]
     return enemy
   say "You bare your sword and leap into the fray."
-  liftIO $ playTurn (playerEntity : enemies)
+  entities %= (playerEntity :)
+  playTurn
 
 prompt :: String -> IO String
 prompt str = do
