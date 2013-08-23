@@ -41,7 +41,7 @@ dealDamage attacker defender = do
   let p = power attacker
   amount <- anyIn (p, p + 3)
   let injured = defender { hp = hp defender - amount }
-  announce $ Damage attacker (verb "hit") injured amount
+  announce $ TakeDamage injured amount
   return injured
 
 tellVictory :: Entity -> Game ()
@@ -53,5 +53,5 @@ tellHealth (Entity { hp = hp, ai = Player })
   | hp > 0 = say "You feel woozy from blood loss."
   | otherwise = say "Your hit points dwindle to zero. You perish!"
 tellHealth npc@(Entity { hp = hp })
-  | hp <= 0 = announce (Perish npc)
+  | hp <= 0 = announce (Die npc)
 tellHealth _ = return ()

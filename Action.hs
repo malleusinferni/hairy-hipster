@@ -3,7 +3,7 @@ module Action where
 import Describe
 import Entity
 
-data Action = Melee | Ranged -- Damage another entity
+data Action = Attack -- Damage another entity
             | Eat -- Consume an entity (dead or living!)
             | Goto -- Actor goes to a different location
             | Take | Put -- Move stuff between world and inventory
@@ -12,6 +12,7 @@ data Action = Melee | Ranged -- Damage another entity
             | Copulate -- Laying eggs???
             | Rest -- Do nothing (recuperate if possible)
             -- NOTE: Looking around doesn't consume a turn!
+  deriving (Eq, Show)
 
 data ActionEvent = Evt {
     verbType :: Action,
@@ -21,18 +22,14 @@ data ActionEvent = Evt {
     instrument :: Maybe Entity
   }
 
-data Outcome = Damage {
-    subject :: Entity,
-    method :: Verb,
-    defender :: Entity,
-    amount :: Int
-  } | Perish {
-    subject :: Entity
-  } | Win {
-    subject :: Entity
-  } | Lurk {
-    subject :: Entity
-  } deriving (Eq, Show)
+data Outcome = TakeDamage Entity Int
+             | NearDeath Entity
+             | Die Entity
+             | Win Entity
+             | Lose Entity
+             | Lurk Entity
+             | RunAway Entity
+  deriving (Eq, Show)
 
 data EventReport = Report ActionEvent [Outcome]
 
@@ -41,17 +38,47 @@ data EventReport = Report ActionEvent [Outcome]
                    [TakeDamage 4000, Die player]
 -}
 
+subj, obj :: Nominable a => a -> String
+subj = nominative . name
+obj = accusative . name
+
+cverb :: Nominable a => a -> String -> String
+cverb a = conj a . verb
+
+aeverb :: Nominable a => a -> Action -> String
+aeverb a = cverb a . downcase . show
+
 -- TODO Rewrite all of this to use randomness, vocabulary, etc.
 instance Effable Outcome where
-  describe (Damage s m d a)
-    | hp d > 0 = unwords [subj, averb, obj, amt]
-    | otherwise = unwords [subj, "mortally", conj s (verb "wound"), obj]
-    where subj = nominative (name s)
-          obj = accusative (name d)
+  describe (TakeDamage a v) =
+    unwords [subj a, cverb a "take", show v, "damage"]
+  describe (Die a)
+    | ai a == Player = "your hit points dwindle to zero"
+    | otherwise = unwords [subj a, cverb a "collapse", "in a pool of blood"]
+  describe (NearDeath a)
+    | ai a == Player = "you feel woozy from loss of blood"
+    | otherwise = unwords [subj a, cverb a "be", "near death"]
+  describe (Win a) = unwords [subj a, cverb a "emerge", "victorious"]
+  describe (Lose a) = unwords [subj a, cverb a "be", "defeated"]
+  describe (Lurk a) = unwords [describe a, cverb a "be",
+    "lurking in the darkness"]
+  describe (RunAway a) = unwords [subj a, cverb a "escape", "with",
+    genitive (name a), "life.."]
+  -- describe ev = show ev
+
+instance Effable ActionEvent where
+  describe (Evt v a (Just p) _ _) = unwords [subj a, aeverb a v, obj p]
+  describe (Evt v a _ _ _) = unwords [subj a, aeverb a v]
+  -- describe _ = "UNIMPLEMENTED"
+
+instance Effable EventReport where
+  describe (Report (Evt Attack a (Just p) _ _) outcomes)
+    | wasFatal = unwords [subj, "mortally", theverb, obj, amt]
+    | otherwise = unwords [subj, theverb, obj, amt]
+    where subj = nominative (name a)
+          obj = accusative (name p)
           amt = unwords ["for", show a, "damage"]
-          averb = conj s m
-  describe (Perish s) = unwords [nominative (name s), conj s (verb "perish")]
-  describe (Win s) = unwords [nominative (name s), conj s (verb "emerge"),
-    "victorious"]
-  describe (Lurk s) = unwords [describe s, conj s (verb "be"), "lurking",
-    "in the darkness"]
+          theverb = conj a (verb "strike")
+          wasFatal = any fatalTest outcomes
+          fatalTest (Die e) = e == p
+  describe (Report v outcomes) = unlines (describe v : map describe outcomes)
