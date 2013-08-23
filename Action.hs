@@ -1,5 +1,7 @@
 module Action where
 
+import Data.List (find)
+
 import Describe
 import Entity
 
@@ -14,13 +16,9 @@ data Action = Attack -- Damage another entity
             -- NOTE: Looking around doesn't consume a turn!
   deriving (Eq, Show)
 
-data ActionEvent = Evt {
-    verbType :: Action,
-    agent :: Entity,
-    patient :: Maybe Entity,
-    theme :: Maybe Entity,
-    instrument :: Maybe Entity
-  }
+data ActionEvent = VI Action Entity
+                 | VT Action Entity Entity
+                 | V3 Action Entity Entity Entity
 
 data Outcome = TakeDamage Entity Int
              | NearDeath Entity
@@ -53,11 +51,13 @@ instance Effable Outcome where
   describe (TakeDamage a v) =
     unwords [subj a, cverb a "take", show v, "damage"]
   describe (Die a)
-    | ai a == Player = "your hit points dwindle to zero"
+    | ai a == Player = "you perish"
     | otherwise = unwords [subj a, cverb a "collapse", "in a pool of blood"]
   describe (NearDeath a)
-    | ai a == Player = "you feel woozy from loss of blood"
-    | otherwise = unwords [subj a, cverb a "be", "near death"]
+    | ai a == Player = if hp a > 0
+                          then "you feel woozy from loss of blood"
+                          else "your hit points dwindle to zero"
+    | otherwise = unwords [subj a, cverb a "stagger", "under the blow"]
   describe (Win a) = unwords [subj a, cverb a "emerge", "victorious"]
   describe (Lose a) = unwords [subj a, cverb a "be", "defeated"]
   describe (Lurk a) = unwords [describe a, cverb a "be",
@@ -67,18 +67,23 @@ instance Effable Outcome where
   -- describe ev = show ev
 
 instance Effable ActionEvent where
-  describe (Evt v a (Just p) _ _) = unwords [subj a, aeverb a v, obj p]
-  describe (Evt v a _ _ _) = unwords [subj a, aeverb a v]
-  -- describe _ = "UNIMPLEMENTED"
+  describe (VI Goto a) = "you climb back up the well"
+  describe (VI v a) = unwords [subj a, aeverb a v]
+  describe (VT v a p) = unwords [subj a, aeverb a v, obj p]
+  describe _ = "UNIMPLEMENTED"
 
 instance Effable EventReport where
-  describe (Report (Evt Attack a (Just p) _ _) outcomes)
-    | wasFatal = unwords [subj, "mortally", theverb, obj, amt]
-    | otherwise = unwords [subj, theverb, obj, amt]
-    where subj = nominative (name a)
-          obj = accusative (name p)
-          amt = unwords ["for", show a, "damage"]
+  describe (Report (VT Attack a p) outcomes)
+    | nodamage = unwords [subj a, theverb, obj p, "to no effect"]
+    | wasFatal = unwords [subj a, "mortally", theverb, obj p, amt]
+    | otherwise = unwords [subj a, theverb, obj p, amt]
+    where amt = unwords ["for", show damage, "damage"]
+          damage = let Just (TakeDamage _ v) = find damageTest outcomes in v
           theverb = conj a (verb "strike")
+          nodamage = not $ any damageTest outcomes
+          damageTest (TakeDamage _ _) = True
+          damageTest _ = False
           wasFatal = any fatalTest outcomes
-          fatalTest (Die e) = e == p
+          fatalTest (Die _) = True
+          fatalTest _ = False
   describe (Report v outcomes) = unlines (describe v : map describe outcomes)
