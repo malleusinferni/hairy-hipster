@@ -36,10 +36,12 @@ verb v =
     "emerge" -> reg "emerge emerges emerged emerging"
     "lurk" -> reg "lurk lurks lurked lurking"
     "die" -> reg "die dies died dying"
+    _ -> reg $ defaultVerb v
   where reg text =
          case words text of
           [inf, sing, past, ger] -> Verb inf sing inf past past ger Nothing
           _ -> error ("WRONG VERB FORMAT: " ++ text)
+        defaultVerb v = unwords [v, v ++ "s", v ++ "d", v ++ "ing"]
 
 noun n =
   case n of
