@@ -10,10 +10,10 @@ import Action
 
 playerAmong = elem Player . map ai
 
-playerSurvives = playerAmong `fmap` getEntitiesWhere stillAlive
+playerSurvives = playerAmong `fmap` getEntitiesWhere isActor
 
 playTurn :: Game ()
-playTurn = getEntitiesWhere stillAlive >>= go
+playTurn = getEntitiesWhere isActor >>= go
   where go [] = say "None survive..."
         go [entity] = tellVictory entity
         go combatants = while playerSurvives (map tick combatants) playTurn

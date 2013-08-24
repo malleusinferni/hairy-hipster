@@ -38,10 +38,15 @@ runAI player@(Entity { ai = Player }) defender = do
      else leaveGame player
 runAI self other = attack self other
 
+setAI entity ai = do
+  updateEntity $ entity { ai = ai }
+
 attack attacker defender = do
   let event = VT Attack attacker defender
   (defender, damage) <- dealDamage attacker defender
-  updateEntity defender
+  if hp defender <= 0
+     then setAI defender Inert
+     else return ()
   return (Report event (damage : tellHealth defender))
 
 dealDamage attacker defender = do

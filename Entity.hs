@@ -37,7 +37,7 @@ data Species = Shoggoth | Goblin | Unseelie | Merovingian
 newtype ID = EID Int
   deriving (Eq, Show, Ord)
 
-data AI = Player | Monster
+data AI = Player | Monster | Inert
   deriving (Eq, Show, Ord)
 
 hpRangeFor Goblin = (5, 25)
@@ -47,5 +47,7 @@ hpRangeFor _ = (10, 30)
 
 strRangeFor Shoggoth = (10, 20)
 strRangeFor _ = (5, 15)
+
+isActor = (/= Inert) . ai
 
 stillAlive = (> 0) . hp
