@@ -1,11 +1,14 @@
 module Entity where
 
 import Describe
+import Coords
+import Room
 
 data Entity = Entity {
     eid :: ID,
     ai :: AI,
     hp :: Int,
+    location :: Room,
     species :: Species,
     power :: Int
   } deriving (Show)

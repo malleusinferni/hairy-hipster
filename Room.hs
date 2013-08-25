@@ -1,13 +1,12 @@
 module Room where
 
-data Room = Room {
-    placename :: String,
-    doors :: [(Door, Room)]
-  }
+import Coords
 
-data Door = Door {
-    doortype :: String,
-    doordir :: Cardinal
+data Room = Room {
+    onGrid :: Coords,
+    exits :: [(Cardinal, Room)]
   }
+  deriving (Eq, Show)
 
 data Cardinal = North | East | South | West | Up | Down
+  deriving (Eq, Show, Ord, Enum)

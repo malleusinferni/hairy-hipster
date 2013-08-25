@@ -2,7 +2,7 @@ module World (
   World(..), Game(..),
   (%=), ($=), storeEntity, updateEntity, getEntities,
   anyEntityExcept, getEntitiesWhere, getByID,
-  makeWorld, nextID,
+  makeWorld, nextID, anyRoom,
   say, saywords, announce,
   asks, liftIO, runReaderT
   ) where
@@ -17,6 +17,7 @@ import Entity
 import Room
 import Rand
 import Describe
+import Coords
 
 data World = World {
     getID :: IO ID,
@@ -48,9 +49,8 @@ makeWorld :: IO World
 makeWorld = do
   stream <- streamIDs 0
   ref <- newIORef []
-  let well = Door { doortype = "well", doordir = Down }
-      outside = Room { placename = "outside", doors = [(well, inside)] }
-      inside = Room { placename = "inside", doors = [] }
+  let outside = Room { exits = [(Down, inside)], onGrid = ZYX 1 0 0 }
+      inside = Room { exits = [(Up, outside)], onGrid = ZYX 0 0 0 }
   return World { getID = stream, entities = ref,
     locations = [outside, inside] }
 
@@ -81,3 +81,8 @@ getByID anid = find ((== anid) . eid) `fmap` getEntities
 
 anyEntityExcept :: Entity -> Game (Maybe Entity)
 anyEntityExcept self = getEntities >>= anyOf . filter (/= self)
+
+anyRoom :: Game Room
+anyRoom = do
+  [outside, inside] <- asks locations
+  return inside

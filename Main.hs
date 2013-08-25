@@ -39,10 +39,11 @@ makeMob species ai = do
   eid <- nextID
   hp <- anyIn (hpRangeFor species)
   str <- anyIn (strRangeFor species)
+  loc <- anyRoom
   let name | ai == Player = "player"
            | otherwise = show species
   return $ Entity { eid = eid, hp = hp, power = str,
-        ai = ai, species = species }
+        ai = ai, species = species, location = loc }
 
 randomSpecies :: Game Species
 randomSpecies = toEnum `fmap` anyIn (low, high)
