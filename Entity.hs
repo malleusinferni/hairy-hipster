@@ -6,7 +6,7 @@ import Room
 
 data Entity = Entity {
     eid :: ID,
-    ai :: AI,
+    ai :: AIType,
     hp :: Int,
     location :: Room,
     species :: Species,
@@ -40,8 +40,11 @@ data Species = Shoggoth | Goblin | Unseelie | Merovingian
 newtype ID = EID Int
   deriving (Eq, Show, Ord)
 
-data AI = Player | Monster | Inert
+data AIType = Player | Monster | Inert
   deriving (Eq, Show, Ord)
+
+data AI = AI { aiType :: AIType, entity :: ID }
+  deriving (Eq, Show)
 
 hpRangeFor Goblin = (5, 25)
 hpRangeFor Merovingian = (15, 35)

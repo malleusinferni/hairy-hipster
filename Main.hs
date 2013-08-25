@@ -34,7 +34,7 @@ makeEnemy = do
   species <- randomSpecies
   makeMob species Monster
 
-makeMob :: Species -> AI -> Game Entity
+makeMob :: Species -> AIType -> Game Entity
 makeMob species ai = do
   eid <- nextID
   hp <- anyIn (hpRangeFor species)
