@@ -30,12 +30,18 @@ leaveGame e = do
       o = [RunAway e]
   return (Report v o)
 
+parseInstr "fight" = Attack
+parseInstr "escape" = Goto
+parseInstr _ = Rest
+
 runAI player@(Entity { ai = Player }) defender = do
-  let ask = concat ["Attack ", accusative (name defender), "? [Yn] "]
-  yn <- liftIO (promptYN ask)
-  if yn
-     then attack player defender
-     else leaveGame player
+  move <- liftIO (prompt "[fight/escape] > ")
+  case parseInstr move of
+    Attack -> attack player defender
+    Goto -> leaveGame player
+    _ -> do
+      saywords ["You don't know how to", move ++ "!"]
+      runAI player defender
 runAI self other = attack self other
 
 setAI entity ai = do
