@@ -1,3 +1,4 @@
+{-# LANGUAGE RecordWildCards #-}
 module World (
   World(..), Game(..),
   (%=), ($=), storeEntity, updateEntity, getEntities,
@@ -47,10 +48,10 @@ nextID = liftIO =<< asks getID
 
 makeWorld :: IO World
 makeWorld = do
-  stream <- streamIDs 0
-  ref <- newIORef []
+  getID <- streamIDs 0
+  entities <- newIORef []
   locations <- makeMap 1
-  return World { getID = stream, entities = ref, locations = locations }
+  return World{..}
 
 makeMap :: Int -> IO [Room]
 makeMap gridSize = do

@@ -1,3 +1,4 @@
+{-# LANGUAGE RecordWildCards #-}
 import Control.Monad (replicateM_)
 
 import World
@@ -35,17 +36,15 @@ makeEnemy = do
   makeMob species Actor
 
 makeMob :: Species -> AIType -> Game Entity
-makeMob species ai = do
+makeMob species aitype = do
   eid <- nextID
   hp <- anyIn (hpRangeFor species)
-  str <- anyIn (strRangeFor species)
-  loc <- anyRoom
-  let name | ai == Player = "player"
-           | otherwise = show species
-  return $ Entity { eid = eid, hp = hp, power = str,
-        ai = makeAI ai eid, species = species, location = loc }
+  power <- anyIn (strRangeFor species)
+  location <- anyRoom
+  let ai = makeAI aitype eid
+  return Entity{..}
 
-makeAI ofType eid = AI { aiType = ofType, entity = eid }
+makeAI aiType entity = AI{..}
 
 randomSpecies :: Game Species
 randomSpecies = toEnum `fmap` anyIn (low, high)
