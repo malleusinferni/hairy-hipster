@@ -37,7 +37,7 @@ makeEnemy = do
 
 makeMob :: Species -> AIType -> Game Entity
 makeMob species aitype = do
-  eid <- nextID
+  eid <- nextEID
   hp <- anyIn (hpRangeFor species)
   power <- anyIn (strRangeFor species)
   location <- anyRoom

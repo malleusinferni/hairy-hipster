@@ -5,7 +5,7 @@ import Coords
 import Room
 
 data Entity = Entity {
-    eid :: ID,
+    eid :: EID,
     ai :: AI,
     hp :: Int,
     location :: Room,
@@ -37,8 +37,7 @@ instance Effable Entity where
 data Species = Shoggoth | Goblin | Unseelie | Merovingian
   deriving (Eq, Show, Ord, Enum, Bounded)
 
-newtype ID = EID Int
-  deriving (Eq, Show, Ord)
+type EID = Int
 
 data AIType = Player -- Controlled by IO hooks
             | Actor -- Controlled by runAI
@@ -46,7 +45,7 @@ data AIType = Player -- Controlled by IO hooks
             | Inert -- No special behavior
   deriving (Eq, Show, Ord)
 
-data AI = AI { aiType :: AIType, entity :: ID }
+data AI = AI { aiType :: AIType, entity :: EID }
   deriving (Eq, Show)
 
 hpRangeFor Goblin = (5, 25)

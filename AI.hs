@@ -12,7 +12,7 @@ import Action
 
 tick :: Entity -> Game ()
 tick self = do
-  selves <- getByID (eid self)
+  selves <- getByEID (eid self)
   others <- anyOpponent self
   case (selves, others) of
     (Just self, Just other) | hp self > 0 -> do

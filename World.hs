@@ -2,8 +2,8 @@
 module World (
   World(..), Game(..),
   (%=), ($=), storeEntity, updateEntity, getEntities,
-  anyEntityExcept, getEntitiesWhere, getByID,
-  makeWorld, nextID, anyRoom,
+  anyEntityExcept, getEntitiesWhere, getByEID,
+  makeWorld, nextEID, anyRoom,
   say, saywords, announce,
   asks, liftIO, runReaderT
   ) where
@@ -21,7 +21,7 @@ import Describe
 import Coords
 
 data World = World {
-    getID :: IO ID,
+    getEID :: IO EID,
     entities :: IORef [Entity],
     locations :: [Room]
   }
@@ -37,18 +37,18 @@ saywords = say . unwords
 announce :: (Effable a) => a -> Game ()
 announce d = say (sentence d ".")
 
-streamIDs :: Int -> IO (IO ID)
+streamIDs :: Int -> IO (IO Int)
 streamIDs n = do
   ref <- newEmptyMVar
   forkIO (mapM_ (putMVar ref) [n ..])
-  return (fmap EID $ takeMVar ref)
+  return (takeMVar ref)
 
-nextID :: Game ID
-nextID = liftIO =<< asks getID
+nextEID :: Game EID
+nextEID = liftIO =<< asks getEID
 
 makeWorld :: IO World
 makeWorld = do
-  getID <- streamIDs 0
+  getEID <- streamIDs 0
   entities <- newIORef []
   locations <- makeMap 1
   return World{..}
@@ -81,8 +81,8 @@ getEntities = asks entities >>= liftIO . readIORef
 getEntitiesWhere :: (Entity -> Bool) -> Game [Entity]
 getEntitiesWhere test = filter test `fmap` getEntities
 
-getByID :: ID -> Game (Maybe Entity)
-getByID anid = find ((== anid) . eid) `fmap` getEntities
+getByEID :: EID -> Game (Maybe Entity)
+getByEID anid = find ((== anid) . eid) `fmap` getEntities
 
 anyEntityExcept :: Entity -> Game (Maybe Entity)
 anyEntityExcept self = getEntities >>= anyOf . filter (/= self)
