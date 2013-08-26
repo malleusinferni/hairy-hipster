@@ -49,10 +49,14 @@ makeWorld :: IO World
 makeWorld = do
   stream <- streamIDs 0
   ref <- newIORef []
+  locations <- makeMap 1
+  return World { getID = stream, entities = ref, locations = locations }
+
+makeMap :: Int -> IO [Room]
+makeMap gridSize = do
   let outside = Room { exits = [(Down, inside)], onGrid = ZYX 1 0 0 }
       inside = Room { exits = [(Up, outside)], onGrid = ZYX 0 0 0 }
-  return World { getID = stream, entities = ref,
-    locations = [outside, inside] }
+  return [outside, inside]
 
 type Selector a = World -> IORef a
 
