@@ -62,8 +62,8 @@ makeMap :: IO RID -> Int -> IO [Room]
 makeMap stream gridSize = do
   orid <- stream
   irid <- stream
-  let outside = Room { rid = orid, exits = [(Down, irid)], onGrid = ZYX 1 0 0 }
-      inside = Room { rid = irid, exits = [(Up, orid)], onGrid = ZYX 0 0 0 }
+  let outside = Room { rid = orid, exits = [(Down, irid)], onGrid = zyx 1 0 0 }
+      inside = Room { rid = irid, exits = [(Up, orid)], onGrid = zyx 0 0 0 }
   return [outside, inside]
 
 type Selector a = World -> IORef a

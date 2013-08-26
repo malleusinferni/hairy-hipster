@@ -9,7 +9,4 @@ data Room = Room {
   }
   deriving (Eq, Show)
 
-data Cardinal = North | East | South | West | Up | Down
-  deriving (Eq, Show, Ord, Enum)
-
 type RID = Int
