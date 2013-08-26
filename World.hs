@@ -22,6 +22,7 @@ import Coords
 
 data World = World {
     getEID :: IO EID,
+    getRID :: IO RID,
     entities :: IORef [Entity],
     locations :: [Room]
   }
@@ -46,17 +47,23 @@ streamIDs n = do
 nextEID :: Game EID
 nextEID = liftIO =<< asks getEID
 
+nextRID :: Game RID
+nextRID = liftIO =<< asks getRID
+
 makeWorld :: IO World
 makeWorld = do
   getEID <- streamIDs 0
+  getRID <- streamIDs 0
   entities <- newIORef []
-  locations <- makeMap 1
+  locations <- makeMap getRID 1
   return World{..}
 
-makeMap :: Int -> IO [Room]
-makeMap gridSize = do
-  let outside = Room { exits = [(Down, inside)], onGrid = ZYX 1 0 0 }
-      inside = Room { exits = [(Up, outside)], onGrid = ZYX 0 0 0 }
+makeMap :: IO RID -> Int -> IO [Room]
+makeMap stream gridSize = do
+  orid <- stream
+  irid <- stream
+  let outside = Room { rid = orid, exits = [(Down, irid)], onGrid = ZYX 1 0 0 }
+      inside = Room { rid = irid, exits = [(Up, orid)], onGrid = ZYX 0 0 0 }
   return [outside, inside]
 
 type Selector a = World -> IORef a
