@@ -67,7 +67,11 @@ conj n
   | plural (name n) = presentPlural
   | otherwise = presentSingular
 
+sentence :: Effable d => d -> String -> String
 sentence d end = upcase (describe d) ++ end
+
+unsentence :: Effable d => [d] -> String
+unsentence = unlines . map (`sentence` ".")
 
 upcase (c:cs) = toUpper c : cs
 downcase (c:cs) = toLower c : cs

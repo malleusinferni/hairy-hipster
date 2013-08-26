@@ -61,7 +61,7 @@ playGame = do
   numEnemies <- anyIn (1, 5)
   replicateM_ numEnemies $ do
     enemy <- makeEnemy
-    announce (Lurk enemy)
+    announce (See :& [Agent playerEntity, Patient enemy])
     storeEntity enemy
   say "You bare your sword and leap into the fray."
   storeEntity playerEntity

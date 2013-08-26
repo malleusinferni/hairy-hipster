@@ -9,6 +9,7 @@ import UI
 import Rand
 import Describe
 import Action
+import Coords
 
 tick :: Entity -> Game ()
 tick self = do
@@ -16,24 +17,22 @@ tick self = do
   others <- anyOpponent self
   case (selves, others) of
     (Just self, Just other) | hp self > 0 -> do
-      (Report v outcomes) <- runAI self other
-      announce v
-      mapM_ announce outcomes
+      events <- runAI self other
+      say $ describe (Tick :=> events)
     _ -> return ()
 
 anyOpponent self = getEntitiesWhere test >>= anyOf
   where test e = hp e > 0 && eid e /= eid self
 
 leaveGame e = do
-  entities $= [e]
-  let v = VI Goto e
-      o = [RunAway e]
-  return (Report v o)
+  entities %= const [e]
+  return [Walk :& [Agent e, WhichWay Up], Lose :& [Patient e]]
 
 parseInstr "fight" = Attack
 parseInstr "escape" = Goto
 parseInstr _ = Rest
 
+runAI :: Entity -> Entity -> Game [Event]
 runAI player defender | isPlayer player = do
   move <- liftIO (prompt "[fight/escape] > ")
   case parseInstr move of
@@ -49,25 +48,23 @@ setAI entity newType = do
       newAI = (ai entity) { aiType = newType }
   updateEntity $ entity { ai = newAI }
 
-attack attacker defender = do
-  let event = VT Attack attacker defender
-  (defender, damage) <- dealDamage attacker defender
-  if hp defender <= 0
-     then setAI defender Inert
-     else return ()
-  return (Report event (damage : tellHealth defender))
+attack attacker defender = dealDamage attacker defender
 
+dealDamage :: Entity -> Entity -> Game [Event]
 dealDamage attacker defender = do
   let p = power attacker
   amount <- anyIn (p, p + 3)
-  let injured = defender { hp = hp defender - amount }
+  let newHP = hp defender - amount
+      injured = defender { hp = newHP }
   updateEntity injured
-  return (injured, TakeDamage injured amount)
+  let d = TakeDamage :& [Agent attacker, Patient defender, ByAmount amount]
+      n = NearDeath :& [Patient defender]
+      x = Die :& [Patient defender]
+      neardeath = newHP <= 10
+      dead = newHP <= 0
+      events = d : if dead then [x] else if neardeath then [n] else []
+  if dead then setAI injured Inert else return ()
+  return events
 
 tellVictory :: Entity -> Game ()
-tellVictory = announce . Win
-
-tellHealth :: Entity -> [Outcome]
-tellHealth e@(Entity { hp = hp }) =
-  concat [if hp <= 10 then [NearDeath e] else [],
-          if hp <= 0 then [Die e] else []]
+tellVictory e = announce (Win :& [Patient e])
