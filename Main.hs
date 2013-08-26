@@ -8,7 +8,7 @@ import UI
 import Rand
 import Action
 
-playerAmong = elem Player . map ai
+playerAmong = any isPlayer
 
 playerSurvives = playerAmong `fmap` getEntitiesWhere isActor
 
@@ -32,7 +32,7 @@ makePlayer = makeMob Merovingian Player
 makeEnemy :: Game Entity
 makeEnemy = do
   species <- randomSpecies
-  makeMob species Monster
+  makeMob species Actor
 
 makeMob :: Species -> AIType -> Game Entity
 makeMob species ai = do
@@ -43,7 +43,9 @@ makeMob species ai = do
   let name | ai == Player = "player"
            | otherwise = show species
   return $ Entity { eid = eid, hp = hp, power = str,
-        ai = ai, species = species, location = loc }
+        ai = makeAI ai eid, species = species, location = loc }
+
+makeAI ofType eid = AI { aiType = ofType, entity = eid }
 
 randomSpecies :: Game Species
 randomSpecies = toEnum `fmap` anyIn (low, high)

@@ -51,12 +51,12 @@ instance Effable Outcome where
   describe (TakeDamage a v) =
     unwords [subj a, cverb a "take", show v, "damage"]
   describe (Die a)
-    | ai a == Player = "you perish"
+    | isPlayer a = "you perish"
     | otherwise = unwords [subj a, cverb a "collapse", "in a pool of blood"]
   describe (NearDeath a)
-    | ai a == Player = if hp a > 0
-                          then "you feel woozy from loss of blood"
-                          else "your hit points dwindle to zero"
+    | isPlayer a = if hp a > 0
+                      then "you feel woozy from loss of blood"
+                      else "your hit points dwindle to zero"
     | otherwise = unwords [subj a, cverb a "stagger", "under the blow"]
   describe (Win a) = unwords [subj a, cverb a "emerge", "victorious"]
   describe (Lose a) = unwords [subj a, cverb a "be", "defeated"]

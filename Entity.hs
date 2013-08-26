@@ -6,7 +6,7 @@ import Room
 
 data Entity = Entity {
     eid :: ID,
-    ai :: AIType,
+    ai :: AI,
     hp :: Int,
     location :: Room,
     species :: Species,
@@ -27,7 +27,7 @@ instance Effable Species where
   describe s = downcase (show s)
 
 instance Nominable Entity where
-  name (Entity { ai = Player }) = noun You
+  name actor | aiType (ai actor) == Player = noun You
   name (Entity { species = s })= noun (The s)
 
 instance Effable Entity where
@@ -40,7 +40,10 @@ data Species = Shoggoth | Goblin | Unseelie | Merovingian
 newtype ID = EID Int
   deriving (Eq, Show, Ord)
 
-data AIType = Player | Monster | Inert
+data AIType = Player -- Controlled by IO hooks
+            | Actor -- Controlled by runAI
+            | Reactor -- Only responds to triggers
+            | Inert -- No special behavior
   deriving (Eq, Show, Ord)
 
 data AI = AI { aiType :: AIType, entity :: ID }
@@ -54,6 +57,8 @@ hpRangeFor _ = (10, 30)
 strRangeFor Shoggoth = (10, 20)
 strRangeFor _ = (5, 15)
 
-isActor = (/= Inert) . ai
+isActor = (`elem` [Player, Actor]) . aiType . ai
+
+isPlayer = (== Player) . aiType . ai
 
 stillAlive = (> 0) . hp

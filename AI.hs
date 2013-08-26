@@ -34,7 +34,7 @@ parseInstr "fight" = Attack
 parseInstr "escape" = Goto
 parseInstr _ = Rest
 
-runAI player@(Entity { ai = Player }) defender = do
+runAI player defender | isPlayer player = do
   move <- liftIO (prompt "[fight/escape] > ")
   case parseInstr move of
     Attack -> attack player defender
@@ -44,8 +44,10 @@ runAI player@(Entity { ai = Player }) defender = do
       runAI player defender
 runAI self other = attack self other
 
-setAI entity ai = do
-  updateEntity $ entity { ai = ai }
+setAI entity newType = do
+  let oldType = aiType (ai entity)
+      newAI = (ai entity) { aiType = newType }
+  updateEntity $ entity { ai = newAI }
 
 attack attacker defender = do
   let event = VT Attack attacker defender
