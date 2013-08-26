@@ -28,15 +28,15 @@ while c (f : fs) z = do
      else return ()
 
 makePlayer :: Game Entity
-makePlayer = makeMob Merovingian Player
+makePlayer = makeMob Merovingian Player True
 
 makeEnemy :: Game Entity
 makeEnemy = do
   species <- randomSpecies
-  makeMob species Actor
+  makeMob species Actor False
 
-makeMob :: Species -> AIType -> Game Entity
-makeMob species aitype = do
+makeMob :: Species -> AIType -> Bool -> Game Entity
+makeMob species aitype isPlayer = do
   eid <- nextEID
   hp <- anyIn (hpRangeFor species)
   power <- anyIn (strRangeFor species)

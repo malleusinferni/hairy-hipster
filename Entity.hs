@@ -8,6 +8,7 @@ data Entity = Entity {
     eid :: EID,
     ai :: AI,
     hp :: Int,
+    isPlayer :: Bool,
     location :: Room,
     species :: Species,
     power :: Int
@@ -57,7 +58,5 @@ strRangeFor Shoggoth = (10, 20)
 strRangeFor _ = (5, 15)
 
 isActor = (`elem` [Player, Actor]) . aiType . ai
-
-isPlayer = (== Player) . aiType . ai
 
 stillAlive = (> 0) . hp
