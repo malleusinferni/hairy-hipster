@@ -25,6 +25,7 @@ data Noun = Noun {
 data Dependent = I | You | He | She | It | They
                | forall n. Nominable n => The n
                | forall n. Nominable n => An n
+               | forall n. Effable n => Adj String n
 
 verb :: String -> Verb
 verb v =
@@ -56,6 +57,7 @@ noun n =
     It -> reg "it" "its" False
     The w -> nmap the w
     An w -> nmap an w
+    Adj a w -> let n = unwords [a, describe w] in reg n (n ++ "'s") False
   where reg nom gen = Noun nom gen nom
         nmap f w = let (Noun n g a p) = name w in
                        Noun (f n) (f g) (f a) p
@@ -85,6 +87,9 @@ class Nominable a where
 
 instance Nominable Noun where
   name = id
+
+instance Nominable Dependent where
+  name = noun
 
 class Effable a where
   describe :: a -> String
