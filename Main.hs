@@ -28,23 +28,25 @@ while c (f : fs) z = do
      else return ()
 
 makePlayer :: Game Entity
-makePlayer = makeMob Merovingian Player True
+makePlayer = makeMob Merovingian True
 
 makeEnemy :: Game Entity
 makeEnemy = do
   species <- randomSpecies
-  makeMob species Actor False
+  makeMob species False
 
-makeMob :: Species -> AIType -> Bool -> Game Entity
-makeMob species aitype isPlayer = do
+makeMob :: Species -> Bool -> Game Entity
+makeMob species isPlayer = do
   eid <- nextEID
   hp <- anyIn (hpRangeFor species)
   power <- anyIn (strRangeFor species)
   location <- anyRoom
-  let ai = makeAI aitype eid
+  let ai = makeAI isPlayer eid
   return Entity{..}
 
-makeAI aiType entity = AI{..}
+makeAI isPlayer entity = AI{..}
+  where hooks | isPlayer = makeRespMap playerTick
+              | otherwise = makeRespMap monsterTick
 
 randomSpecies :: Game Species
 randomSpecies = toEnum `fmap` anyIn (low, high)

@@ -1,6 +1,9 @@
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TypeSynonymInstances #-}
 module GameTypes where
 
 import Data.IORef
+import qualified Data.IntMap as IM
 import Control.Monad.Reader
 
 import Coords
@@ -29,14 +32,8 @@ instance Ord Entity where
 data Species = Shoggoth | Goblin | Unseelie | Merovingian
   deriving (Eq, Show, Ord, Enum, Bounded)
 
-data AIType = Player -- Controlled by IO hooks
-            | Actor -- Controlled by runAI
-            | Reactor -- Only responds to triggers
-            | Inert -- No special behavior
-  deriving (Eq, Show, Ord)
-
-data AI = AI { aiType :: AIType, entity :: EID }
-  deriving (Eq, Show)
+data AI = AI { hooks :: TrigMap, entity :: EID }
+  deriving (Show)
 
 -- Commands which an actor AI may issue in response to Tick
 data Action = Attack -- Damage another entity
@@ -101,6 +98,13 @@ data World = World {
 type Game a = ReaderT World IO a
 
 type Selector a = World -> IORef a
+
+type Responder = Trigger -> Game Action
+
+instance Show Responder where
+  show _ = "<responder function>"
+
+type TrigMap = IM.IntMap Responder
 
 data Room = Room {
     rid :: RID,

@@ -1,24 +1,11 @@
 module Action where
 
 import Data.List (find)
-import qualified Data.IntMap as IM
 
 import GameTypes
 import Describe
 import Entity
 import Coords
-
--- TODO Find a less obnoxious way to accomplish this
-triggerCode :: Trigger -> Int
-triggerCode (Tick) = 0
-triggerCode (Impacted _) = 1
-triggerCode (Pierced _) = 2
-triggerCode (Slashed _) = 3
-triggerCode (Burned _) = 4
-triggerCode (Seen) = 5
-
-getResponder :: Trigger -> IM.IntMap a -> Maybe a
-getResponder = IM.lookup . triggerCode
 
 subj, obj, poss :: Nominable a => a -> String
 subj = nominative . name

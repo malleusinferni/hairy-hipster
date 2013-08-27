@@ -13,41 +13,52 @@ import Coords
 
 tick :: Entity -> Game ()
 tick self = do
+  let instr = getResponder (Tick) self
   selves <- getByEID (eid self)
   others <- anyOpponent self
-  case (selves, others) of
-    (Just self, Just other) | hp self > 0 -> do
-      events <- runAI self other
+  case (selves, others, instr) of
+    (Just self, Just other, Just trigger) | hp self > 0 -> do
+      action <- trigger (Tick)
+      events <- runAI action self other
       say $ describe (Tick :=> events)
     _ -> return ()
 
 anyOpponent self = getEntitiesWhere test >>= anyOf
   where test e = hp e > 0 && eid e /= eid self
 
+leaveGame :: Entity -> Game [Event]
 leaveGame e = do
   entities %= const [e]
   return [Walk :& [Agent e, WhichWay Up], Lose :& [Patient e]]
 
+parseInstr :: String -> Action
 parseInstr "fight" = Attack
 parseInstr "escape" = Goto
 parseInstr _ = Rest
 
-runAI :: Entity -> Entity -> Game [Event]
-runAI player defender | isPlayer player = do
+playerTick :: Responder
+playerTick (Tick) = do
   move <- liftIO (prompt "[fight/escape] > ")
-  case parseInstr move of
-    Attack -> attack player defender
-    Goto -> leaveGame player
-    _ -> do
+  let r = parseInstr move
+  if elem r [Attack, Goto]
+     then return r
+     else do
       saywords ["You don't know how to", move ++ "!"]
-      runAI player defender
-runAI self other = attack self other
+      playerTick Tick
 
-setAI entity newType = do
-  let oldType = aiType (ai entity)
-      newAI = (ai entity) { aiType = newType }
-  updateEntity $ entity { ai = newAI }
+monsterTick (Tick) = return Attack
 
+runAI :: Action -> Entity -> Entity -> Game [Event]
+runAI Attack self other = attack self other
+runAI _ _ _ = return [NothingHappens :& []]
+
+makeCorpse :: Entity -> Game Entity
+makeCorpse e = do
+  let oldAI = ai e
+      newAI = removeHooks [Tick] oldAI
+  return $ e { ai = newAI }
+
+attack :: Entity -> Entity -> Game [Event]
 attack attacker defender = dealDamage attacker defender
 
 dealDamage :: Entity -> Entity -> Game [Event]
@@ -56,14 +67,18 @@ dealDamage attacker defender = do
   amount <- anyIn (p, p + 3)
   let newHP = hp defender - amount
       injured = defender { hp = newHP }
-  updateEntity injured
-  let d = TakeDamage :& [Agent attacker, Patient defender, ByAmount amount]
-      n = NearDeath :& [Patient defender]
-      x = Die :& [Patient defender]
+      d = TakeDamage :& [Agent attacker, Patient injured, ByAmount amount]
+      n = NearDeath :& [Patient injured]
+      x = Die :& [Patient injured]
       neardeath = newHP <= 10
       dead = newHP <= 0
-      events = d : if dead then [x] else if neardeath then [n] else []
-  if dead then setAI injured Inert else return ()
+      events
+        | dead = [d, x]
+        | neardeath = [d, n]
+        | otherwise = [d]
+  if dead
+     then makeCorpse injured >>= updateEntity
+     else updateEntity injured
   return events
 
 tellVictory :: Entity -> Game ()
