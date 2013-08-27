@@ -3,7 +3,6 @@ module Entity where
 import GameTypes
 import Describe
 import Coords
-import Room
 
 instance Nominable Species where
   name s = Noun (describe s) (describe s ++ "'s") (describe s) False

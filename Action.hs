@@ -7,7 +7,6 @@ import GameTypes
 import Describe
 import Entity
 import Coords
-import Room
 
 -- TODO Find a less obnoxious way to accomplish this
 triggerCode :: Trigger -> Int

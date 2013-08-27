@@ -4,7 +4,6 @@ import Control.Monad (replicateM_)
 import GameTypes
 import World
 import Entity
-import Room
 import AI
 import UI
 import Rand

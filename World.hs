@@ -15,7 +15,6 @@ import Control.Concurrent.MVar
 
 import GameTypes
 import Entity
-import Room
 import Rand
 import Describe
 import Coords
