@@ -3,62 +3,11 @@ module Action where
 import Data.List (find)
 import qualified Data.IntMap as IM
 
+import GameTypes
 import Describe
 import Entity
 import Coords
 import Room
-
--- Commands which an actor AI may issue in response to Tick
-data Action = Attack -- Damage another entity
-            | Eat -- Consume an entity (dead or living!)
-            | Goto -- Actor goes to a different location
-            | Take | Put -- Move stuff between world and inventory
-            | Open | Close -- Door, chest, portal...?
-            | Ask | Tell -- Includes reading and writing
-            | Copulate -- Laying eggs???
-            | Rest -- Do nothing (recuperate if possible)
-            -- NOTE: Looking around doesn't consume a turn!
-  deriving (Eq, Show)
-
--- Prompts to which an AI may (or may not) respond
-data Trigger = Tick
-             | Impacted Int
-             | Pierced Int
-             | Slashed Int
-             | Burned Int
-             | Seen
-  deriving (Eq, Show)
-
--- Descriptive account of one result of an action
-data Event = Outcome :& [EvArg]
-
--- Effect of the action on the patient (IMPORTANT!)
-data Outcome = NothingHappens
-             | TakeDamage
-             | NearDeath
-             | Stand
-             | Walk
-             | See
-             | Die
-             | Win
-             | Lose
-  deriving (Eq, Show)
-
--- Semantic arguments to an Outcome
-data EvArg = Agent Entity
-           | Patient Entity
-           | Using Entity
-           | ByAmount Int
-           | Into Coords
-           | OutOf Coords
-           | WhichWay Cardinal
-  deriving (Eq, Show)
-
--- Bind cause to effect
-data EventReport = Trigger :=> [Event]
-
-infixr 1 :=>
-infixr 2 :&
 
 -- TODO Find a less obnoxious way to accomplish this
 triggerCode :: Trigger -> Int

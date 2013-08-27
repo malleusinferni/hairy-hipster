@@ -2,6 +2,7 @@ module AI where
 
 import System.Random (randomRIO)
 
+import GameTypes
 import World
 import Entity
 import Room

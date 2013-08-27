@@ -1,24 +1,9 @@
 module Entity where
 
+import GameTypes
 import Describe
 import Coords
 import Room
-
-data Entity = Entity {
-    eid :: EID,
-    ai :: AI,
-    hp :: Int,
-    isPlayer :: Bool,
-    location :: Room,
-    species :: Species,
-    power :: Int
-  } deriving (Show)
-
-instance Eq Entity where
-  Entity { eid = lhs } == Entity { eid = rhs } = lhs == rhs
-
-instance Ord Entity where
-  compare (Entity { eid = lhs }) (Entity { eid = rhs }) = compare lhs rhs
 
 instance Nominable Species where
   name s = Noun (describe s) (describe s ++ "'s") (describe s) False
@@ -34,20 +19,6 @@ instance Nominable Entity where
 instance Effable Entity where
   describe e = unwords [subj, "with", show (hp e), "HP"]
     where subj = nominative . noun . An $ species e
-
-data Species = Shoggoth | Goblin | Unseelie | Merovingian
-  deriving (Eq, Show, Ord, Enum, Bounded)
-
-type EID = Int
-
-data AIType = Player -- Controlled by IO hooks
-            | Actor -- Controlled by runAI
-            | Reactor -- Only responds to triggers
-            | Inert -- No special behavior
-  deriving (Eq, Show, Ord)
-
-data AI = AI { aiType :: AIType, entity :: EID }
-  deriving (Eq, Show)
 
 hpRangeFor Goblin = (5, 25)
 hpRangeFor Merovingian = (15, 35)

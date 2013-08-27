@@ -1,6 +1,5 @@
 {-# LANGUAGE RecordWildCards #-}
 module World (
-  World(..), Game(..),
   (%=), ($=), storeEntity, updateEntity, getEntities,
   anyEntityExcept, getEntitiesWhere, getByEID,
   makeWorld, nextEID, anyRoom,
@@ -14,20 +13,12 @@ import Control.Monad.Reader
 import Control.Concurrent (forkIO)
 import Control.Concurrent.MVar
 
+import GameTypes
 import Entity
 import Room
 import Rand
 import Describe
 import Coords
-
-data World = World {
-    getEID :: IO EID,
-    getRID :: IO RID,
-    entities :: IORef [Entity],
-    locations :: [Room]
-  }
-
-type Game a = ReaderT World IO a
 
 say :: String -> Game ()
 say = liftIO . putStrLn
@@ -65,8 +56,6 @@ makeMap stream gridSize = do
   let outside = Room { rid = orid, exits = [(Down, irid)], onGrid = zyx 1 0 0 }
       inside = Room { rid = irid, exits = [(Up, orid)], onGrid = zyx 0 0 0 }
   return [outside, inside]
-
-type Selector a = World -> IORef a
 
 (%=) :: Selector a -> (a -> a) -> Game ()
 sel %= action = do
