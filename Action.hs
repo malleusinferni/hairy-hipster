@@ -79,8 +79,8 @@ instance Effable Event where
   describe (NearDeath :& Patient p : _)
     | isPlayer p = unwords [subj p, cverb p "feel", "woozy from blood loss"]
     | otherwise = unwords [subj p, cverb p "stagger", "under the blow"]
-  describe (See :& Agent a : Patient p : _) =
-    unwords [subj a, cverb a "see", describe p, "lurking in the darkness"]
+  describe (See :& Agent _ : Patient p : _) =
+    unwords [describe p, cverb p "be", "lurking in the darkness"]
   describe (Die :& Agent a : Patient p : _) =
     unwords [subj a, cverb a "defeat", obj p]
   describe (Die :& Patient p : _) =
