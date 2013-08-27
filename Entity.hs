@@ -55,6 +55,8 @@ hpRangeFor _ = (10, 30)
 strRangeFor Shoggoth = (10, 20)
 strRangeFor _ = (5, 15)
 
+isActor, isNearDeath, isDead, isAlive :: Entity -> Bool
 isActor = respondsTo (Tick)
-
-stillAlive = (> 0) . hp
+isNearDeath = (<= 10) . hp
+isDead = (<= 0) . hp
+isAlive = not . isDead

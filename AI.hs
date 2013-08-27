@@ -1,3 +1,4 @@
+{-# LANGUAGE RecordWildCards #-}
 module AI where
 
 import System.Random (randomRIO)
@@ -17,14 +18,14 @@ tick self = do
   selves <- getByEID (eid self)
   others <- anyOpponent self
   case (selves, others, instr) of
-    (Just self, Just other, Just trigger) | hp self > 0 -> do
+    (Just self, Just other, Just trigger) | isAlive self -> do
       action <- trigger (Tick)
       events <- runAI action self other
       say $ describe (Tick :=> events)
     _ -> return ()
 
 anyOpponent self = getEntitiesWhere test >>= anyOf
-  where test e = hp e > 0 && eid e /= eid self
+  where test e = isAlive e && eid e /= eid self
 
 leaveGame :: Entity -> Game [Event]
 leaveGame e = do
@@ -61,22 +62,21 @@ makeCorpse e = do
 attack :: Entity -> Entity -> Game [Event]
 attack attacker defender = dealDamage attacker defender
 
+attackPower :: Entity -> Game Int
+attackPower Entity{..} = anyIn (power, power + 3)
+
 dealDamage :: Entity -> Entity -> Game [Event]
 dealDamage attacker defender = do
-  let p = power attacker
-  amount <- anyIn (p, p + 3)
-  let newHP = hp defender - amount
-      injured = defender { hp = newHP }
+  amount <- attackPower attacker
+  let injured = defender { hp = hp defender - amount }
       d = TakeDamage :& [Agent attacker, Patient injured, ByAmount amount]
       n = NearDeath :& [Patient injured]
       x = Die :& [Patient injured]
-      neardeath = newHP <= 10
-      dead = newHP <= 0
       events
-        | dead = [d, x]
-        | neardeath = [d, n]
+        | isDead injured = [d, x]
+        | isNearDeath injured = [d, n]
         | otherwise = [d]
-  if dead
+  if isDead injured
      then makeCorpse injured >>= updateEntity
      else updateEntity injured
   return events
