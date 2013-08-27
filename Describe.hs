@@ -26,6 +26,7 @@ data Dependent = I | You | He | She | It | They
                | forall n. Nominable n => The n
                | forall n. Nominable n => An n
 
+verb :: String -> Verb
 verb v =
   case v of
     "be" -> Verb "be" "is" "are" "was" "were" "being" Nothing
@@ -43,6 +44,7 @@ verb v =
           _ -> error ("WRONG VERB FORMAT: " ++ text)
         defaultVerb v = unwords [v, v ++ "s", v ++ "d", v ++ "ing"]
 
+noun :: Dependent -> Noun
 noun n =
   case n of
     I -> Noun "I" "my" "me" False
@@ -63,6 +65,7 @@ noun n =
           | otherwise = "a " ++ w
         isVowel c = elem c "aeiouAEIOU"
 
+conj :: Nominable n => n -> Verb -> String
 conj n
   | plural (name n) = presentPlural
   | otherwise = presentSingular
@@ -73,6 +76,7 @@ sentence d end = upcase (describe d) ++ end
 unsentence :: Effable d => [d] -> String
 unsentence = unlines . map (`sentence` ".")
 
+upcase, downcase :: String -> String
 upcase (c:cs) = toUpper c : cs
 downcase (c:cs) = toLower c : cs
 

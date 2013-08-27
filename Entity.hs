@@ -45,9 +45,11 @@ removeHooks triggers oldAI = oldAI { hooks = newHooks }
         prune = IM.delete . triggerCode
         oldHooks = hooks oldAI
 
+makeRespMap :: Responder -> TrigMap
 makeRespMap r = IM.fromList [(triggerCode Tick, r)]
 
 -- Size in inches
+sizeRangeFor :: Species -> (Int, Int)
 sizeRangeFor Goblin = (40, 55)
 sizeRangeFor Merovingian = (60, 80)
 sizeRangeFor Shoggoth = (50, 120)

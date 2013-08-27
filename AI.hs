@@ -24,6 +24,7 @@ tick self = do
       say $ describe (Tick :=> events)
     _ -> return ()
 
+anyOpponent :: Entity -> Game (Maybe Entity)
 anyOpponent self = getEntitiesWhere test >>= anyOf
   where test e = isAlive e && eid e /= eid self
 
@@ -47,6 +48,7 @@ playerTick (Tick) = do
       saywords ["You don't know how to", move ++ "!"]
       playerTick Tick
 
+monsterTick :: Responder
 monsterTick (Tick) = return Attack
 
 runAI :: Action -> Entity -> Entity -> Game [Event]

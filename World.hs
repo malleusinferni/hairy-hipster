@@ -66,8 +66,8 @@ sel $= value = do
   ref <- asks sel
   liftIO $ writeIORef ref value
 
+storeEntity, updateEntity :: Entity -> Game ()
 storeEntity e = entities %= (e:)
-
 updateEntity e = entities %= ((e :) . delete e)
 
 getEntities :: Game [Entity]

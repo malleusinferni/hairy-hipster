@@ -9,8 +9,10 @@ import UI
 import Rand
 import Action
 
+playerAmong :: [Entity] -> Bool
 playerAmong = any isPlayer
 
+playerSurvives :: Game Bool
 playerSurvives = playerAmong `fmap` getEntitiesWhere isActor
 
 playTurn :: Game ()
@@ -35,6 +37,7 @@ makeEnemy = do
   species <- randomSpecies
   makeMob species False
 
+makeBody :: Species -> Game Body
 makeBody species = do
   size <- anyIn $ sizeRangeFor species
   let material = Flesh
@@ -50,6 +53,7 @@ makeMob species isPlayer = do
       power = strengthFor body
   return Entity{..}
 
+makeAI :: Bool -> EID -> AI
 makeAI isPlayer entity = AI{..}
   where hooks | isPlayer = makeRespMap playerTick
               | otherwise = makeRespMap monsterTick

@@ -8,6 +8,7 @@ prompt str = do
   hFlush stdout
   getLine
 
+promptYN :: String -> IO Bool
 promptYN str = do
   r <- prompt str
   case r of
