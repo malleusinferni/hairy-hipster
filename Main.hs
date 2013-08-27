@@ -35,13 +35,19 @@ makeEnemy = do
   species <- randomSpecies
   makeMob species False
 
+makeBody species = do
+  size <- anyIn $ sizeRangeFor species
+  let material = Flesh
+  return Body{..}
+
 makeMob :: Species -> Bool -> Game Entity
 makeMob species isPlayer = do
   eid <- nextEID
-  hp <- anyIn (hpRangeFor species)
-  power <- anyIn (strRangeFor species)
+  body <- makeBody species
   location <- anyRoom
   let ai = makeAI isPlayer eid
+      hp = maxHPFor body
+      power = strengthFor body
   return Entity{..}
 
 makeAI isPlayer entity = AI{..}

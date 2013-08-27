@@ -47,16 +47,29 @@ removeHooks triggers oldAI = oldAI { hooks = newHooks }
 
 makeRespMap r = IM.fromList [(triggerCode Tick, r)]
 
-hpRangeFor Goblin = (5, 25)
-hpRangeFor Merovingian = (15, 35)
-hpRangeFor Shoggoth = (25, 45)
-hpRangeFor _ = (10, 30)
+-- Size in inches
+sizeRangeFor Goblin = (40, 55)
+sizeRangeFor Merovingian = (60, 80)
+sizeRangeFor Shoggoth = (50, 120)
+sizeRangeFor Unseelie = (60, 100)
 
-strRangeFor Shoggoth = (10, 20)
-strRangeFor _ = (5, 15)
+inFeet :: Int -> Int
+inFeet i = i `rdiv` 12
+
+rdiv :: Int -> Int -> Int
+rdiv q d = round $ toRational q / toRational d
+
+maxHPFor, strengthFor :: Body -> Int
+maxHPFor body = size body `rdiv` 3
+strengthFor body = size body `rdiv` 5
+
+attackRangeFor :: Entity -> (Int, Int)
+attackRangeFor e = (mid - err, mid + err)
+  where mid = power e
+        err = mid `rdiv` 10
 
 isActor, isNearDeath, isDead, isAlive :: Entity -> Bool
+isNearDeath e = hp e <= (maxHPFor $ body e) `rdiv` 5
 isActor = respondsTo (Tick)
-isNearDeath = (<= 10) . hp
 isDead = (<= 0) . hp
 isAlive = not . isDead

@@ -13,6 +13,7 @@ data Entity = Entity {
     eid :: EID,
     ai :: AI,
     hp :: Int,
+    body :: Body,
     isPlayer :: Bool,
     location :: Room,
     species :: Species,
@@ -114,3 +115,11 @@ data Room = Room {
   deriving (Eq, Show)
 
 type RID = Int
+
+data Body = Body {
+    material :: Material,
+    size :: Int
+  } deriving (Eq, Show)
+
+data Material = Flesh | Steel | Carapace
+  deriving (Eq, Show, Ord, Enum)

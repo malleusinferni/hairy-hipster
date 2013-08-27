@@ -63,7 +63,7 @@ attack :: Entity -> Entity -> Game [Event]
 attack attacker defender = dealDamage attacker defender
 
 attackPower :: Entity -> Game Int
-attackPower Entity{..} = anyIn (power, power + 3)
+attackPower = anyIn . attackRangeFor
 
 dealDamage :: Entity -> Entity -> Game [Event]
 dealDamage attacker defender = do
