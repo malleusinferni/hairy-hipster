@@ -49,44 +49,41 @@ playerAI, actorAI, objectAI, inertAI :: EID -> AI
 
 playerAI entity = AI{..}
   where super = Just $ actorAI entity
-        ifMissing = playerMM
+        ifMissing = playerMM entity
         methods = makeMethodMap []
 
 actorAI entity = AI{..}
   where super = Just $ objectAI entity
-        ifMissing = actorMM
+        ifMissing = actorMM entity
         methods = makeMethodMap []
 
 objectAI entity = AI{..}
   where super = Just $ inertAI entity
-        ifMissing = objectMM
+        ifMissing = objectMM entity
         methods = makeMethodMap []
 
 inertAI entity = AI{..}
   where super = Nothing
-        ifMissing = inertMM
+        ifMissing = inertMM entity
         methods = makeMethodMap []
 
-playerMM :: Responder
-playerMM (Tick) = do
+playerMM, actorMM, objectMM, inertMM :: EID -> Responder
+playerMM eid (Tick) = do
   move <- liftIO (prompt "[fight/escape] > ")
   let r = parseInstr move
   if r `elem` [Attack, Goto]
      then return r
      else do
       saywords ["You don't know how to", move ++ "!"]
-      playerMM Tick
-playerMM t = actorMM t
+      playerMM eid Tick
+playerMM eid t = actorMM eid t
 
-actorMM :: Responder
-actorMM (Tick) = return Attack
-actorMM t = objectMM t
+actorMM _ (Tick) = return Attack
+actorMM eid t = objectMM eid t
 
-objectMM :: Responder
 objectMM = inertMM
 
-inertMM :: Responder
-inertMM _ = return Rest
+inertMM _ _ = return Rest
 
 makeCorpse :: Entity -> Game Entity
 makeCorpse e@(Entity{..}) = return $ e { ai = popAI ai }

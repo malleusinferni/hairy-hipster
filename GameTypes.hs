@@ -36,8 +36,7 @@ data Species = Shoggoth | Goblin | Unseelie | Merovingian
 data AI = AI {
     methods :: TrigMap,
     ifMissing :: Responder,
-    super :: Maybe AI,
-    entity :: EID
+    super :: Maybe AI
   } deriving (Show)
 
 -- Commands which an actor AI may issue in response to Tick
