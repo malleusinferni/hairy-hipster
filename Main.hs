@@ -14,7 +14,7 @@ playerAmong :: [Entity] -> Bool
 playerAmong = any isPlayer
 
 playerSurvives :: Game Bool
-playerSurvives = return True
+playerSurvives = playerAmong `fmap` getEntitiesWhere isAlive
 
 playTurn :: Game ()
 playTurn = getEntitiesWhere isAlive >>= go
