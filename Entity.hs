@@ -95,5 +95,5 @@ attackRangeFor e = (mid - err, mid + err)
 
 isNearDeath, isDead, isAlive :: Entity -> Bool
 isNearDeath e = hp e <= (maxHPFor $ body e) `rdiv` 5
-isDead = (<= 0) . hp
-isAlive = not . isDead
+isAlive = (> 0) . hp
+isDead = not . isAlive
