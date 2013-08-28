@@ -1,6 +1,7 @@
 {-# LANGUAGE RecordWildCards #-}
 module Entity where
 
+import Data.Maybe (fromMaybe)
 import qualified Data.IntMap as IM
 
 import GameTypes
@@ -39,10 +40,7 @@ respondTo Entity{ ai = ai } t = IM.findWithDefault ifMissing t' methods t
         t' = triggerCode t
 
 popAI :: AI -> AI
-popAI ai =
-  case super ai of
-    Just s -> s
-    Nothing -> ai
+popAI ai = ai `fromMaybe` super ai
 
 makeRespMap :: Responder -> TrigMap
 makeRespMap r = IM.fromList [(triggerCode Tick, r)]
@@ -94,6 +92,6 @@ attackRangeFor e = (mid - err, mid + err)
         err = mid `rdiv` 10
 
 isNearDeath, isDead, isAlive :: Entity -> Bool
-isNearDeath e = hp e <= (maxHPFor $ body e) `rdiv` 5
+isNearDeath e = hp e <= maxHPFor (body e) `rdiv` 5
 isAlive = (> 0) . hp
 isDead = not . isAlive

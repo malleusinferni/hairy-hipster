@@ -26,12 +26,9 @@ runAI :: Entity -> Action -> Game [Event]
 runAI self Attack = do
   others <- anyOpponent self
   case others of
-    Just defender -> self `attack` defender
+    Just defender -> self `dealDamage` defender
     Nothing -> return [Stand :& []]
 runAI _ _ = return [NothingHappens :& []]
-
-attack :: Entity -> Entity -> Game [Event]
-attack attacker defender = dealDamage attacker defender
 
 anyOpponent :: Entity -> Game (Maybe Entity)
 anyOpponent self = getEntitiesWhere test >>= anyOf
@@ -74,7 +71,7 @@ playerMM :: Responder
 playerMM (Tick) = do
   move <- liftIO (prompt "[fight/escape] > ")
   let r = parseInstr move
-  if elem r [Attack, Goto]
+  if r `elem` [Attack, Goto]
      then return r
      else do
       saywords ["You don't know how to", move ++ "!"]
@@ -92,8 +89,7 @@ inertMM :: Responder
 inertMM _ = return Rest
 
 makeCorpse :: Entity -> Game Entity
-makeCorpse e@(Entity{..}) = do
-  return $ e { ai = popAI ai }
+makeCorpse e@(Entity{..}) = return $ e { ai = popAI ai }
 
 attackPower :: Entity -> Game Int
 attackPower = anyIn . attackRangeFor

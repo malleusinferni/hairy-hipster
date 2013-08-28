@@ -65,7 +65,7 @@ noun n =
         an w@(c:_)
           | isVowel c = "an " ++ w
           | otherwise = "a " ++ w
-        isVowel c = elem c "aeiouAEIOU"
+        isVowel c = c `elem` "aeiouAEIOU"
 
 conj :: Nominable n => n -> Verb -> String
 conj n

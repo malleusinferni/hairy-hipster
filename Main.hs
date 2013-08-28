@@ -1,5 +1,5 @@
 {-# LANGUAGE RecordWildCards #-}
-import Control.Monad (replicateM_)
+import Control.Monad (replicateM_, when)
 
 import GameTypes
 import World
@@ -27,9 +27,7 @@ doTick (x : xs) z = do
   report <- tick x
   say $ describe report
   check <- playerSurvives
-  if check
-     then doTick xs z
-     else return ()
+  when check $ doTick xs z
 
 makePlayer :: Game Entity
 makePlayer = makeMob Merovingian True
@@ -84,4 +82,4 @@ main :: IO ()
 main = do
   newGame
   retry <- promptYN "Play again? [Yn] "
-  if retry then main else return ()
+  when retry main
