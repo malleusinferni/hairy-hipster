@@ -41,6 +41,7 @@ instance Effable Event where
     unwords [subj a, aeverb a v, obj p]
   describe (v :& Agent a : _ ) = unwords [subj a, aeverb a v]
   describe (v :& Patient p : _) = unwords [subj p, aeverb p v]
+  describe (v :& []) = "nothing happens"
   describe _ = "UNIMPLEMENTED"
 
 instance Effable EventReport where

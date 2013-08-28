@@ -12,16 +12,26 @@ import Describe
 import Action
 import Coords
 
-tick :: Entity -> Game ()
+tick :: Entity -> Game EventReport
 tick self = do
   selves <- getByEID (eid self)
+  fmap (Tick :=>) $
+    case selves of
+      Just self | isAlive self -> do
+        action <- self `respondTo` Tick
+        self `runAI` action
+      _ -> return []
+
+runAI :: Entity -> Action -> Game [Event]
+runAI self Attack = do
   others <- anyOpponent self
-  case (selves, others) of
-    (Just self, Just other) | isAlive self -> do
-      action <- self `respondTo` Tick
-      events <- runAI action self other
-      say $ describe (Tick :=> events)
-    _ -> return ()
+  case others of
+    Just defender -> self `attack` defender
+    Nothing -> return [Stand :& []]
+runAI _ _ = return [NothingHappens :& []]
+
+attack :: Entity -> Entity -> Game [Event]
+attack attacker defender = dealDamage attacker defender
 
 anyOpponent :: Entity -> Game (Maybe Entity)
 anyOpponent self = getEntitiesWhere test >>= anyOf
@@ -80,16 +90,9 @@ objectMM = inertMM
 inertMM :: Responder
 inertMM _ = return Rest
 
-runAI :: Action -> Entity -> Entity -> Game [Event]
-runAI Attack self other = attack self other
-runAI _ _ _ = return [NothingHappens :& []]
-
 makeCorpse :: Entity -> Game Entity
 makeCorpse e@(Entity{..}) = do
   return $ e { ai = popAI ai }
-
-attack :: Entity -> Entity -> Game [Event]
-attack attacker defender = dealDamage attacker defender
 
 attackPower :: Entity -> Game Int
 attackPower = anyIn . attackRangeFor

@@ -8,6 +8,7 @@ import AI
 import UI
 import Rand
 import Action
+import Describe
 
 playerAmong :: [Entity] -> Bool
 playerAmong = any isPlayer
@@ -16,17 +17,18 @@ playerSurvives :: Game Bool
 playerSurvives = return True
 
 playTurn :: Game ()
-playTurn = getEntities >>= go
+playTurn = getEntitiesWhere isAlive >>= go
   where go [] = say "None survive..."
         go [entity] = tellVictory entity
-        go combatants = while playerSurvives (map tick combatants) playTurn
+        go combatants = doTick combatants playTurn
 
-while :: (Monad m) => m Bool -> [m ()] -> m () -> m ()
-while c [] z = z
-while c (f : fs) z = do
-  test <- c
-  if test
-     then f >> while c fs z
+doTick [] z = z
+doTick (x : xs) z = do
+  report <- tick x
+  say $ describe report
+  check <- playerSurvives
+  if check
+     then doTick xs z
      else return ()
 
 makePlayer :: Game Entity
