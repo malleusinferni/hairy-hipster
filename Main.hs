@@ -21,6 +21,7 @@ playTurn = getEntitiesWhere isAlive >>= go
         go [entity] = tellVictory entity
         go combatants = doTick combatants playTurn
 
+doTick :: [Entity] -> Game () -> Game ()
 doTick [] z = z
 doTick (x : xs) z = do
   report <- tick x

@@ -54,6 +54,7 @@ sizeRangeFor Merovingian = (60, 80)
 sizeRangeFor Shoggoth = (50, 120)
 sizeRangeFor Unseelie = (60, 100)
 
+numWord :: Int -> String
 numWord 1 = "one"
 numWord 2 = "two"
 numWord 3 = "three"

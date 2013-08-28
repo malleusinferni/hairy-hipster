@@ -14,8 +14,10 @@ data Cardinal = North | Northeast
               | Up | Down
   deriving (Eq, Show, Ord, Enum)
 
+zyx :: Int -> Int -> Int -> Vec3I
 zyx z y x = Vec3I x y z
 
+dirToCoords :: Cardinal -> Vec3I
 dirToCoords North = Vec3I 0 1 0
 dirToCoords East  = Vec3I 1 0 0
 dirToCoords South = Vec3I 0 (-1) 0
@@ -29,4 +31,5 @@ dirToCoords Northwest = Vec3I (-1) 1 0
 dirToCoords Up = Vec3I 0 0 1
 dirToCoords Down = Vec3I 0 0 (-1)
 
+radials :: [Vec3I]
 radials = map dirToCoords [North .. Northwest]
