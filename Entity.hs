@@ -6,7 +6,6 @@ import qualified Data.IntMap as IM
 
 import GameTypes
 import Describe
-import Coords
 
 instance Nominable Species where
   name s = Noun (describe s) (describe s ++ "'s") (describe s) False
@@ -75,6 +74,7 @@ numWord 17 = "seventeen"
 numWord 18 = "eighteen"
 numWord 19 = "nineteen"
 numWord 20 = "twenty"
+numWord _ = undefined
 
 inFeet :: Entity -> Int
 inFeet e = size (body e) `rdiv` 12

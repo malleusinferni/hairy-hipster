@@ -1,15 +1,13 @@
 {-# LANGUAGE RecordWildCards #-}
 module AI where
 
-import System.Random (randomRIO)
-
 import GameTypes
 import World
 import Entity
 import UI
 import Rand
-import Describe
-import Action
+import Describe ()
+import Action ()
 import Coords
 
 tick :: Entity -> Game EventReport

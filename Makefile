@@ -2,7 +2,7 @@
 test: run clean
 
 build: *.hs
-	ghc Main.hs -o dungeon
+	ghc -W Main.hs -o dungeon
 
 run: build
 	./dungeon

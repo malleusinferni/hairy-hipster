@@ -2,7 +2,7 @@
 module World (
   (%=), ($=), storeEntity, updateEntity, getEntities,
   anyEntityExcept, getEntitiesWhere, getByEID,
-  makeWorld, nextEID, anyRoom,
+  makeWorld, nextEID, nextRID, anyRoom,
   say, saywords, announce,
   asks, liftIO, runReaderT
   ) where
@@ -14,7 +14,7 @@ import Control.Concurrent (forkIO)
 import Control.Concurrent.MVar
 
 import GameTypes
-import Entity
+import Entity ()
 import Rand
 import Describe
 import Coords
@@ -49,7 +49,7 @@ makeWorld = do
   return World{..}
 
 makeMap :: IO RID -> Int -> IO [Room]
-makeMap stream gridSize = do
+makeMap stream _gridSize = do
   orid <- stream
   irid <- stream
   let outside = Room { rid = orid, exits = [(Down, irid)], onGrid = zyx 1 0 0 }
@@ -84,5 +84,5 @@ anyEntityExcept self = getEntities >>= anyOf . filter (/= self)
 
 anyRoom :: Game Room
 anyRoom = do
-  [outside, inside] <- asks locations
+  [_outside, inside] <- asks locations
   return inside

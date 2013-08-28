@@ -65,6 +65,7 @@ noun n =
         an w@(c:_)
           | isVowel c = "an " ++ w
           | otherwise = "a " ++ w
+        an [] = "something"
         isVowel c = c `elem` "aeiouAEIOU"
 
 conj :: Nominable n => n -> Verb -> String
@@ -80,7 +81,10 @@ unsentence = unlines . map (`sentence` ".")
 
 upcase, downcase :: String -> String
 upcase (c:cs) = toUpper c : cs
+upcase [] = []
+
 downcase (c:cs) = toLower c : cs
+downcase [] = []
 
 class Nominable a where
   name :: a -> Noun

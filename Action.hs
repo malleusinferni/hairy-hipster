@@ -1,10 +1,8 @@
 module Action where
 
-import Data.List (find)
-
 import GameTypes
 import Describe
-import Entity
+import Entity ()
 import Coords
 
 subj, obj, poss :: Nominable a => a -> String
@@ -41,10 +39,10 @@ instance Effable Event where
     unwords [subj a, aeverb a v, obj p]
   describe (v :& Agent a : _ ) = unwords [subj a, aeverb a v]
   describe (v :& Patient p : _) = unwords [subj p, aeverb p v]
-  describe (v :& []) = "nothing happens"
+  describe (_ :& []) = "nothing happens"
   describe _ = "UNIMPLEMENTED"
 
 instance Effable EventReport where
-  describe (_ :=> [o1, NothingHappens :& (Agent a : Patient p : _)]) =
+  describe (_ :=> [o1, NothingHappens :& (Agent _ : Patient _ : _)]) =
     unwords [describe o1, "to no effect"]
-  describe (t :=> outcomes) = unsentence outcomes
+  describe (_ :=> outcomes) = unsentence outcomes

@@ -7,7 +7,6 @@ import Entity
 import AI
 import UI
 import Rand
-import Action
 import Describe
 
 playerAmong :: [Entity] -> Bool
