@@ -1,3 +1,4 @@
+{-# LANGUAGE RecordWildCards #-}
 module Entity where
 
 import qualified Data.IntMap as IM
@@ -32,23 +33,22 @@ triggerCode (Slashed _) = 3
 triggerCode (Burned _) = 4
 triggerCode (Seen) = 5
 
-getResponder :: Trigger -> Entity -> Maybe Responder
-getResponder t = IM.lookup (triggerCode t) . hooks . ai
+respondTo :: Entity -> Responder
+respondTo Entity{ ai = ai } t = IM.findWithDefault ifMissing t' methods t
+  where AI{..} = ai
+        t' = triggerCode t
 
-respondsTo :: Trigger -> Entity -> Bool
-respondsTo t entity =
-  case getResponder t entity of
-    Just _ -> True
-    Nothing -> False
-
-removeHooks :: [Trigger] -> AI -> AI
-removeHooks triggers oldAI = oldAI { hooks = newHooks }
-  where newHooks = foldr prune oldHooks triggers
-        prune = IM.delete . triggerCode
-        oldHooks = hooks oldAI
+popAI :: AI -> AI
+popAI ai =
+  case super ai of
+    Just s -> s
+    Nothing -> ai
 
 makeRespMap :: Responder -> TrigMap
 makeRespMap r = IM.fromList [(triggerCode Tick, r)]
+
+makeMethodMap :: [(Int, Responder)] -> TrigMap
+makeMethodMap = IM.fromList
 
 -- Size in inches
 sizeRangeFor :: Species -> (Int, Int)
@@ -93,8 +93,7 @@ attackRangeFor e = (mid - err, mid + err)
   where mid = power e
         err = mid `rdiv` 10
 
-isActor, isNearDeath, isDead, isAlive :: Entity -> Bool
+isNearDeath, isDead, isAlive :: Entity -> Bool
 isNearDeath e = hp e <= (maxHPFor $ body e) `rdiv` 5
-isActor = respondsTo (Tick)
 isDead = (<= 0) . hp
 isAlive = not . isDead

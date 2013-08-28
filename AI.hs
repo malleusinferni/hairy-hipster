@@ -14,12 +14,11 @@ import Coords
 
 tick :: Entity -> Game ()
 tick self = do
-  let instr = getResponder (Tick) self
   selves <- getByEID (eid self)
   others <- anyOpponent self
-  case (selves, others, instr) of
-    (Just self, Just other, Just trigger) | isAlive self -> do
-      action <- trigger (Tick)
+  case (selves, others) of
+    (Just self, Just other) | isAlive self -> do
+      action <- self `respondTo` Tick
       events <- runAI action self other
       say $ describe (Tick :=> events)
     _ -> return ()
@@ -38,28 +37,56 @@ parseInstr "fight" = Attack
 parseInstr "escape" = Goto
 parseInstr _ = Rest
 
-playerTick :: Responder
-playerTick (Tick) = do
+playerAI, actorAI, objectAI, inertAI :: EID -> AI
+
+playerAI entity = AI{..}
+  where super = Just $ actorAI entity
+        ifMissing = playerMM
+        methods = makeMethodMap []
+
+actorAI entity = AI{..}
+  where super = Just $ objectAI entity
+        ifMissing = actorMM
+        methods = makeMethodMap []
+
+objectAI entity = AI{..}
+  where super = Just $ inertAI entity
+        ifMissing = objectMM
+        methods = makeMethodMap []
+
+inertAI entity = AI{..}
+  where super = Nothing
+        ifMissing = inertMM
+        methods = makeMethodMap []
+
+playerMM :: Responder
+playerMM (Tick) = do
   move <- liftIO (prompt "[fight/escape] > ")
   let r = parseInstr move
   if elem r [Attack, Goto]
      then return r
      else do
       saywords ["You don't know how to", move ++ "!"]
-      playerTick Tick
+      playerMM Tick
+playerMM t = actorMM t
 
-monsterTick :: Responder
-monsterTick (Tick) = return Attack
+actorMM :: Responder
+actorMM (Tick) = return Attack
+actorMM t = objectMM t
+
+objectMM :: Responder
+objectMM = inertMM
+
+inertMM :: Responder
+inertMM _ = return Rest
 
 runAI :: Action -> Entity -> Entity -> Game [Event]
 runAI Attack self other = attack self other
 runAI _ _ _ = return [NothingHappens :& []]
 
 makeCorpse :: Entity -> Game Entity
-makeCorpse e = do
-  let oldAI = ai e
-      newAI = removeHooks [Tick] oldAI
-  return $ e { ai = newAI }
+makeCorpse e@(Entity{..}) = do
+  return $ e { ai = popAI ai }
 
 attack :: Entity -> Entity -> Game [Event]
 attack attacker defender = dealDamage attacker defender

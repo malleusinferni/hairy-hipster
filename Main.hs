@@ -13,10 +13,10 @@ playerAmong :: [Entity] -> Bool
 playerAmong = any isPlayer
 
 playerSurvives :: Game Bool
-playerSurvives = playerAmong `fmap` getEntitiesWhere isActor
+playerSurvives = return True
 
 playTurn :: Game ()
-playTurn = getEntitiesWhere isActor >>= go
+playTurn = getEntities >>= go
   where go [] = say "None survive..."
         go [entity] = tellVictory entity
         go combatants = while playerSurvives (map tick combatants) playTurn
@@ -54,9 +54,8 @@ makeMob species isPlayer = do
   return Entity{..}
 
 makeAI :: Bool -> EID -> AI
-makeAI isPlayer entity = AI{..}
-  where hooks | isPlayer = makeRespMap playerTick
-              | otherwise = makeRespMap monsterTick
+makeAI True entity = playerAI entity
+makeAI False entity = actorAI entity
 
 randomSpecies :: Game Species
 randomSpecies = toEnum `fmap` anyIn (low, high)

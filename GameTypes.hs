@@ -33,8 +33,12 @@ instance Ord Entity where
 data Species = Shoggoth | Goblin | Unseelie | Merovingian
   deriving (Eq, Show, Ord, Enum, Bounded)
 
-data AI = AI { hooks :: TrigMap, entity :: EID }
-  deriving (Show)
+data AI = AI {
+    methods :: TrigMap,
+    ifMissing :: Responder,
+    super :: Maybe AI,
+    entity :: EID
+  } deriving (Show)
 
 -- Commands which an actor AI may issue in response to Tick
 data Action = Attack -- Damage another entity
