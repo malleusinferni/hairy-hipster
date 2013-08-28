@@ -43,6 +43,7 @@ leaveGame e = do
   return [Walk :& [Agent e, WhichWay Up], Lose :& [Patient e]]
 
 parseInstr :: String -> Action
+parseInstr "" = Attack
 parseInstr "fight" = Attack
 parseInstr "escape" = Goto
 parseInstr _ = Rest
