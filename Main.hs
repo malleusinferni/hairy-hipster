@@ -30,7 +30,9 @@ doTick (x : xs) z = do
   when check $ doTick xs z
 
 makePlayer :: Game Entity
-makePlayer = makeMob Merovingian True
+makePlayer = do
+  (species:_) <- asks speciesData
+  makeMob species True
 
 makeEnemy :: Game Entity
 makeEnemy = do
@@ -58,9 +60,10 @@ makeAI True entity = playerAI entity
 makeAI False entity = actorAI entity
 
 randomSpecies :: Game Species
-randomSpecies = toEnum `fmap` anyIn (low, high)
-  where [low, high] = map fromEnum range
-        range = [minBound, maxBound] :: [Species]
+randomSpecies = do
+  species <- asks speciesData
+  Just soSueMe <- anyOf species
+  return soSueMe
 
 newGame :: IO ()
 newGame = makeWorld >>= runReaderT playGame

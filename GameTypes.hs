@@ -1,3 +1,4 @@
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 module GameTypes where
@@ -7,6 +8,7 @@ import qualified Data.IntMap as IM
 import Control.Monad.Reader
 
 import Coords
+import Table
 
 -- An object in the game, usually with a physical body
 data Entity = Entity {
@@ -29,9 +31,18 @@ instance Eq Entity where
 instance Ord Entity where
   compare (Entity { eid = lhs }) (Entity { eid = rhs }) = compare lhs rhs
 
--- TODO Make dynamic
-data Species = Shoggoth | Goblin | Unseelie | Merovingian
-  deriving (Eq, Show, Ord, Enum, Bounded)
+data Species = Species
+  { speciesName :: String
+  , minHeight :: Int
+  , maxHeight :: Int
+  } deriving (Eq, Show, Ord)
+
+instance Tabular Species where
+  readRecord = do
+    speciesName <- copyField "Name"
+    minHeight <- readField "Min height"
+    maxHeight <- readField "Max height"
+    return Species{..}
 
 data AI = AI {
     methods :: TrigMap,
@@ -96,6 +107,7 @@ data World = World {
     getEID :: IO EID,
     getRID :: IO RID,
     entities :: IORef [Entity],
+    speciesData :: [Species],
     locations :: [Room]
   }
 

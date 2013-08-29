@@ -11,8 +11,7 @@ instance Nominable Species where
   name s = Noun (describe s) (describe s ++ "'s") (describe s) False
 
 instance Effable Species where
-  describe Merovingian = "Merovingian"
-  describe s = downcase (show s)
+  describe = speciesName
 
 instance Nominable Entity where
   name a | isPlayer a = noun You
@@ -49,10 +48,7 @@ makeMethodMap = IM.fromList
 
 -- Size in inches
 sizeRangeFor :: Species -> (Int, Int)
-sizeRangeFor Goblin = (40, 55)
-sizeRangeFor Merovingian = (60, 80)
-sizeRangeFor Shoggoth = (50, 120)
-sizeRangeFor Unseelie = (60, 100)
+sizeRangeFor species = (minHeight species, maxHeight species)
 
 numWord :: Int -> String
 numWord 1 = "one"

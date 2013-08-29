@@ -18,6 +18,7 @@ import Entity ()
 import Rand
 import Describe
 import Coords
+import Table
 
 say :: String -> Game ()
 say = liftIO . putStrLn
@@ -45,6 +46,7 @@ makeWorld = do
   getEID <- streamIDs 0
   getRID <- streamIDs 0
   entities <- newIORef []
+  speciesData <- readTSVFile "species.tsv"
   locations <- makeMap getRID 1
   return World{..}
 
