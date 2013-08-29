@@ -3,6 +3,7 @@ module Table
   ( Tabular
   , readRecord
   , readField
+  , copyField
   , readTSVFile
   , readTSVString
   , readTable
@@ -49,10 +50,13 @@ readValue :: Read v => String -> RecordReader v
 readValue = either throwError return . readEither
 
 readField :: Read v => String -> RecordReader v
-readField k = do
+readField k = copyField k >>= readValue
+
+copyField :: String -> RecordReader String
+copyField k = do
   v <- asks (lookup k)
   case v of
-    Just v' -> readValue v'
+    Just v' -> return v'
     Nothing -> throwError $ "No such key: " ++ k
 
 tsvTable :: Parser [Row]
