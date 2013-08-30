@@ -80,7 +80,7 @@ makeCorpse :: Entity -> Game Entity
 makeCorpse e@(Entity{..}) = return $ e { ai = popAI ai }
 
 attackPower :: Entity -> Game Int
-attackPower = anyIn . attackRangeFor
+attackPower = fuzz . power
 
 dealDamage :: Entity -> Entity -> Game [Event]
 dealDamage attacker defender = do

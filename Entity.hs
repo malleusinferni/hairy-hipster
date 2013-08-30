@@ -83,11 +83,6 @@ maxHPFor, strengthFor :: Body -> Int
 maxHPFor body = size body `rdiv` 3
 strengthFor body = size body `rdiv` 5
 
-attackRangeFor :: Entity -> (Int, Int)
-attackRangeFor e = (mid - err, mid + err)
-  where mid = power e
-        err = mid `rdiv` 10
-
 isNearDeath, isDead, isAlive :: Entity -> Bool
 isNearDeath e = hp e <= maxHPFor (body e) `rdiv` 5
 isAlive = (> 0) . hp
