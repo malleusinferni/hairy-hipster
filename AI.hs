@@ -1,6 +1,8 @@
 {-# LANGUAGE RecordWildCards #-}
 module AI where
 
+import Control.Applicative ((<*>))
+
 import GameTypes
 import World
 import Entity
@@ -45,25 +47,16 @@ parseInstr _ = Rest
 
 playerAI, actorAI, objectAI, inertAI :: EID -> AI
 
-playerAI entity = AI{..}
-  where super = Just $ actorAI entity
-        ifMissing = playerMM entity
-        methods = makeMethodMap []
+playerAI = playerMM `inherit` Just actorAI
+actorAI = actorMM `inherit` Just objectAI
+objectAI = objectMM `inherit` Just inertAI
+inertAI = inertMM `inherit` Nothing
 
-actorAI entity = AI{..}
-  where super = Just $ objectAI entity
-        ifMissing = actorMM entity
-        methods = makeMethodMap []
-
-objectAI entity = AI{..}
-  where super = Just $ inertAI entity
-        ifMissing = objectMM entity
-        methods = makeMethodMap []
-
-inertAI entity = AI{..}
-  where super = Nothing
-        ifMissing = inertMM entity
-        methods = makeMethodMap []
+inherit :: (EID -> Responder) -> Maybe (EID -> AI) -> EID -> AI
+inherit resp super' entity = AI{..}
+  where methods = makeMethodMap []
+        super = super' <*> Just entity
+        ifMissing = resp entity
 
 playerMM, actorMM, objectMM, inertMM :: EID -> Responder
 playerMM eid (Tick) = do
