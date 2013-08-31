@@ -27,7 +27,7 @@ runAI self Attack = do
   others <- anyOpponent self
   case others of
     Just defender -> self `dealDamage` defender
-    Nothing -> return [Stand :& []]
+    Nothing -> return [Fail :& [Tried Attack]]
 runAI self (Go dir) = do
   exit <- findExitFrom (location self) dir
   case exit of
@@ -42,7 +42,9 @@ runAI _ _ = return [] -- [NothingHappens :& []]
 
 anyOpponent :: Entity -> Game (Maybe Entity)
 anyOpponent self = getEntitiesWhere test >>= anyOf
-  where test e = isAlive e && eid e /= eid self
+  where test e = isAlive e &&
+          eid e /= eid self &&
+            location e == location self
 
 leaveGame :: Entity -> Game [Event]
 leaveGame e = do

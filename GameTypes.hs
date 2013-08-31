@@ -85,6 +85,7 @@ data Outcome = NothingHappens
              | Die
              | Win
              | Lose
+             | Fail
   deriving (Eq, Show)
 
 -- Semantic arguments to an Outcome
@@ -96,6 +97,7 @@ data EvArg = Agent Entity
            | OutOf Coords
            | WhichWay Cardinal
            | Via Corridor
+           | Tried Action
   deriving (Eq, Show)
 
 -- Bind cause to effect
