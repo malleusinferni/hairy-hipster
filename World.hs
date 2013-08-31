@@ -10,7 +10,6 @@ module World
   , getByEID
   , makeWorld
   , nextEID
-  , nextRID
   , anyRoom
   , say
   , saywords
@@ -33,6 +32,8 @@ import Describe
 import Coords
 import Table
 
+import AlphaDungeon
+
 say :: String -> Game ()
 say = liftIO . putStrLn
 
@@ -51,25 +52,16 @@ streamIDs n = do
 nextEID :: Game EID
 nextEID = liftIO =<< asks getEID
 
-nextRID :: Game RID
-nextRID = liftIO =<< asks getRID
-
 makeWorld :: IO World
 makeWorld = do
   getEID <- streamIDs 0
-  getRID <- streamIDs 0
   entities <- newIORef []
   speciesData <- readTSVFile "species.tsv"
-  locations <- makeMap getRID 1
+  locations <- makeMap
   return World{..}
 
-makeMap :: IO RID -> Int -> IO [Room]
-makeMap stream _gridSize = do
-  orid <- stream
-  irid <- stream
-  let outside = Room { rid = orid, exits = [(Down, irid)], onGrid = zyx 1 0 0 }
-      inside = Room { rid = irid, exits = [(Up, orid)], onGrid = zyx 0 0 0 }
-  return [outside, inside]
+makeMap :: IO LevelMap
+makeMap = return alphaDungeon
 
 (%=) :: Selector a -> (a -> a) -> Game ()
 sel %= action = do
@@ -99,5 +91,6 @@ anyEntityExcept self = getEntities >>= anyOf . filter (/= self)
 
 anyRoom :: Game Room
 anyRoom = do
-  [_outside, inside] <- asks locations
-  return inside
+  (rooms, _) <- asks locations
+  Just r <- anyOf rooms
+  return r

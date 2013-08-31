@@ -49,7 +49,7 @@ makeMob :: Species -> Bool -> Game Entity
 makeMob species isPlayer = do
   eid <- nextEID
   body <- makeBody species
-  location <- anyRoom
+  location <- onGrid `fmap` anyRoom
   let ai = makeAI isPlayer eid
       hp = maxHPFor body
       power = strengthFor body

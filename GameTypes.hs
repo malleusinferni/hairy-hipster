@@ -17,7 +17,7 @@ data Entity = Entity
   , hp :: Int
   , body :: Body
   , isPlayer :: Bool
-  , location :: Room
+  , location :: Coords
   , species :: Species
   , power :: Int
   } deriving (Show)
@@ -105,13 +105,14 @@ infixr 2 :&
 -- Master game state record
 data World = World
   { getEID :: IO EID
-  , getRID :: IO RID
   , entities :: IORef [Entity]
   , speciesData :: [Species]
-  , locations :: [Room]
+  , locations :: LevelMap
   }
 
 type Game a = ReaderT World IO a
+
+type LevelMap = ([Room], [Corridor])
 
 type Selector a = World -> IORef a
 
@@ -123,12 +124,17 @@ instance Show Responder where
 type TrigMap = IM.IntMap Responder
 
 data Room = Room
-  { rid :: RID
-  , onGrid :: Coords
-  , exits :: [(Cardinal, RID)]
+  { onGrid :: Coords
+  , roomName :: String
+  , description :: String
+  , walls :: Material
+  , floors :: Material
   } deriving (Eq, Show)
 
-type RID = Int
+data Corridor = Corridor
+  { endpoints :: (Coords, Coords)
+  , doorName :: String
+  } deriving (Eq, Show)
 
 data Body = Body
   { material :: Material
