@@ -72,7 +72,7 @@ playGame :: Game ()
 playGame = do
   say "You climb down the well."
   playerEntity <- makePlayer
-  numEnemies <- anyIn (1, 5)
+  numEnemies <- fuzz 5
   replicateM_ numEnemies $ do
     enemy <- makeEnemy
     announce (See :& [Agent playerEntity, Patient enemy])
