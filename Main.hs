@@ -17,10 +17,15 @@ playerSurvives :: Game Bool
 playerSurvives = playerAmong `fmap` getEntitiesWhere isAlive
 
 playTurn :: Game ()
-playTurn = getEntitiesWhere isAlive >>= go
-  where go [] = say "None survive..."
-        go [entity] = tellVictory entity
-        go combatants = doTick combatants playTurn
+playTurn = do
+  [player] <- getEntitiesWhere isPlayer
+  survivors <- getEntitiesWhere isAlive
+  localEntities <- getEntitiesHere player
+  if aboveGround (location player)
+     then if length survivors > 1
+             then say "You escape with your life..."
+             else say "You emerge victorious."
+     else doTick localEntities playTurn
 
 doTick :: [Entity] -> Game () -> Game ()
 doTick [] z = z
