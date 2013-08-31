@@ -11,15 +11,15 @@ import Coords
 import Table
 
 -- An object in the game, usually with a physical body
-data Entity = Entity {
-    eid :: EID,
-    ai :: AI,
-    hp :: Int,
-    body :: Body,
-    isPlayer :: Bool,
-    location :: Room,
-    species :: Species,
-    power :: Int
+data Entity = Entity
+  { eid :: EID
+  , ai :: AI
+  , hp :: Int
+  , body :: Body
+  , isPlayer :: Bool
+  , location :: Room
+  , species :: Species
+  , power :: Int
   } deriving (Show)
 
 -- Entities are indexed by their unique IDs
@@ -44,10 +44,10 @@ instance Tabular Species where
     maxHeight <- readField "Max height"
     return Species{..}
 
-data AI = AI {
-    methods :: TrigMap,
-    ifMissing :: Responder,
-    super :: Maybe AI
+data AI = AI
+  { methods :: TrigMap
+  , ifMissing :: Responder
+  , super :: Maybe AI
   } deriving (Show)
 
 -- Commands which an actor AI may issue in response to Tick
@@ -103,12 +103,12 @@ infixr 1 :=>
 infixr 2 :&
 
 -- Master game state record
-data World = World {
-    getEID :: IO EID,
-    getRID :: IO RID,
-    entities :: IORef [Entity],
-    speciesData :: [Species],
-    locations :: [Room]
+data World = World
+  { getEID :: IO EID
+  , getRID :: IO RID
+  , entities :: IORef [Entity]
+  , speciesData :: [Species]
+  , locations :: [Room]
   }
 
 type Game a = ReaderT World IO a
@@ -122,18 +122,17 @@ instance Show Responder where
 
 type TrigMap = IM.IntMap Responder
 
-data Room = Room {
-    rid :: RID,
-    onGrid :: Coords,
-    exits :: [(Cardinal, RID)]
-  }
-  deriving (Eq, Show)
+data Room = Room
+  { rid :: RID
+  , onGrid :: Coords
+  , exits :: [(Cardinal, RID)]
+  } deriving (Eq, Show)
 
 type RID = Int
 
-data Body = Body {
-    material :: Material,
-    size :: Int
+data Body = Body
+  { material :: Material
+  , size :: Int
   } deriving (Eq, Show)
 
 data Material = Flesh | Steel | Carapace

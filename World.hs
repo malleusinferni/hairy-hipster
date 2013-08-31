@@ -1,10 +1,23 @@
 {-# LANGUAGE RecordWildCards #-}
-module World (
-  (%=), ($=), storeEntity, updateEntity, getEntities,
-  anyEntityExcept, getEntitiesWhere, getByEID,
-  makeWorld, nextEID, nextRID, anyRoom,
-  say, saywords, announce,
-  asks, liftIO, runReaderT
+module World
+  ( (%=)
+  , ($=)
+  , storeEntity
+  , updateEntity
+  , getEntities
+  , anyEntityExcept
+  , getEntitiesWhere
+  , getByEID
+  , makeWorld
+  , nextEID
+  , nextRID
+  , anyRoom
+  , say
+  , saywords
+  , announce
+  , asks
+  , liftIO
+  , runReaderT
   ) where
 
 import Data.List (find, delete)

@@ -5,21 +5,21 @@ module Describe where
 
 import Data.Char (toUpper, toLower)
 
-data Verb = Verb {
-    infinitive :: String,
-    presentSingular :: String,
-    presentPlural :: String,
-    pastSingular :: String,
-    pastPlural :: String,
-    gerund :: String,
-    danglingPreposition :: Maybe String
+data Verb = Verb
+  { infinitive :: String
+  , presentSingular :: String
+  , presentPlural :: String
+  , pastSingular :: String
+  , pastPlural :: String
+  , gerund :: String
+  , danglingPreposition :: Maybe String
   } deriving (Eq, Show)
 
-data Noun = Noun {
-    nominative :: String,
-    genitive :: String,
-    accusative :: String,
-    plural :: Bool
+data Noun = Noun
+  { nominative :: String
+  , genitive :: String
+  , accusative :: String
+  , plural :: Bool
   } deriving (Eq, Show)
 
 data Dependent = I | You | He | She | It | They
