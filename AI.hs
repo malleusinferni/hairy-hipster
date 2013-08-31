@@ -36,6 +36,7 @@ runAI self (Go dir) = do
       return []
     Just door -> do
       dest <- self `traverseExit` door
+      Just self <- getByEID (eid self)
       comments <- viewRoom self (onGrid dest)
       return $ (Walk :& [Patient self, WhichWay dir, Via door]) : comments
 runAI self Rest = do
@@ -108,7 +109,7 @@ viewRoom self loc = do
   let view = Walk :& [Patient self, Into room]
       inDest e = location e == loc
   others <- getEntitiesWhere inDest
-  enemies <- mapM (viewEntity self) others
+  enemies <- mapM (viewEntity self) (filter (not . isPlayer) others)
   return (view : enemies)
 
 viewEntity :: Entity -> Entity -> Game Event
