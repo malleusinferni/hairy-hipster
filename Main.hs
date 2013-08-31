@@ -20,7 +20,7 @@ playTurn :: Game ()
 playTurn = do
   [player] <- getEntitiesWhere isPlayer
   survivors <- getEntitiesWhere isAlive
-  localEntities <- getEntitiesHere player
+  localEntities <- getEntitiesNear player
   if aboveGround (location player)
      then if length survivors > 1
              then say "You escape with your life..."

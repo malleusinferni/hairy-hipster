@@ -7,7 +7,7 @@ module World
   , getEntities
   , anyEntityExcept
   , getEntitiesWhere
-  , getEntitiesHere
+  , getEntitiesNear
   , getByEID
   , makeWorld
   , nextEID
@@ -95,8 +95,8 @@ getEntities = asks entities >>= liftIO . readIORef
 getEntitiesWhere :: (Entity -> Bool) -> Game [Entity]
 getEntitiesWhere test = filter test `fmap` getEntities
 
-getEntitiesHere :: Entity -> Game [Entity]
-getEntitiesHere (Entity { location = here }) =
+getEntitiesNear :: Entity -> Game [Entity]
+getEntitiesNear (Entity { location = here }) =
   getEntitiesWhere ((== here) . location)
 
 getByEID :: EID -> Game (Maybe Entity)
