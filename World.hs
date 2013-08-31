@@ -12,6 +12,7 @@ module World
   , makeWorld
   , nextEID
   , anyRoom
+  , roomByLocation
   , findExitFrom
   , traverseExit
   , say
@@ -110,6 +111,10 @@ anyRoom = do
   (rooms, _) <- asks locations
   Just r <- anyOf $ filter ((/= 0) . xy . onGrid) (M.elems rooms)
   return r
+
+roomByLocation loc = do
+  (rooms, _) <- asks locations
+  return $ M.lookup loc rooms
 
 findExitFrom :: Coords -> Cardinal -> Game (Maybe Corridor)
 findExitFrom here dir = do

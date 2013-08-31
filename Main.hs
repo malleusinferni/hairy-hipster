@@ -84,9 +84,7 @@ playGame = do
   numEnemies <- fuzz 5
   replicateM_ numEnemies $ do
     enemy <- makeEnemy
-    announce (See :& [Agent playerEntity, Patient enemy])
     storeEntity enemy
-  say "You bare your sword and leap into the fray."
   storeEntity playerEntity
   playTurn
 

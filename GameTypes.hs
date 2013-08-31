@@ -61,7 +61,7 @@ data Action = Attack -- Damage another entity
             | Copulate -- Laying eggs???
             | Rest -- Remain still and recuperate
             | DoNothing -- Really do nothing
-            -- NOTE: Looking around doesn't consume a turn!
+            | Look -- NOTE: Looking around doesn't consume a turn!
   deriving (Eq, Show)
 
 -- Prompts to which an AI may (or may not) respond
