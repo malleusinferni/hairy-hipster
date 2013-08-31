@@ -101,7 +101,7 @@ actorMM eid t = objectMM eid t
 
 objectMM = inertMM
 
-inertMM _ _ = return Rest
+inertMM _ _ = return DoNothing
 
 makeCorpse :: Entity -> Game Entity
 makeCorpse e@(Entity{..}) = return $ e { ai = inertAI eid }

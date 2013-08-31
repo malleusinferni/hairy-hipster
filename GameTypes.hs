@@ -59,7 +59,8 @@ data Action = Attack -- Damage another entity
             | Open | Close -- Door, chest, portal...?
             | Ask | Tell -- Includes reading and writing
             | Copulate -- Laying eggs???
-            | Rest -- Do nothing (recuperate if possible)
+            | Rest -- Remain still and recuperate
+            | DoNothing -- Really do nothing
             -- NOTE: Looking around doesn't consume a turn!
   deriving (Eq, Show)
 
