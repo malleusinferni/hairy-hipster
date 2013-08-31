@@ -33,3 +33,15 @@ dirToCoords Down = Vec3I 0 0 (-1)
 
 radials :: [Vec3I]
 radials = map dirToCoords [North .. Northwest]
+
+neighbors :: Vec3I -> [Vec3I]
+neighbors o = map (o +) radials
+
+showCoord :: Vec3I -> String
+showCoord (Vec3I x y z) = show (x, y, z)
+
+printCoord :: Vec3I -> IO ()
+printCoord = putStrLn . showCoord
+
+printCoords :: [Vec3I] -> IO ()
+printCoords = mapM_ printCoord
