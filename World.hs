@@ -20,6 +20,7 @@ module World
   ) where
 
 import Data.List (find, delete)
+import qualified Data.Map.Lazy as M
 import Data.IORef
 import Control.Monad.Reader
 import Control.Concurrent (forkIO)
@@ -61,7 +62,10 @@ makeWorld = do
   return World{..}
 
 makeMap :: IO LevelMap
-makeMap = return alphaDungeon
+makeMap = return (roomMap, corridors)
+  where (rooms, corridors) = alphaDungeon
+        byCoords r = (onGrid r, r)
+        roomMap = M.fromList $ map byCoords rooms
 
 (%=) :: Selector a -> (a -> a) -> Game ()
 sel %= action = do
@@ -92,5 +96,5 @@ anyEntityExcept self = getEntities >>= anyOf . filter (/= self)
 anyRoom :: Game Room
 anyRoom = do
   (rooms, _) <- asks locations
-  Just r <- anyOf (filter ((/= 0) . xy . onGrid) rooms)
+  Just r <- anyOf $ filter ((/= 0) . xy . onGrid) (M.elems rooms)
   return r

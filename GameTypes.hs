@@ -4,6 +4,7 @@
 module GameTypes where
 
 import Data.IORef
+import qualified Data.Map as M
 import qualified Data.IntMap as IM
 import Control.Monad.Reader
 
@@ -112,7 +113,7 @@ data World = World
 
 type Game a = ReaderT World IO a
 
-type LevelMap = ([Room], [Corridor])
+type LevelMap = (M.Map Coords Room, [Corridor])
 
 type Selector a = World -> IORef a
 
