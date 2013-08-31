@@ -36,7 +36,7 @@ quantize (Vec3I x y _)
   | abs x > 2 * abs y = use x 0
   | abs y > 2 * abs x = use 0 y
   | otherwise = use x y
-  where use x' y' = Vec3I (signum x) (signum y) 0
+  where use x' y' = Vec3I (signum x') (signum y') 0
 
 dirToCoords :: Cardinal -> Coords
 dirToCoords dir = Vec3I x y z
