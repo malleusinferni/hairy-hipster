@@ -9,7 +9,7 @@ import Entity
 import UI
 import Rand
 import Describe ()
-import Action ()
+import Action
 import Coords
 
 tick :: Entity -> Game EventReport

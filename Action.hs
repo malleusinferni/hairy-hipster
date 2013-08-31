@@ -1,4 +1,9 @@
-module Action where
+module Action
+  ( subj
+  , obj
+  , poss
+  , cverb
+  ) where
 
 import GameTypes
 import Describe
