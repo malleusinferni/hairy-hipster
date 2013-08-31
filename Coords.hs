@@ -34,12 +34,3 @@ radials = map dirToCoords [North .. Northwest]
 
 neighbors :: Coords -> [Coords]
 neighbors o = map (o +) radials
-
-showCoord :: Coords -> String
-showCoord (Vec3I x y z) = show (x, y, z)
-
-printCoord :: Coords -> IO ()
-printCoord = putStrLn . showCoord
-
-printCoords :: [Coords] -> IO ()
-printCoords = mapM_ printCoord
