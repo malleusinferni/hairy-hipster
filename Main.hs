@@ -1,6 +1,7 @@
 {-# LANGUAGE RecordWildCards #-}
 import Control.Monad (replicateM_, when)
 
+import Coords
 import GameTypes
 import World
 import Entity
@@ -49,10 +50,13 @@ makeMob :: Species -> Bool -> Game Entity
 makeMob species isPlayer = do
   eid <- nextEID
   body <- makeBody species
-  location <- onGrid `fmap` anyRoom
+  aRoom <- onGrid `fmap` anyRoom
   let ai = makeAI isPlayer eid
       hp = maxHPFor body
       power = strengthFor body
+      location
+        | isPlayer = zyx 0 0 0
+        | otherwise = aRoom
   return Entity{..}
 
 makeAI :: Bool -> EID -> AI
