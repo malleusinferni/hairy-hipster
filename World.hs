@@ -62,10 +62,15 @@ makeWorld = do
   return World{..}
 
 makeMap :: IO LevelMap
-makeMap = return (roomMap, corridors)
+makeMap = return (roomMap, corMap)
   where (rooms, corridors) = alphaDungeon
         byCoords r = (onGrid r, r)
+        byExit r = (r, findExits r corridors)
         roomMap = M.fromList $ map byCoords rooms
+        corMap = M.fromList $ map (byExit . onGrid) rooms
+
+findExits loc cors = filter test cors
+  where test (Corridor { endpoints = (s, e) }) = s == loc || e == loc
 
 (%=) :: Selector a -> (a -> a) -> Game ()
 sel %= action = do

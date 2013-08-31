@@ -113,7 +113,7 @@ data World = World
 
 type Game a = ReaderT World IO a
 
-type LevelMap = (M.Map Coords Room, [Corridor])
+type LevelMap = (M.Map Coords Room, M.Map Coords [Corridor])
 
 type Selector a = World -> IORef a
 
