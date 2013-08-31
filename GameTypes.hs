@@ -92,9 +92,10 @@ data EvArg = Agent Entity
            | Patient Entity
            | Using Entity
            | ByAmount Int
-           | Into Coords
+           | Into Room
            | OutOf Coords
            | WhichWay Cardinal
+           | Via Corridor
   deriving (Eq, Show)
 
 -- Bind cause to effect

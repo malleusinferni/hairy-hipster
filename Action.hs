@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances #-}
 module Action
   ( subj
   , obj
@@ -21,6 +22,15 @@ cverb a = conj a . verb
 aeverb :: Nominable a => a -> Outcome -> String
 aeverb a = cverb a . downcase . show
 
+instance Effable Corridor where
+  describe c = "the " ++ doorName c
+
+instance Effable Cardinal where
+  describe = downcase . show
+
+instance Effable [String] where
+  describe = unwords
+
 -- TODO Rewrite all of this to use randomness, vocabulary, etc.
 instance Effable Event where
   describe (Walk :& (Agent a : WhichWay Up : _)) =
@@ -40,6 +50,11 @@ instance Effable Event where
     unwords [subj p, cverb p "emerge", "victorious"]
   describe (Lose :& Patient p : _) =
     unwords [subj p, cverb p "escape", "with", poss p, "life"]
+  describe (Walk :& Patient p : WhichWay u : Via d : _)
+    | u `elem` [Up, Down] =
+      unwords [subj p, cverb p "climb", show u, describe d]
+    | otherwise = unwords [subj p, cverb p "go", "through", describe d]
+  describe (Walk :& Patient p : Into d : _) = description d
   describe (v :& Agent a : Patient p : _) =
     unwords [subj a, aeverb a v, obj p]
   describe (v :& Agent a : _ ) = unwords [subj a, aeverb a v]
