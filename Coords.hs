@@ -19,6 +19,24 @@ zyx z y x = Vec3I x y z
 
 xy (Vec3I x y _) = Vec2I x y
 
+quadrant :: Coords -> Cardinal
+quadrant (Vec3I x y _)
+  | x == 0 && y > 0 = North
+  | x == 0 && y < 0 = South
+  | y == 0 && x > 0 = East
+  | y == 0 && x < 0 = West
+  | x > 0 && y > 0 = Northeast
+  | x > 0 && y < 0 = Southeast
+  | x < 0 && y > 0 = Northwest
+  | x < 0 && y < 0 = Southwest
+
+quantize :: Coords -> Coords
+quantize (Vec3I x y _)
+  | abs x > 2 * abs y = use x 0
+  | abs y > 2 * abs x = use 0 y
+  | otherwise = use x y
+  where use x' y' = Vec3I (signum x) (signum y) 0
+
 dirToCoords :: Cardinal -> Coords
 dirToCoords dir = Vec3I x y z
   where x | dir `elem` [Northeast, East, Southwest] = 1
