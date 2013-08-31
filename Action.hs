@@ -52,7 +52,7 @@ instance Effable Event where
     unwords [subj p, cverb p "escape", "with", poss p, "life"]
   describe (Walk :& Patient p : WhichWay u : Via d : _)
     | u `elem` [Up, Down] =
-      unwords [subj p, cverb p "climb", show u, describe d]
+      unwords [subj p, cverb p "climb", describe u, describe d]
     | otherwise = unwords [subj p, cverb p "go", "through", describe d]
   describe (Walk :& Patient p : Into d : _) = description d
   describe (v :& Agent a : Patient p : _) =
