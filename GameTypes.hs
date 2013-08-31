@@ -135,5 +135,15 @@ data Body = Body
   , size :: Int
   } deriving (Eq, Show)
 
-data Material = Flesh | Steel | Carapace
+data Material = Flesh
+              | Steel
+              | Carapace
+              | Air
+              | Grass
+              | Stone
+              | Masonry
+              | Dirt
+              | Sand
+              | Blood
+              | Sandstone
   deriving (Eq, Show, Ord, Enum)
