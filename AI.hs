@@ -63,11 +63,17 @@ parseInstr "north" = Go North
 parseInstr "south" = Go South
 parseInstr "east" = Go East
 parseInstr "west" = Go West
+parseInstr "n" = Go North
+parseInstr "s" = Go South
+parseInstr "e" = Go East
+parseInstr "w" = Go West
 parseInstr "ne" = Go Northeast
 parseInstr "nw" = Go Northwest
 parseInstr "se" = Go Southeast
 parseInstr "sw" = Go Southwest
-parseInstr _ = Rest
+parseInstr "rest" = Rest
+parseInstr "r" = Rest
+parseInstr _ = DoNothing
 
 playerAI, actorAI, objectAI, inertAI :: EID -> AI
 
