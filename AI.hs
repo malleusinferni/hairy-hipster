@@ -85,7 +85,7 @@ inherit resp super' entity = AI{..}
 
 playerMM, actorMM, objectMM, inertMM :: EID -> Responder
 playerMM eid (Tick) = do
-  move <- liftIO (prompt "[fight/escape] > ")
+  move <- liftIO (prompt "> ")
   let r = parseInstr move
   case r of
     Attack -> return r
