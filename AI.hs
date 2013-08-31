@@ -96,16 +96,16 @@ playerMM eid (Tick) = do
     Go _ -> return r
     Rest -> return r
     Look -> do
-      viewRoom self
+      viewRoom self (location self)
       playerMM eid Tick -- Don't lose a turn
     _ -> do
       saywords ["You don't know how to", move ++ "!"]
       playerMM eid Tick
 playerMM eid t = actorMM eid t
 
-viewRoom :: Entity -> Game ()
-viewRoom self = do
-  Just room <- roomByLocation (location self)
+viewRoom :: Entity -> Coords -> Game ()
+viewRoom self loc = do
+  Just room <- roomByLocation loc
   say (description room)
   others <- getEntitiesNear self
   mapM_ (viewEntity self) others
