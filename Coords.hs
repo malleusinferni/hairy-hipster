@@ -18,18 +18,16 @@ zyx :: Int -> Int -> Int -> Coords
 zyx z y x = Vec3I x y z
 
 dirToCoords :: Cardinal -> Coords
-dirToCoords North = Vec3I 0 1 0
-dirToCoords East  = Vec3I 1 0 0
-dirToCoords South = Vec3I 0 (-1) 0
-dirToCoords West  = Vec3I (-1) 0 0
-
-dirToCoords Northeast = Vec3I 1 1 0
-dirToCoords Southeast = Vec3I 1 (-1) 0
-dirToCoords Southwest = Vec3I (-1) (-1) 0
-dirToCoords Northwest = Vec3I (-1) 1 0
-
-dirToCoords Up = Vec3I 0 0 1
-dirToCoords Down = Vec3I 0 0 (-1)
+dirToCoords dir = Vec3I x y z
+  where x | dir `elem` [Northeast, East, Southwest] = 1
+          | dir `elem` [Northwest, West, Southwest] = -1
+          | otherwise = 0
+        y | dir `elem` [Northwest, North, Northeast] = 1
+          | dir `elem` [Southwest, South, Southeast] = -1
+          | otherwise = 0
+        z | dir == Up = 1
+          | dir == Down = -1
+          | otherwise = 0
 
 radials :: [Coords]
 radials = map dirToCoords [North .. Northwest]
