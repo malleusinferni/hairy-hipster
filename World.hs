@@ -92,5 +92,5 @@ anyEntityExcept self = getEntities >>= anyOf . filter (/= self)
 anyRoom :: Game Room
 anyRoom = do
   (rooms, _) <- asks locations
-  Just r <- anyOf rooms
+  Just r <- anyOf (filter ((/= 0) . xy . onGrid) rooms)
   return r
