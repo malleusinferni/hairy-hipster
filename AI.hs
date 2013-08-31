@@ -17,7 +17,7 @@ tick self = do
   selves <- getByEID (eid self)
   fmap (Tick :=>) $
     case selves of
-      Just self | isAlive self -> do
+      Just self -> do
         action <- self `respondTo` Tick
         self `runAI` action
       _ -> return []
@@ -28,7 +28,7 @@ runAI self Attack = do
   case others of
     Just defender -> self `dealDamage` defender
     Nothing -> return [Stand :& []]
-runAI _ _ = return [NothingHappens :& []]
+runAI _ _ = return [] -- [NothingHappens :& []]
 
 anyOpponent :: Entity -> Game (Maybe Entity)
 anyOpponent self = getEntitiesWhere test >>= anyOf
@@ -85,7 +85,7 @@ objectMM = inertMM
 inertMM _ _ = return Rest
 
 makeCorpse :: Entity -> Game Entity
-makeCorpse e@(Entity{..}) = return $ e { ai = popAI ai }
+makeCorpse e@(Entity{..}) = return $ e { ai = inertAI eid }
 
 attackPower :: Entity -> Game Int
 attackPower = fuzz . power
