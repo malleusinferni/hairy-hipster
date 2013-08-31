@@ -4,6 +4,7 @@
 module Describe where
 
 import Data.Char (toUpper, toLower)
+import Data.List (intercalate)
 
 data Verb = Verb
   { infinitive :: String
@@ -77,7 +78,7 @@ sentence :: Effable d => d -> String -> String
 sentence d end = upcase (describe d) ++ end
 
 unsentence :: Effable d => [d] -> String
-unsentence = unlines . map (`sentence` ".")
+unsentence = intercalate "\n" . map (`sentence` ".")
 
 upcase, downcase :: String -> String
 upcase (c:cs) = toUpper c : cs
