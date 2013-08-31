@@ -17,6 +17,7 @@ data Cardinal = North | Northeast
 zyx :: Int -> Int -> Int -> Coords
 zyx z y x = Vec3I x y z
 
+xy :: Coords -> Vec2I
 xy (Vec3I x y _) = Vec2I x y
 
 quadrant :: Coords -> Cardinal
@@ -39,7 +40,7 @@ quantize (Vec3I x y _)
 
 dirToCoords :: Cardinal -> Coords
 dirToCoords dir = Vec3I x y z
-  where x | dir `elem` [Northeast, East, Southwest] = 1
+  where x | dir `elem` [Northeast, East, Southeast] = 1
           | dir `elem` [Northwest, West, Southwest] = -1
           | otherwise = 0
         y | dir `elem` [Northwest, North, Northeast] = 1
