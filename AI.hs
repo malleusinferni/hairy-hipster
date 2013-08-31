@@ -37,7 +37,7 @@ runAI self (Go dir) = do
     Just door -> do
       dest <- self `traverseExit` door
       Just self <- getByEID (eid self)
-      comments <- viewRoom self (onGrid dest)
+      comments <- viewRoom self
       return $ (Walk :& [Patient self, WhichWay dir, Via door]) : comments
 runAI self Rest = do
   rec <- fuzz (hp self `quot` 10)
@@ -46,10 +46,7 @@ runAI self Rest = do
 runAI _ _ = return [] -- [NothingHappens :& []]
 
 anyOpponent :: Entity -> Game (Maybe Entity)
-anyOpponent self = getEntitiesWhere test >>= anyOf
-  where test e = isAlive e &&
-          eid e /= eid self &&
-            location e == location self
+anyOpponent self = getEntitiesWhere (isOpponentOf self) >>= anyOf
 
 leaveGame :: Entity -> Game [Event]
 leaveGame e = do
@@ -95,7 +92,7 @@ playerMM eid (Tick) = do
     Go _ -> return r
     Rest -> return r
     Look -> do
-      observations <- viewRoom self (location self)
+      observations <- viewRoom self
       announce (Seen :=> observations)
       playerMM eid Tick -- Don't lose a turn
     _ -> do
@@ -103,13 +100,14 @@ playerMM eid (Tick) = do
       playerMM eid Tick
 playerMM eid t = actorMM eid t
 
-viewRoom :: Entity -> Coords -> Game [Event]
-viewRoom self loc = do
+viewRoom :: Entity -> Game [Event]
+viewRoom self = do
+  let loc = location self
   Just room <- roomByLocation loc
   let view = Walk :& [Patient self, Into room]
       inDest e = location e == loc
-  others <- getEntitiesWhere inDest
-  enemies <- mapM (viewEntity self) (filter (not . isPlayer) others)
+  others <- getEntitiesWhere (isOpponentOf self)
+  enemies <- mapM (viewEntity self) others
   return (view : enemies)
 
 viewEntity :: Entity -> Entity -> Game Event

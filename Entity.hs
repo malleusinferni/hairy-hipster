@@ -87,3 +87,9 @@ isNearDeath, isDead, isAlive :: Entity -> Bool
 isNearDeath e = hp e <= maxHPFor (body e) `rdiv` 5
 isAlive = (> 0) . hp
 isDead = not . isAlive
+
+isOpponentOf :: Entity -> Entity -> Bool
+isOpponentOf self e =
+  isAlive e &&
+    eid e /= eid self &&
+      location e == location self
