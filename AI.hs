@@ -36,10 +36,8 @@ runAI self (Go dir) = do
       return []
     Just door -> do
       dest <- self `traverseExit` door
-      others <- getEntitiesNear self
-      let seen = map (\o -> See :& [Agent self, Patient o]) others
-      return $ [Walk :& [Patient self, WhichWay dir, Via door],
-                Walk :& [Patient self, Into dest]] ++ seen
+      comments <- viewRoom self (onGrid dest)
+      return $ (Walk :& [Patient self, WhichWay dir, Via door]) : comments
 runAI self Rest = do
   rec <- fuzz (hp self `quot` 10)
   updateEntity $ self { hp = hp self + rec }
@@ -96,22 +94,25 @@ playerMM eid (Tick) = do
     Go _ -> return r
     Rest -> return r
     Look -> do
-      viewRoom self (location self)
+      observations <- viewRoom self (location self)
+      announce (Seen :=> observations)
       playerMM eid Tick -- Don't lose a turn
     _ -> do
       saywords ["You don't know how to", move ++ "!"]
       playerMM eid Tick
 playerMM eid t = actorMM eid t
 
-viewRoom :: Entity -> Coords -> Game ()
+viewRoom :: Entity -> Coords -> Game [Event]
 viewRoom self loc = do
   Just room <- roomByLocation loc
-  say (description room)
-  others <- getEntitiesNear self
-  mapM_ (viewEntity self) others
+  let view = Walk :& [Patient self, Into room]
+      inDest e = location e == loc
+  others <- getEntitiesWhere inDest
+  enemies <- mapM (viewEntity self) others
+  return (view : enemies)
 
-viewEntity :: Entity -> Entity -> Game ()
-viewEntity self other = announce (See :& [Agent self, Patient other])
+viewEntity :: Entity -> Entity -> Game Event
+viewEntity self other = return $ See :& [Agent self, Patient other]
 
 actorMM _ (Tick) = return Attack
 actorMM eid t = objectMM eid t
