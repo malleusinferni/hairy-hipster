@@ -38,6 +38,10 @@ runAI self (Go dir) = do
       dest <- self `traverseExit` door
       return [Walk :& [Patient self, WhichWay dir, Via door],
               Walk :& [Patient self, Into dest]]
+runAI self Rest = do
+  rec <- fuzz (hp self `quot` 10)
+  updateEntity $ self { hp = hp self + rec }
+  return [Heal :& [Patient self]]
 runAI _ _ = return [] -- [NothingHappens :& []]
 
 anyOpponent :: Entity -> Game (Maybe Entity)
@@ -86,6 +90,7 @@ playerMM eid (Tick) = do
   case r of
     Attack -> return r
     Go _ -> return r
+    Rest -> return r
     _ -> do
       saywords ["You don't know how to", move ++ "!"]
       playerMM eid Tick

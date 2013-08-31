@@ -79,6 +79,7 @@ data Event = Outcome :& [EvArg]
 data Outcome = NothingHappens
              | TakeDamage
              | NearDeath
+             | Heal
              | Stand
              | Walk
              | See

@@ -52,6 +52,8 @@ instance Effable Event where
     unwords [subj p, cverb p "escape", "with", poss p, "life"]
   describe (Fail :& Tried v : _) =
     unwords ["there's nothing to", downcase (show v)]
+  describe (Heal :& Patient p : _) =
+    unwords [subj p, cverb p "recover", "a little health"]
   describe (Walk :& Patient p : WhichWay u : Via d : _)
     | u `elem` [Up, Down] =
       unwords [subj p, cverb p "climb", describe u, describe d]
