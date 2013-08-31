@@ -54,7 +54,7 @@ data AI = AI
 -- Commands which an actor AI may issue in response to Tick
 data Action = Attack -- Damage another entity
             | Eat -- Consume an entity (dead or living!)
-            | Goto -- Actor goes to a different location
+            | Go Cardinal -- Actor goes to a different location
             | Take | Put -- Move stuff between world and inventory
             | Open | Close -- Door, chest, portal...?
             | Ask | Tell -- Includes reading and writing

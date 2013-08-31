@@ -42,7 +42,15 @@ leaveGame e = do
 parseInstr :: String -> Action
 parseInstr "" = Attack
 parseInstr "fight" = Attack
-parseInstr "escape" = Goto
+parseInstr "escape" = Go Up
+parseInstr "north" = Go North
+parseInstr "south" = Go South
+parseInstr "east" = Go East
+parseInstr "west" = Go West
+parseInstr "ne" = Go Northeast
+parseInstr "nw" = Go Northwest
+parseInstr "se" = Go Southeast
+parseInstr "sw" = Go Southwest
 parseInstr _ = Rest
 
 playerAI, actorAI, objectAI, inertAI :: EID -> AI
@@ -62,7 +70,7 @@ playerMM, actorMM, objectMM, inertMM :: EID -> Responder
 playerMM eid (Tick) = do
   move <- liftIO (prompt "[fight/escape] > ")
   let r = parseInstr move
-  if r `elem` [Attack, Goto]
+  if r `elem` [Attack, Go Up]
      then return r
      else do
       saywords ["You don't know how to", move ++ "!"]
