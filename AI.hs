@@ -8,7 +8,7 @@ import World
 import Entity
 import UI
 import Rand
-import Describe ()
+import Describe
 import Action
 import Coords
 
@@ -28,6 +28,16 @@ runAI self Attack = do
   case others of
     Just defender -> self `dealDamage` defender
     Nothing -> return [Stand :& []]
+runAI self (Go dir) = do
+  exit <- findExitFrom (location self) dir
+  case exit of
+    Nothing -> do
+      announce [subj self, "can't go", describe dir]
+      return []
+    Just door -> do
+      dest <- self `traverseExit` door
+      return [Walk :& [Patient self, WhichWay dir, Via door],
+              Walk :& [Patient self, Into dest]]
 runAI _ _ = return [] -- [NothingHappens :& []]
 
 anyOpponent :: Entity -> Game (Maybe Entity)
@@ -42,7 +52,8 @@ leaveGame e = do
 parseInstr :: String -> Action
 parseInstr "" = Attack
 parseInstr "fight" = Attack
-parseInstr "escape" = Go Up
+parseInstr "up" = Go Up
+parseInstr "down" = Go Down
 parseInstr "north" = Go North
 parseInstr "south" = Go South
 parseInstr "east" = Go East
@@ -70,9 +81,10 @@ playerMM, actorMM, objectMM, inertMM :: EID -> Responder
 playerMM eid (Tick) = do
   move <- liftIO (prompt "[fight/escape] > ")
   let r = parseInstr move
-  if r `elem` [Attack, Go Up]
-     then return r
-     else do
+  case r of
+    Attack -> return r
+    Go _ -> return r
+    _ -> do
       saywords ["You don't know how to", move ++ "!"]
       playerMM eid Tick
 playerMM eid t = actorMM eid t
