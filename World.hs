@@ -11,6 +11,8 @@ module World
   , makeWorld
   , nextEID
   , anyRoom
+  , findExitFrom
+  , traverseExit
   , say
   , saywords
   , announce
@@ -102,4 +104,26 @@ anyRoom :: Game Room
 anyRoom = do
   (rooms, _) <- asks locations
   Just r <- anyOf $ filter ((/= 0) . xy . onGrid) (M.elems rooms)
+  return r
+
+findExitFrom :: Coords -> Cardinal -> Game (Maybe Corridor)
+findExitFrom here dir = do
+  let there = dirToCoords dir + here
+  (rooms, exits) <- asks locations
+  return $ do
+    xs <- M.lookup here exits
+    let pair = (here, there)
+        riap = (there, here)
+        test (Corridor { endpoints = e }) = e `elem` [pair, riap]
+    find test xs
+
+traverseExit :: Entity -> Corridor -> Game Room
+traverseExit self door = do
+  (rooms, exits) <- asks locations
+  let (a, b) = endpoints door
+      (here, there)
+        | location self == a = (a, b)
+        | otherwise = (b, a)
+      Just r = M.lookup there rooms
+  updateEntity (self { location = there })
   return r
