@@ -158,4 +158,5 @@ data Material = Flesh
               | Sand
               | Blood
               | Sandstone
+              | Wood
   deriving (Eq, Show, Ord, Enum)

@@ -48,6 +48,48 @@ alphaDungeon = (rooms, corridors)
             , walls = Stone
             , floors = Stone
             }
+          , Room
+            { onGrid = zyx 0 0 (-1)
+            , roomName = "library"
+            , description = "Leathery tomes are stacked against the walls."
+            , walls = Masonry
+            , floors = Masonry
+            }
+          , Room
+            { onGrid = zyx 0 1 (-1)
+            , roomName = "sepulchre"
+            , description = "Torches illuminate the entrance to the tomb."
+            , walls = Sandstone
+            , floors = Sand
+            }
+          , Room
+            { onGrid = zyx 0 1 (-2)
+            , roomName = "tomb"
+            , description = "The stone casket has been opened recently."
+            , walls = Dirt
+            , floors = Dirt
+            }
+          , Room
+            { onGrid = zyx 0 (-1) (-2)
+            , roomName = "pit"
+            , description = "A yawning chasm opens to the west."
+            , walls = Stone
+            , floors = Stone
+            }
+          , Room 
+            { onGrid = zyx 0 (-2) (-1)
+            , roomName = "pantry"
+            , description = "The shelves are stuffed with stores of food."
+            , walls = Wood
+            , floors = Masonry
+            }
+          , Room
+            { onGrid = zyx 0 (-3) (-2)
+            , roomName = "chapel"
+            , description = "It is very bright here."
+            , walls = Wood
+            , floors = Wood
+            }
           ]
         corridors =
           [ Corridor (zyx 1 0 0, zyx 0 0 0) "well"
@@ -55,4 +97,11 @@ alphaDungeon = (rooms, corridors)
           , Corridor (zyx 0 (-1) 0, zyx 0 (-1) 1) "tunnel"
           , Corridor (zyx 0 (-1) 1, zyx 0 (-2) 1) "bridge"
           , Corridor (zyx 0 (-1) 1, zyx 0 1 0) "crevice"
+          , Corridor (zyx 0 1 0, zyx 0 0 (-1)) "stone door"
+          , Corridor (zyx 0 0 (-1), zyx 0 1 (-1)) "archway"
+          , Corridor (zyx 0 1 (-1), zyx 0 1 (-2)) "slab door"
+          , Corridor (zyx 0 0 (-1), zyx 0 (-1) (-2)) "ledge"
+          , Corridor (zyx 0 0 (-1), zyx 0 (-2) (-1)) "wooden door"
+          , Corridor (zyx 0 (-1) (-2), zyx 0 (-3) (-2)) "steps"
+          , Corridor (zyx 0 (-2) (-1), zyx 0 (-3) (-2)) "hall"
           ]
