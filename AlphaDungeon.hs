@@ -41,10 +41,18 @@ alphaDungeon = (rooms, corridors)
             , walls = Stone
             , floors = Stone
             }
+          , Room
+            { onGrid = zyx 0 1 0
+            , roomName = "grotto"
+            , description = "Luminescent fungus dangles from the ceiling."
+            , walls = Stone
+            , floors = Stone
+            }
           ]
         corridors =
           [ Corridor (zyx 1 0 0, zyx 0 0 0) "well"
           , Corridor (zyx 0 0 0, zyx 0 (-1) 0) "secret door"
           , Corridor (zyx 0 (-1) 0, zyx 0 (-1) 1) "tunnel"
           , Corridor (zyx 0 (-1) 1, zyx 0 (-2) 1) "bridge"
+          , Corridor (zyx 0 (-1) 1, zyx 0 1 0) "crevice"
           ]

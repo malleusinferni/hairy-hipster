@@ -131,12 +131,12 @@ whereTo from via = (near, far)
 
 findExitFrom :: Coords -> Cardinal -> Game (Maybe Corridor)
 findExitFrom here dir = do
-  let there = dirToCoords dir + here
   exits <- getExits here
   return $ do
-    let pair = (here, there)
-        riap = (there, here)
-        test (Corridor { endpoints = e }) = e `elem` [pair, riap]
+    let test e = dir `elem` attempts
+          where attempts = [quadrant diff, quadrant (negate diff)]
+                (l, r) = endpoints e
+                diff = l - r
     find test exits
 
 describeExitsFrom :: Entity -> Game [Event]
