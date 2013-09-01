@@ -13,6 +13,8 @@ module World
   , nextEID
   , anyRoom
   , roomByLocation
+  , getExits
+  , describeExitsFrom
   , findExitFrom
   , traverseExit
   , say
@@ -116,24 +118,40 @@ roomByLocation loc = do
   (rooms, _) <- asks locations
   return $ M.lookup loc rooms
 
+getExits :: Coords -> Game [Corridor]
+getExits here = do
+  (_, exits) <- asks locations
+  return $ M.findWithDefault [] here exits
+
+whereTo from via = (near, far)
+  where (n, f) = endpoints via
+        (near, far)
+          | n == from = (n, f)
+          | otherwise = (f, n)
+
 findExitFrom :: Coords -> Cardinal -> Game (Maybe Corridor)
 findExitFrom here dir = do
   let there = dirToCoords dir + here
-  (rooms, exits) <- asks locations
+  exits <- getExits here
   return $ do
-    xs <- M.lookup here exits
     let pair = (here, there)
         riap = (there, here)
         test (Corridor { endpoints = e }) = e `elem` [pair, riap]
-    find test xs
+    find test exits
+
+describeExitsFrom :: Entity -> Game [Event]
+describeExitsFrom self = do
+  let loc = location self
+  exits <- getExits loc
+  forM exits $ \door -> do
+    let (here, there) = whereTo loc door
+        dir = quadrant $ quantize (there - here)
+    return $ See :& [Agent self, Via door, OutOf here, WhichWay dir]
 
 traverseExit :: Entity -> Corridor -> Game Room
 traverseExit self door = do
   (rooms, exits) <- asks locations
-  let (a, b) = endpoints door
-      (here, there)
-        | location self == a = (a, b)
-        | otherwise = (b, a)
+  let (here, there) = whereTo (location self) door
       Just r = M.lookup there rooms
   updateEntity (self { location = there })
   return r

@@ -30,13 +30,16 @@ quadrant (Vec3I x y _)
   | x > 0 && y < 0 = Southeast
   | x < 0 && y > 0 = Northwest
   | x < 0 && y < 0 = Southwest
+quadrant (Vec3I _ _ z)
+  | z > 0 = Up
+  | z < 0 = Down
 
 quantize :: Coords -> Coords
-quantize (Vec3I x y _)
+quantize (Vec3I x y z)
   | abs x > 2 * abs y = use x 0
   | abs y > 2 * abs x = use 0 y
   | otherwise = use x y
-  where use x' y' = Vec3I (signum x') (signum y') 0
+  where use x' y' = Vec3I (signum x') (signum y') z
 
 dirToCoords :: Cardinal -> Coords
 dirToCoords dir = Vec3I x y z

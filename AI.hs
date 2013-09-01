@@ -114,7 +114,8 @@ viewRoom self = do
       inDest e = location e == loc
   others <- getEntitiesWhere (isOpponentOf self)
   enemies <- mapM (viewEntity self) others
-  return (view : enemies)
+  doors <- describeExitsFrom self
+  return (view : (enemies ++ doors))
 
 viewEntity :: Entity -> Entity -> Game Event
 viewEntity self other = return $ See :& [Agent self, Patient other]
