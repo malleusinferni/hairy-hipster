@@ -15,6 +15,7 @@ import Text.Parsec.Text
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 
+import Control.Arrow ((|||), left)
 import Control.Monad.Reader
 import Control.Monad.Error
 import Text.Read (readEither)
@@ -29,37 +30,39 @@ type RecordReader = ReaderT Row (Either String)
 class Tabular r where
   readRecord :: RecordReader r
 
+-- TODO Less nonsensical error handling for user code
 readTSVFile :: Tabular r => String -> IO [r]
 readTSVFile file = do
   text <- TIO.readFile file
-  either error return $ readTable text file
+  error ||| return $ readTable text file
 
 readTSVString :: Tabular r => String -> [r]
-readTSVString text = either error id $ readTable (T.pack text) ""
+readTSVString text = error ||| id $ readTable (T.pack text) ""
 
 readTable :: Tabular r => T.Text -> String -> Either String [r]
 readTable text source = do
-  rows <- show `onLeft` parse tsvTable source text
+  rows <- show `left` parse tsvTable source text
   mapM (runReaderT readRecord) rows
 
-onLeft :: (a -> b) -> Either a r -> Either b r
-onLeft f (Left v) = Left (f v)
-onLeft _ (Right v) = Right v -- rebind
-
 readValue :: Read v => String -> RecordReader v
-readValue = either throwError return . readEither
+readValue = (throwError ||| return) . readEither
 
 readField :: Read v => String -> RecordReader v
 readField k = copyField k >>= readValue
 
 copyField :: String -> RecordReader String
-copyField k = do
-  v <- asks (lookup k)
-  case v of
-    Just v' -> return v'
-    Nothing -> throwError $ "No such key: " ++ k
+copyField k = asks (lookup k) ??? "No such key: " ++ k
 
-tsvTable :: Parser [Row]
+(???) :: (MonadError e m) => m (Maybe b) -> e -> m b
+f ??? e = do
+  r <- f
+  case r of
+    Just v -> return v
+    Nothing -> throwError e
+
+infix 0 ???
+
+tsvTable :: Parser Table
 tsvTable = do
   header <- tsvRow
   newline
@@ -75,9 +78,7 @@ tsvZip [] _ = fail "too many fields"
 tsvZip _ [] = fail "not enough fields"
 
 tsvRecord :: [Key] -> Parser Row
-tsvRecord header = do
-  row <- tsvRow
-  tsvZip header row
+tsvRecord header = tsvRow >>= tsvZip header
 
 tsvField :: Parser String
 tsvField = many . noneOf $ "\t\r\n"
