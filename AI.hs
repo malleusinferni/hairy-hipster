@@ -40,7 +40,7 @@ runAI self (Go dir) = do
       comments <- viewRoom self
       return $ (Walk :& [Patient self, WhichWay dir, Via door]) : comments
 runAI self Rest = do
-  rec <- fuzz (hp self `quot` 10)
+  rec <- fuzz 5
   updateEntity $ self { hp = hp self + rec }
   return [Heal :& [Patient self]]
 runAI _ _ = return [] -- [NothingHappens :& []]
