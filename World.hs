@@ -133,10 +133,10 @@ findExitFrom :: Coords -> Cardinal -> Game (Maybe Corridor)
 findExitFrom here dir = do
   exits <- getExits here
   return $ do
-    let test e = dir `elem` attempts
-          where attempts = [quadrant diff, quadrant (negate diff)]
-                (l, r) = endpoints e
-                diff = l - r
+    let test e = dir == quadrant canon
+          where (l, r) = endpoints e
+                canon | l == here = r - l
+                      | otherwise = l - r
     find test exits
 
 describeExitsFrom :: Entity -> Game [Event]
