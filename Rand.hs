@@ -23,8 +23,8 @@ avg :: (Fractional a) => [a] -> a
 avg [] = 0
 avg xs = sum xs / fromIntegral (length xs)
 
-rolls :: (Num n, Random n, MonadIO m) => Int -> m [n]
-rolls n = replicateM n $ anyIn (0, 1)
+rolls :: (Random n, MonadIO m) => Int -> m [n]
+rolls n = replicateM n $ liftIO randomIO
 
 roll :: (MonadIO m) => Int -> m Float
 roll n
