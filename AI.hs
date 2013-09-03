@@ -48,11 +48,6 @@ runAI _ _ = return [] -- [NothingHappens :& []]
 anyOpponent :: Entity -> Game (Maybe Entity)
 anyOpponent self = getEntitiesWhere (isOpponentOf self) >>= anyOf
 
-leaveGame :: Entity -> Game [Event]
-leaveGame e = do
-  entities %= const [e]
-  return [Walk :& [Agent e, WhichWay Up], Lose :& [Patient e]]
-
 parseInstr :: String -> Action
 parseInstr "" = Attack
 parseInstr "fight" = Attack
@@ -152,6 +147,3 @@ dealDamage attacker defender = do
      then makeCorpse injured >>= updateEntity
      else updateEntity injured
   return events
-
-tellVictory :: Entity -> Game ()
-tellVictory e = announce (Win :& [Patient e])

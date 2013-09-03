@@ -5,7 +5,6 @@ module World
   , storeEntity
   , updateEntity
   , getEntities
-  , anyEntityExcept
   , getEntitiesWhere
   , getEntitiesNear
   , getByEID
@@ -104,9 +103,6 @@ getEntitiesNear (Entity { location = here }) =
 
 getByEID :: EID -> Game (Maybe Entity)
 getByEID anid = find ((== anid) . eid) `fmap` getEntities
-
-anyEntityExcept :: Entity -> Game (Maybe Entity)
-anyEntityExcept self = getEntities >>= anyOf . filter (/= self)
 
 anyRoom :: Game Room
 anyRoom = do
