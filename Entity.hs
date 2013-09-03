@@ -37,12 +37,6 @@ respondTo Entity{ ai = ai } t = IM.findWithDefault ifMissing t' methods t
   where AI{..} = ai
         t' = triggerCode t
 
-popAI :: AI -> AI
-popAI ai = ai `fromMaybe` super ai
-
-makeRespMap :: Responder -> TrigMap
-makeRespMap r = IM.fromList [(triggerCode Tick, r)]
-
 makeMethodMap :: [(Int, Responder)] -> TrigMap
 makeMethodMap = IM.fromList
 
