@@ -82,6 +82,10 @@ actorAI = actorMM `inherit` Just objectAI
 objectAI = objectMM `inherit` Just inertAI
 inertAI = inertMM `inherit` Nothing
 
+makeAI :: Bool -> EID -> AI
+makeAI True entity = playerAI entity
+makeAI False entity = actorAI entity
+
 inherit :: (EID -> Responder) -> Maybe (EID -> AI) -> EID -> AI
 inherit resp super' entity = AI{..}
   where methods = makeMethodMap []

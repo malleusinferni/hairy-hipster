@@ -64,10 +64,6 @@ makeMob species isPlayer = do
   storeEntity Entity{..}
   return eid
 
-makeAI :: Bool -> EID -> AI
-makeAI True entity = playerAI entity
-makeAI False entity = actorAI entity
-
 randomSpecies :: Game Species
 randomSpecies = do
   species <- asks speciesData
