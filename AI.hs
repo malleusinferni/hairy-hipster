@@ -12,9 +12,9 @@ import Describe
 import Action
 import Coords
 
-tick :: Entity -> Game EventReport
-tick self = do
-  selves <- getByEID (eid self)
+tick :: EID -> Game EventReport
+tick eid = do
+  selves <- getByEID eid
   fmap (Tick :=>) $
     case selves of
       Just self -> do

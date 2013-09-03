@@ -1,5 +1,5 @@
 {-# LANGUAGE RecordWildCards #-}
-import Control.Monad (replicateM_, when)
+import Control.Monad (replicateM_, when, liftM2)
 
 import Coords
 import GameTypes
@@ -10,11 +10,10 @@ import UI
 import Rand
 import Describe
 
-playerAmong :: [Entity] -> Bool
-playerAmong = any isPlayer
-
 playerSurvives :: Game Bool
-playerSurvives = playerAmong `fmap` getEntitiesWhere isAlive
+playerSurvives = do
+  players <- getEntitiesWhere (liftM2 (&&) isAlive isPlayer)
+  return $ not (null players)
 
 playTurn :: Game ()
 playTurn = do
@@ -25,9 +24,9 @@ playTurn = do
      then if length survivors > 1
              then say "You escape with your life..."
              else say "You emerge victorious."
-     else doTick localEntities playTurn
+     else doTick (map eid localEntities) playTurn
 
-doTick :: [Entity] -> Game () -> Game ()
+doTick :: [EID] -> Game () -> Game ()
 doTick [] z = z
 doTick (x : xs) z = do
   report <- tick x
@@ -35,12 +34,12 @@ doTick (x : xs) z = do
   check <- playerSurvives
   when check $ doTick xs z
 
-makePlayer :: Game Entity
+makePlayer :: Game EID
 makePlayer = do
   (species:_) <- asks speciesData
   makeMob species True
 
-makeEnemy :: Game Entity
+makeEnemy :: Game EID
 makeEnemy = do
   species <- randomSpecies
   makeMob species False
@@ -51,7 +50,7 @@ makeBody species = do
   let material = Flesh
   return Body{..}
 
-makeMob :: Species -> Bool -> Game Entity
+makeMob :: Species -> Bool -> Game EID
 makeMob species isPlayer = do
   eid <- nextEID
   body <- makeBody species
@@ -62,7 +61,8 @@ makeMob species isPlayer = do
       location
         | isPlayer = zyx 0 0 0
         | otherwise = aRoom
-  return Entity{..}
+  storeEntity Entity{..}
+  return eid
 
 makeAI :: Bool -> EID -> AI
 makeAI True entity = playerAI entity
@@ -80,12 +80,9 @@ newGame = makeWorld >>= runReaderT playGame
 playGame :: Game ()
 playGame = do
   say "You climb down the well."
-  playerEntity <- makePlayer
+  _playerID <- makePlayer
   numEnemies <- fuzz 5
-  replicateM_ numEnemies $ do
-    enemy <- makeEnemy
-    storeEntity enemy
-  storeEntity playerEntity
+  replicateM_ numEnemies makeEnemy
   playTurn
 
 main :: IO ()
