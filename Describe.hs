@@ -87,6 +87,17 @@ upcase [] = []
 downcase (c:cs) = toLower c : cs
 downcase [] = []
 
+subj, obj, poss :: (Nominable a) => a -> String
+subj = nominative . name
+obj = accusative . name
+poss = genitive . name
+
+cverb :: (Nominable a) => a -> String -> String
+cverb a = conj a . verb
+
+aeverb :: (Nominable a, Show b) => a -> b -> String
+aeverb a = cverb a . downcase . show
+
 numWord :: Int -> String
 numWord 1 = "one"
 numWord 2 = "two"

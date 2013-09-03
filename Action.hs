@@ -1,26 +1,10 @@
 {-# LANGUAGE FlexibleInstances #-}
-module Action
-  ( subj
-  , obj
-  , poss
-  , cverb
-  ) where
+module Action where
 
 import GameTypes
 import Describe
 import Entity ()
 import Coords
-
-subj, obj, poss :: Nominable a => a -> String
-subj = nominative . name
-obj = accusative . name
-poss = genitive . name
-
-cverb :: Nominable a => a -> String -> String
-cverb a = conj a . verb
-
-aeverb :: Nominable a => a -> Outcome -> String
-aeverb a = cverb a . downcase . show
 
 instance Effable Corridor where
   describe c = "the " ++ doorName c
