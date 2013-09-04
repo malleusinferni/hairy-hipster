@@ -1,8 +1,10 @@
 {-# LANGUAGE RecordWildCards #-}
 module Entity where
 
-import Data.Maybe (fromMaybe)
+import Data.List (find)
+import Data.IORef
 import qualified Data.IntMap as IM
+import Control.Monad.Reader
 
 import GameTypes
 import ActionTypes
@@ -50,6 +52,21 @@ inFeet e = size (body e) `rdiv` 12
 
 rdiv :: Int -> Int -> Int
 rdiv q d = round $ toRational q / toRational d
+
+getEntities :: Game [Entity]
+getEntities = asks entities >>= liftIO . readIORef
+
+getEntitiesWhere :: (Entity -> Bool) -> Game [Entity]
+getEntitiesWhere test = filter test `fmap` getEntities
+
+getEntitiesNear :: Entity -> Game [Entity]
+getEntitiesNear (Entity { location = here }) =
+  getEntitiesWhere ((== here) . location)
+
+getByEID :: EID -> Game Entity
+getByEID anid = do
+  Just self <- find ((== anid) . eid) `fmap` getEntities
+  return self
 
 maxHPFor, strengthFor :: Body -> Int
 maxHPFor body = size body `rdiv` 3

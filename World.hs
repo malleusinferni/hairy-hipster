@@ -4,10 +4,6 @@ module World
   , ($=)
   , storeEntity
   , updateEntity
-  , getEntities
-  , getEntitiesWhere
-  , getEntitiesNear
-  , getByEID
   , makeWorld
   , nextEID
   , anyRoom
@@ -91,21 +87,6 @@ sel $= value = do
 storeEntity, updateEntity :: Entity -> Game ()
 storeEntity e = entities %= (e:)
 updateEntity e = entities %= ((e :) . delete e)
-
-getEntities :: Game [Entity]
-getEntities = asks entities >>= liftIO . readIORef
-
-getEntitiesWhere :: (Entity -> Bool) -> Game [Entity]
-getEntitiesWhere test = filter test `fmap` getEntities
-
-getEntitiesNear :: Entity -> Game [Entity]
-getEntitiesNear (Entity { location = here }) =
-  getEntitiesWhere ((== here) . location)
-
-getByEID :: EID -> Game Entity
-getByEID anid = do
-  Just self <- find ((== anid) . eid) `fmap` getEntities
-  return self
 
 anyRoom :: Game Room
 anyRoom = do
