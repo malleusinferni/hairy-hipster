@@ -4,6 +4,7 @@ module AI where
 import Control.Applicative ((<*>))
 
 import GameTypes
+import ActionTypes
 import World
 import Entity
 import UI

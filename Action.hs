@@ -2,6 +2,7 @@
 module Action where
 
 import GameTypes
+import ActionTypes
 import Describe
 import Entity ()
 import Coords

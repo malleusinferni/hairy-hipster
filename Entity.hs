@@ -5,6 +5,7 @@ import Data.Maybe (fromMaybe)
 import qualified Data.IntMap as IM
 
 import GameTypes
+import ActionTypes
 import Describe
 
 instance Nominable Species where
