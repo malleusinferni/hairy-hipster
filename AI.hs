@@ -18,13 +18,10 @@ import Coords
 
 tick :: EID -> Game EventReport
 tick eid = do
-  selves <- getByEID eid
-  fmap (Tick :=>) $
-    case selves of
-      Just self -> do
-        action <- self `respondTo` Tick
-        self `runAI` action
-      _ -> return []
+  self <- getByEID eid
+  fmap (Tick :=>) $ do
+    action <- self `respondTo` Tick
+    self `runAI` action
 
 runAI :: Entity -> Action -> Game [Event]
 runAI self Attack = do
@@ -40,7 +37,7 @@ runAI self (Go dir) = do
       return []
     Just door -> do
       dest <- self `traverseExit` door
-      Just self <- getByEID (eid self)
+      self <- getByEID (eid self)
       comments <- viewRoom self
       return $ (Walk :& [Patient self, WhichWay dir, Via door]) : comments
 runAI self Rest = do
@@ -93,7 +90,7 @@ inherit resp super' entity = AI{..}
 
 playerMM, actorMM, objectMM, inertMM :: EID -> Responder
 playerMM eid (Tick) = do
-  Just self <- getByEID eid
+  self <- getByEID eid
   move <- liftIO (prompt "> ")
   let r = parseInstr move
   case r of

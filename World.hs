@@ -102,8 +102,10 @@ getEntitiesNear :: Entity -> Game [Entity]
 getEntitiesNear (Entity { location = here }) =
   getEntitiesWhere ((== here) . location)
 
-getByEID :: EID -> Game (Maybe Entity)
-getByEID anid = find ((== anid) . eid) `fmap` getEntities
+getByEID :: EID -> Game Entity
+getByEID anid = do
+  Just self <- find ((== anid) . eid) `fmap` getEntities
+  return self
 
 anyRoom :: Game Room
 anyRoom = do
