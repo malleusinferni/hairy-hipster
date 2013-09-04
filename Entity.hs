@@ -40,6 +40,16 @@ aiByEID eid = do
   Entity{..} <- getByEID eid
   return ai
 
+hpByEID :: EID -> Game Int
+hpByEID eid = do
+  Entity{..} <- getByEID eid
+  return hp
+
+bodyByEID :: EID -> Game Body
+bodyByEID eid = do
+  Entity{..} <- getByEID eid
+  return body
+
 respondTo :: EID -> Responder
 respondTo eid t = do
   AI{..} <- aiByEID eid
