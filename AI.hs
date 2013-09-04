@@ -1,5 +1,8 @@
 {-# LANGUAGE RecordWildCards #-}
-module AI where
+module AI
+  ( tick
+  , makeAI
+  ) where
 
 import Control.Applicative ((<*>))
 
