@@ -20,7 +20,7 @@ tick :: EID -> Game EventReport
 tick eid = do
   self <- getByEID eid
   fmap (Tick :=>) $ do
-    action <- self `respondTo` Tick
+    action <- eid `respondTo` Tick
     self `runAI` action
 
 runAI :: Entity -> Action -> Game [Event]

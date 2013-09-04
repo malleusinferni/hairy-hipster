@@ -35,10 +35,16 @@ triggerCode (Slashed _) = 3
 triggerCode (Burned _) = 4
 triggerCode (Seen) = 5
 
-respondTo :: Entity -> Responder
-respondTo Entity{ ai = ai } t = IM.findWithDefault ifMissing t' methods t
-  where AI{..} = ai
-        t' = triggerCode t
+aiByEID :: EID -> Game AI
+aiByEID eid = do
+  Entity{..} <- getByEID eid
+  return ai
+
+respondTo :: EID -> Responder
+respondTo eid t = do
+  AI{..} <- aiByEID eid
+  let t' = triggerCode t
+  IM.findWithDefault ifMissing t' methods t
 
 makeMethodMap :: [(Int, Responder)] -> TrigMap
 makeMethodMap = IM.fromList
