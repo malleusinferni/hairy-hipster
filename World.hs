@@ -49,7 +49,7 @@ announce d = say (sentence d ".")
 streamIDs :: Int -> IO (IO Int)
 streamIDs n = do
   ref <- newEmptyMVar
-  forkIO (mapM_ (putMVar ref) [n ..])
+  _ <- forkIO (mapM_ (putMVar ref) [n ..])
   return (takeMVar ref)
 
 nextEID :: Game EID
@@ -130,8 +130,8 @@ describeExitsFrom self = do
 
 traverseExit :: Entity -> Corridor -> Game Room
 traverseExit self door = do
-  (rooms, exits) <- asks locations
-  let (here, there) = whereTo (location self) door
+  (rooms, _) <- asks locations
+  let (_, there) = whereTo (location self) door
       Just r = M.lookup there rooms
   updateEntity (self { location = there })
   return r

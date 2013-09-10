@@ -36,7 +36,7 @@ runAI self (Go dir) = do
       announce [subj self, "can't go", describe dir]
       return []
     Just door -> do
-      dest <- self `traverseExit` door
+      _ <- self `traverseExit` door
       self <- getByEID (eid self)
       comments <- viewRoom self
       return $ (Walk :& [Patient self, WhichWay dir, Via door]) : comments
@@ -111,7 +111,6 @@ viewRoom self = do
   let loc = location self
   Just room <- roomByLocation loc
   let view = Walk :& [Patient self, Into room]
-      inDest e = location e == loc
   others <- getEntitiesWhere (isOpponentOf self)
   enemies <- mapM (viewEntity self) others
   doors <- describeExitsFrom self

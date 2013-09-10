@@ -27,7 +27,7 @@ instance Effable Event where
     | otherwise = unwords [subj p, cverb p "stagger", "under the blow"]
   describe (See :& Agent _ : Patient p : _) =
     unwords [describe p, cverb p "be", "lurking in the darkness"]
-  describe (See :& Agent _ : Via d : OutOf h : WhichWay c : _) =
+  describe (See :& Agent _ : Via d : OutOf _ : WhichWay c : _) =
     unwords [describe d, "leads", describe c]
   describe (Die :& Agent a : Patient p : _) =
     unwords [subj a, cverb a "defeat", obj p]
@@ -45,7 +45,7 @@ instance Effable Event where
     | u `elem` [Up, Down] =
       unwords [subj p, cverb p "climb", describe u, describe d]
     | otherwise = unwords [subj p, cverb p "go", "through", describe d]
-  describe (Walk :& Patient p : Into d : _) = description d
+  describe (Walk :& Patient _ : Into d : _) = description d
   describe (v :& Agent a : Patient p : _) =
     unwords [subj a, aeverb a v, obj p]
   describe (v :& Agent a : _ ) = unwords [subj a, aeverb a v]

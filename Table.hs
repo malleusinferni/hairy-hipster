@@ -65,7 +65,7 @@ infix 0 ???
 tsvTable :: Parser Table
 tsvTable = do
   header <- tsvRow
-  newline
+  _ <- newline
   tsvRecord header `sepEndBy` newline
 
 tsvRow :: Parser [Value]
