@@ -2,6 +2,7 @@
 module Entity.Species where
 
 import Table
+import Describe
 
 data Species = Species
   { speciesName :: String
@@ -15,3 +16,9 @@ instance Tabular Species where
     minHeight <- readField "Min height"
     maxHeight <- readField "Max height"
     return Species{..}
+
+instance Nominable Species where
+  name s = Noun (describe s) (describe s ++ "'s") (describe s) False
+
+instance Effable Species where
+  describe = speciesName

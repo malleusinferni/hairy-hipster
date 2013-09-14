@@ -10,12 +10,6 @@ import GameTypes
 import ActionTypes
 import Describe
 
-instance Nominable Species where
-  name s = Noun (describe s) (describe s ++ "'s") (describe s) False
-
-instance Effable Species where
-  describe = speciesName
-
 instance Nominable Entity where
   name a | isPlayer a = noun You
   name (Entity { species = s })= noun (The s)
