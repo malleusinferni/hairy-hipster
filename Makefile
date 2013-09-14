@@ -8,5 +8,5 @@ run: build
 	./dungeon
 
 clean:
-	find . -type f -regex '.*\.\(hi\|o\)' -delete
+	find . -type f \( -name '*.hi' -or -name '*.o' \) -delete
 	rm -f dungeon
