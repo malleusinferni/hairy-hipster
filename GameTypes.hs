@@ -1,12 +1,35 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE TypeSynonymInstances #-}
-module GameTypes where
+module GameTypes
+  ( EID
+  , Species(..)
+  , Material(..)
+  , Body(..)
+  , Entity(..)
+  , AI(..)
+  , Event(..)
+  , EventReport(..)
+  , EvArg(..)
+  , World(..)
+  , Room(..)
+  , Corridor(..)
+  , Game
+  , LevelMap
+  , Responder
+  , Selector
+  , TrigMap
+  ) where
 
 import Data.IORef
 import qualified Data.Map as M
 import qualified Data.IntMap as IM
 import Control.Monad.Reader
+
+import Entity.Core
+import Entity.Species
+import Entity.Material
+import Entity.Body
 
 import Coords
 import Table
@@ -24,27 +47,11 @@ data Entity = Entity
   , power :: Int
   } deriving (Show)
 
--- Entities are indexed by their unique IDs
-type EID = Int
-
 instance Eq Entity where
   Entity { eid = lhs } == Entity { eid = rhs } = lhs == rhs
 
 instance Ord Entity where
   compare (Entity { eid = lhs }) (Entity { eid = rhs }) = compare lhs rhs
-
-data Species = Species
-  { speciesName :: String
-  , minHeight :: Int
-  , maxHeight :: Int
-  } deriving (Eq, Show, Ord)
-
-instance Tabular Species where
-  readRecord = do
-    speciesName <- copyField "Name"
-    minHeight <- readField "Min height"
-    maxHeight <- readField "Max height"
-    return Species{..}
 
 data AI = AI
   { methods :: TrigMap
@@ -106,22 +113,3 @@ data Corridor = Corridor
   { endpoints :: (Coords, Coords)
   , doorName :: String
   } deriving (Eq, Show)
-
-data Body = Body
-  { material :: Material
-  , size :: Int
-  } deriving (Eq, Show)
-
-data Material = Flesh
-              | Steel
-              | Carapace
-              | Air
-              | Grass
-              | Stone
-              | Masonry
-              | Dirt
-              | Sand
-              | Blood
-              | Sandstone
-              | Wood
-  deriving (Eq, Show, Ord, Enum)
