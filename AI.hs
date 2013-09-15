@@ -8,12 +8,14 @@ import Control.Applicative ((<*>))
 
 import GameTypes
 import World
-import Entity
 import UI
 import Rand
 import Describe
 import Action()
 import Coords
+
+import Entity
+import Entity.Core
 
 import AI.Trigger
 import AI.Action

@@ -32,7 +32,7 @@ import Control.Concurrent.MVar
 
 import GameTypes
 import AI.Event
-import Entity ()
+import Entity.Core
 import Rand
 import Describe
 import Coords

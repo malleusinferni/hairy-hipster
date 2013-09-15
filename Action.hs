@@ -3,9 +3,9 @@ module Action where
 
 import GameTypes
 import Describe
-import Entity ()
 import Coords
 
+import Entity.Core
 import AI.Event
 
 instance Effable Corridor where

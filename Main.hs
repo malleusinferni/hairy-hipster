@@ -10,6 +10,7 @@ import UI
 import Rand
 import Describe
 
+import Entity.Core
 import Entity.Material
 import Entity.Body
 import Entity.Species

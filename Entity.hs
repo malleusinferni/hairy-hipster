@@ -7,6 +7,7 @@ import Control.Monad.Reader
 
 import GameTypes
 
+import Entity.Core
 import Entity.Body
 import Entity.Species
 
