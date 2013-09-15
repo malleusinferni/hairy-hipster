@@ -17,6 +17,7 @@ module GameTypes
 
 import Data.IORef
 import qualified Data.Map as M
+import qualified Data.IntMap.Strict as IM
 import Control.Monad.Reader
 
 import Entity.Core
@@ -35,7 +36,6 @@ import Describe
 -- An object in the game, usually with a physical body
 data Entity = Entity
   { eid :: EID
-  , ai :: AI
   , hp :: Int
   , body :: Body
   , isPlayer :: Bool
@@ -89,6 +89,7 @@ infixr 2 :&
 data World = World
   { getEID :: IO EID
   , entities :: IORef [Entity]
+  , bindings :: IORef (IM.IntMap AI)
   , speciesData :: [Species]
   , locations :: LevelMap
   }

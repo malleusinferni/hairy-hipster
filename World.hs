@@ -4,6 +4,8 @@ module World
   , ($=)
   , storeEntity
   , updateEntity
+  , putAI
+  , getAI
   , makeWorld
   , nextEID
   , anyRoom
@@ -22,6 +24,7 @@ module World
 
 import Data.List (find, delete)
 import qualified Data.Map.Lazy as M
+import qualified Data.IntMap.Strict as IM
 import Data.IORef
 import Control.Monad.Reader
 import Control.Concurrent (forkIO)
@@ -59,6 +62,7 @@ makeWorld :: IO World
 makeWorld = do
   getEID <- streamIDs 0
   entities <- newIORef []
+  bindings <- newIORef IM.empty
   speciesData <- readTSVFile "species.tsv"
   locations <- makeMap
   return World{..}
@@ -87,6 +91,18 @@ sel $= value = do
 storeEntity, updateEntity :: Entity -> Game ()
 storeEntity e = entities %= (e:)
 updateEntity e = entities %= ((e :) . delete e)
+
+putAI :: EID -> AI -> Game ()
+putAI eid ai = bindings %= IM.insert eid ai
+
+getAI :: EID -> Game AI
+getAI eid = do
+  ref <- asks bindings
+  ais <- liftIO $ readIORef ref
+  let err = error (unlines [e1, e2])
+      e1 = "Tried to look up AI for missing EID: " ++ show eid
+      e2 = "Map contents were: " ++ show ais
+  maybe err return $ IM.lookup eid ais
 
 anyRoom :: Game Room
 anyRoom = do

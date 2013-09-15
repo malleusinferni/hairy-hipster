@@ -10,13 +10,6 @@ import GameTypes
 import Entity.Body
 import Entity.Species
 
-import AI.Binding
-
-aiByEID :: EID -> Game AI
-aiByEID eid = do
-  Entity{..} <- getByEID eid
-  return ai
-
 hpByEID :: EID -> Game Int
 hpByEID eid = do
   Entity{..} <- getByEID eid
@@ -26,11 +19,6 @@ bodyByEID :: EID -> Game Body
 bodyByEID eid = do
   Entity{..} <- getByEID eid
   return body
-
-respondTo :: EID -> Responder
-respondTo eid t = do
-  ai <- aiByEID eid
-  ai `getMethod` t
 
 -- Size in inches
 sizeRangeFor :: Species -> (Int, Int)

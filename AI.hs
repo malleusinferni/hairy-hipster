@@ -27,6 +27,11 @@ tick eid = do
     action <- eid `respondTo` Tick
     self `runAI` action
 
+respondTo :: EID -> Responder
+respondTo eid t = do
+  ai <- getAI eid
+  ai `getMethod` t
+
 runAI :: Entity -> Action -> Game [Event]
 runAI self Attack = do
   others <- anyOpponent self
@@ -131,7 +136,9 @@ objectMM = inertMM
 inertMM _ _ = return DoNothing
 
 makeCorpse :: Entity -> Game Entity
-makeCorpse e@(Entity{..}) = return $ e { ai = inertAI eid }
+makeCorpse e@(Entity{..}) = do
+  eid `putAI` inertAI eid
+  return e
 
 attackPower :: Entity -> Game Int
 attackPower = fuzz . power

@@ -59,12 +59,12 @@ makeMob species isPlayer = do
   eid <- nextEID
   body <- makeBody species
   aRoom <- onGrid `fmap` anyRoom
-  let ai = makeAI isPlayer eid
-      hp = maxHPFor body
+  let hp = maxHPFor body
       power = strengthFor body
       location
         | isPlayer = zyx 0 0 0
         | otherwise = aRoom
+  eid `putAI` makeAI isPlayer eid
   storeEntity Entity{..}
   return eid
 
