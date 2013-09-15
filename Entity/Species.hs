@@ -22,3 +22,7 @@ instance Nominable Species where
 
 instance Effable Species where
   describe = speciesName
+
+-- Size in inches
+sizeRangeFor :: Species -> (Int, Int)
+sizeRangeFor species = (minHeight species, maxHeight species)

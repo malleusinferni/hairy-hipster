@@ -3,6 +3,7 @@ module Entity.Core where
 import Describe
 
 import Support.Coords
+import Support.Measure
 
 import Entity.Body
 import Entity.Species
@@ -36,5 +37,15 @@ instance Effable Entity where
     where subj = An $ Adj howtall whatspecies
           howtall = unwords [numWord inFeet, "foot tall"]
           whatspecies = species e
-          inFeet = round (toRational s / 12)
-          s = size (body e)
+          inFeet = size (body e) `rdiv` 12
+
+isNearDeath, isDead, isAlive :: Entity -> Bool
+isNearDeath e = hp e <= maxHPFor (body e) `rdiv` 5
+isAlive = (> 0) . hp
+isDead = not . isAlive
+
+isOpponentOf :: Entity -> Entity -> Bool
+isOpponentOf self e =
+  isAlive e &&
+    eid e /= eid self &&
+      location e == location self

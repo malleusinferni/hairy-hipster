@@ -9,7 +9,6 @@ import GameTypes
 
 import Entity.Core
 import Entity.Body
-import Entity.Species
 
 hpByEID :: EID -> Game Int
 hpByEID eid = do
@@ -20,16 +19,6 @@ bodyByEID :: EID -> Game Body
 bodyByEID eid = do
   Entity{..} <- getByEID eid
   return body
-
--- Size in inches
-sizeRangeFor :: Species -> (Int, Int)
-sizeRangeFor species = (minHeight species, maxHeight species)
-
-inFeet :: Entity -> Int
-inFeet e = size (body e) `rdiv` 12
-
-rdiv :: Int -> Int -> Int
-rdiv q d = round $ toRational q / toRational d
 
 getEntities :: Game [Entity]
 getEntities = asks entities >>= liftIO . readIORef
@@ -45,18 +34,3 @@ getByEID :: EID -> Game Entity
 getByEID anid = do
   Just self <- find ((== anid) . eid) `fmap` getEntities
   return self
-
-maxHPFor, strengthFor :: Body -> Int
-maxHPFor body = size body `rdiv` 3
-strengthFor body = size body `rdiv` 5
-
-isNearDeath, isDead, isAlive :: Entity -> Bool
-isNearDeath e = hp e <= maxHPFor (body e) `rdiv` 5
-isAlive = (> 0) . hp
-isDead = not . isAlive
-
-isOpponentOf :: Entity -> Entity -> Bool
-isOpponentOf self e =
-  isAlive e &&
-    eid e /= eid self &&
-      location e == location self
