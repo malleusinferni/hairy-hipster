@@ -1,15 +1,16 @@
 {-# LANGUAGE RecordWildCards #-}
 import Control.Monad (replicateM_, when, liftM2)
 
-import World.Core
-import World
-import Entity
 import AI
 import UI
 import Describe
 
 import Support.Coords
 import Support.Rand
+
+import World
+import World.Core
+import World.Entity
 
 import Entity.Core
 import Entity.Material

@@ -6,16 +6,17 @@ module AI
 
 import Control.Applicative ((<*>))
 
-import World.Core
-import World
 import UI
 import Describe
 
 import Support.Coords
 import Support.Rand
 
-import Entity
 import Entity.Core
+
+import World
+import World.Core
+import World.Entity
 
 import AI.Trigger
 import AI.Action

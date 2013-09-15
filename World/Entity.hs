@@ -1,5 +1,5 @@
 {-# LANGUAGE RecordWildCards #-}
-module Entity where
+module World.Entity where
 
 import Data.List (find)
 import Data.IORef
