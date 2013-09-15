@@ -27,7 +27,7 @@ import AI.Action
 import AI.Event
 import AI.Binding
 
-import Coords
+import Support.Coords
 
 type AI = Bind Trigger (Game Action)
 

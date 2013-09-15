@@ -3,7 +3,8 @@ module Action where
 
 import GameTypes
 import Describe
-import Coords
+
+import Support.Coords
 
 import Entity.Core
 import AI.Event

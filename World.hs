@@ -33,9 +33,9 @@ import Control.Concurrent.MVar
 import GameTypes
 import AI.Event
 import Entity.Core
-import Rand
+import Support.Rand
+import Support.Coords
 import Describe
-import Coords
 import Table
 
 import AlphaDungeon

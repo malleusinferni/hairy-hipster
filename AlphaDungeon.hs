@@ -1,6 +1,6 @@
 module AlphaDungeon where
 
-import Coords
+import Support.Coords
 import GameTypes
 import Entity.Material
 

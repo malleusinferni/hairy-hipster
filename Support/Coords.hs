@@ -1,4 +1,4 @@
-module Coords where
+module Support.Coords where
 
 import Data.Vec.Packed
 

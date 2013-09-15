@@ -1,4 +1,4 @@
-module Rand where
+module Support.Rand where
 
 import System.Random
 import Control.Monad.IO.Class

@@ -1,6 +1,6 @@
 module AI.Action where
 
-import Coords
+import Support.Coords
 
 -- Commands which an actor AI may issue in response to Tick
 data Action = Attack -- Damage another entity

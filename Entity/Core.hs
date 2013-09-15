@@ -1,7 +1,8 @@
 module Entity.Core where
 
-import Coords
 import Describe
+
+import Support.Coords
 
 import Entity.Body
 import Entity.Species

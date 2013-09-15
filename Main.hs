@@ -1,14 +1,15 @@
 {-# LANGUAGE RecordWildCards #-}
 import Control.Monad (replicateM_, when, liftM2)
 
-import Coords
 import GameTypes
 import World
 import Entity
 import AI
 import UI
-import Rand
 import Describe
+
+import Support.Coords
+import Support.Rand
 
 import Entity.Core
 import Entity.Material

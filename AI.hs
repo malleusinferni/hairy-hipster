@@ -9,10 +9,11 @@ import Control.Applicative ((<*>))
 import GameTypes
 import World
 import UI
-import Rand
 import Describe
 import Action()
-import Coords
+
+import Support.Coords
+import Support.Rand
 
 import Entity
 import Entity.Core
