@@ -2,6 +2,8 @@ module World.Location where
 
 import qualified Data.Map as M
 
+import Describe
+
 import Support.Coords
 
 import Entity.Material
@@ -20,3 +22,6 @@ data Corridor = Corridor
   { endpoints :: (Coords, Coords)
   , doorName :: String
   } deriving (Eq, Show)
+
+instance Effable Corridor where
+  describe c = "the " ++ doorName c

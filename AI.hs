@@ -10,7 +10,6 @@ import GameTypes
 import World
 import UI
 import Describe
-import Action()
 
 import Support.Coords
 import Support.Rand
@@ -22,6 +21,8 @@ import AI.Trigger
 import AI.Action
 import AI.Event
 import AI.Binding
+
+import Event.Action
 
 tick :: EID -> Game EventReport
 tick eid = do

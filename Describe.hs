@@ -1,5 +1,6 @@
 {-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE Rank2Types #-}
+{-# LANGUAGE FlexibleInstances #-}
 
 module Describe where
 
@@ -132,3 +133,6 @@ instance Nominable Dependent where
 
 class Effable a where
   describe :: a -> String
+
+instance Effable [String] where
+  describe = unwords

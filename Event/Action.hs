@@ -1,23 +1,40 @@
-{-# LANGUAGE FlexibleInstances #-}
-module Action where
+module Event.Action where
 
-import GameTypes
 import Describe
 
 import Support.Coords
 
-import Entity.Core
+import AI.Trigger
 import AI.Event
+import AI.Action
+
+import Entity.Core
+
 import World.Location
 
-instance Effable Corridor where
-  describe c = "the " ++ doorName c
+-- Descriptive account of one result of an action
+data Event = Outcome :& [EvArg]
+
+-- Semantic arguments to an Outcome
+data EvArg = Agent Entity
+           | Patient Entity
+           | Using Entity
+           | ByAmount Int
+           | Into Room
+           | OutOf Coords
+           | WhichWay Cardinal
+           | Via Corridor
+           | Tried Action
+  deriving (Eq, Show)
+
+-- Bind cause to effect
+data EventReport = Trigger :=> [Event]
+
+infixr 1 :=>
+infixr 2 :&
 
 instance Effable Cardinal where
   describe = downcase . show
-
-instance Effable [String] where
-  describe = unwords
 
 -- TODO Rewrite all of this to use randomness, vocabulary, etc.
 instance Effable Event where

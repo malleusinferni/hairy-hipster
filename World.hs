@@ -33,6 +33,7 @@ import Control.Concurrent.MVar
 import GameTypes
 import World.Location
 import AI.Event
+import Event.Action
 import Entity.Core
 import Support.Rand
 import Support.Coords
