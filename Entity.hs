@@ -30,7 +30,7 @@ bodyByEID eid = do
 respondTo :: EID -> Responder
 respondTo eid t = do
   ai <- aiByEID eid
-  getMethod ai t t
+  ai `getMethod` t
 
 -- Size in inches
 sizeRangeFor :: Species -> (Int, Int)

@@ -64,7 +64,7 @@ instance Effable Entity where
           inFeet = round (toRational s / 12)
           s = size (body e)
 
-type AI = Bind Trigger Responder
+type AI = Bind Trigger (Game Action)
 
 -- Descriptive account of one result of an action
 data Event = Outcome :& [EvArg]
