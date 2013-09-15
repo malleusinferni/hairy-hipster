@@ -1,4 +1,3 @@
-{-# LANGUAGE RecordWildCards #-}
 module Table
   ( Tabular
   , readRecord
