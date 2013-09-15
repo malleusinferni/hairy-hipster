@@ -32,7 +32,6 @@ import Entity.Material
 import Entity.Body
 
 import Coords
-import Table
 import ActionTypes
 import Describe
 
