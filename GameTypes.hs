@@ -57,7 +57,7 @@ instance Nominable Entity where
 instance Effable Entity where
   describe e = nominative $ noun subj
     where subj = An $ Adj howtall whatspecies
-          howtall = unwords [numWord $ inFeet, "foot tall"]
+          howtall = unwords [numWord inFeet, "foot tall"]
           whatspecies = species e
           inFeet = round (toRational s / 12)
           s = size (body e)

@@ -71,7 +71,7 @@ makeMap = return (roomMap, corMap)
         roomMap = M.fromList $ map byCoords rooms
         corMap = M.fromList $ map (byExit . onGrid) rooms
 
-findExits loc cors = filter test cors
+findExits loc = filter test
   where test (Corridor { endpoints = (s, e) }) = s == loc || e == loc
 
 (%=) :: Selector a -> (a -> a) -> Game ()

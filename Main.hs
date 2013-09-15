@@ -25,9 +25,9 @@ playTurn = do
   survivors <- getEntitiesWhere isAlive
   localEntities <- getEntitiesNear player
   if aboveGround (location player)
-     then if length survivors > 1
-             then say "You escape with your life..."
-             else say "You emerge victorious."
+     then say $ if length survivors > 1
+                   then "You escape with your life..."
+                   else "You emerge victorious."
      else doTick (map eid localEntities) playTurn
 
 doTick :: [EID] -> Game () -> Game ()
