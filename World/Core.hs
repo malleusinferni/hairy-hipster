@@ -1,7 +1,6 @@
-{-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
-module GameTypes
-  ( AI
-  , World(..)
+module World.Core
+  ( World(..)
+  , AI
   , Game
   , Responder
   , Selector
@@ -20,8 +19,6 @@ import AI.Binding
 
 import World.Location
 
-type AI = Bind Trigger (Game Action)
-
 -- Master game state record
 data World = World
   { getEID :: IO EID
@@ -34,5 +31,7 @@ data World = World
 type Game a = ReaderT World IO a
 
 type Selector a = World -> IORef a
+
+type AI = Bind Trigger (Game Action)
 
 type Responder = Trigger -> Game Action

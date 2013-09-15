@@ -5,7 +5,7 @@ import Data.List (find)
 import Data.IORef
 import Control.Monad.Reader
 
-import GameTypes
+import World.Core
 
 import Entity.Core
 import Entity.Body

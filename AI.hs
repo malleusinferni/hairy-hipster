@@ -6,7 +6,7 @@ module AI
 
 import Control.Applicative ((<*>))
 
-import GameTypes
+import World.Core
 import World
 import UI
 import Describe

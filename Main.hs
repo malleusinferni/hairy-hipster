@@ -1,7 +1,7 @@
 {-# LANGUAGE RecordWildCards #-}
 import Control.Monad (replicateM_, when, liftM2)
 
-import GameTypes
+import World.Core
 import World
 import Entity
 import AI

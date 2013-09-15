@@ -30,7 +30,7 @@ import Control.Monad.Reader
 import Control.Concurrent (forkIO)
 import Control.Concurrent.MVar
 
-import GameTypes
+import World.Core
 import World.Location
 import AI.Event
 import Event.Action
