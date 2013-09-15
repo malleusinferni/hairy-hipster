@@ -7,7 +7,8 @@ module GameTypes
   , Material(..)
   , Body(..)
   , Entity(..)
-  , AI(..)
+  , Bind(..)
+  , AI
   , Event(..)
   , EventReport(..)
   , EvArg(..)
@@ -68,11 +69,13 @@ instance Effable Entity where
           inFeet = round (toRational s / 12)
           s = size (body e)
 
-data AI = AI
-  { methods :: TrigMap
-  , ifMissing :: Responder
-  , super :: Maybe AI
+data Bind k v = Bind
+  { methods :: HM.HashMap k v
+  , ifMissing :: v
+  , super :: Maybe (Bind k v)
   } deriving (Show)
+
+type AI = Bind Trigger Responder
 
 -- Descriptive account of one result of an action
 data Event = Outcome :& [EvArg]

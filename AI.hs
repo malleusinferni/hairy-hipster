@@ -86,7 +86,7 @@ makeAI True entity = playerAI entity
 makeAI False entity = actorAI entity
 
 inherit :: (EID -> Responder) -> Maybe (EID -> AI) -> EID -> AI
-inherit resp super' entity = AI{..}
+inherit resp super' entity = Bind{..}
   where methods = makeMethodMap []
         super = super' <*> Just entity
         ifMissing = resp entity

@@ -26,7 +26,7 @@ bodyByEID eid = do
 
 respondTo :: EID -> Responder
 respondTo eid t = do
-  AI{..} <- aiByEID eid
+  Bind{..} <- aiByEID eid
   HM.lookupDefault ifMissing t methods t
 
 makeMethodMap :: [(Trigger, Responder)] -> TrigMap
