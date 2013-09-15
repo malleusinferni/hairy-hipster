@@ -23,7 +23,7 @@ module GameTypes
 
 import Data.IORef
 import qualified Data.Map as M
-import qualified Data.IntMap as IM
+import qualified Data.HashMap.Strict as HM
 import Control.Monad.Reader
 
 import Entity.Core
@@ -114,7 +114,7 @@ type Responder = Trigger -> Game Action
 instance Show Responder where
   show _ = "<responder function>"
 
-type TrigMap = IM.IntMap Responder
+type TrigMap = HM.HashMap Trigger Responder
 
 data Room = Room
   { onGrid :: Coords

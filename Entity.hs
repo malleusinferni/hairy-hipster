@@ -3,20 +3,11 @@ module Entity where
 
 import Data.List (find)
 import Data.IORef
-import qualified Data.IntMap as IM
+import qualified Data.HashMap.Strict as HM
 import Control.Monad.Reader
 
 import GameTypes
 import AI.Trigger
-
--- TODO Find a less obnoxious way to accomplish this
-triggerCode :: Trigger -> Int
-triggerCode (Tick) = 0
-triggerCode (Impacted _) = 1
-triggerCode (Pierced _) = 2
-triggerCode (Slashed _) = 3
-triggerCode (Burned _) = 4
-triggerCode (Seen) = 5
 
 aiByEID :: EID -> Game AI
 aiByEID eid = do
@@ -36,11 +27,10 @@ bodyByEID eid = do
 respondTo :: EID -> Responder
 respondTo eid t = do
   AI{..} <- aiByEID eid
-  let t' = triggerCode t
-  IM.findWithDefault ifMissing t' methods t
+  HM.lookupDefault ifMissing t methods t
 
-makeMethodMap :: [(Int, Responder)] -> TrigMap
-makeMethodMap = IM.fromList
+makeMethodMap :: [(Trigger, Responder)] -> TrigMap
+makeMethodMap = HM.fromList
 
 -- Size in inches
 sizeRangeFor :: Species -> (Int, Int)
