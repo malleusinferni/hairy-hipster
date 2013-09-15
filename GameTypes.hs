@@ -3,9 +3,6 @@
 {-# LANGUAGE TypeSynonymInstances #-}
 module GameTypes
   ( EID
-  , Species(..)
-  , Material(..)
-  , Body(..)
   , Entity(..)
   , AI
   , Event(..)

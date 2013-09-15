@@ -10,6 +10,10 @@ import UI
 import Rand
 import Describe
 
+import Entity.Material
+import Entity.Body
+import Entity.Species
+
 playerSurvives :: Game Bool
 playerSurvives = do
   players <- getEntitiesWhere (liftM2 (&&) isAlive isPlayer)

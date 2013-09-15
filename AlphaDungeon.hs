@@ -2,6 +2,7 @@ module AlphaDungeon where
 
 import Coords
 import GameTypes
+import Entity.Material
 
 alphaDungeon :: ([Room], [Corridor])
 alphaDungeon = (rooms, corridors)

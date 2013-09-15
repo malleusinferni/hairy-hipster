@@ -6,6 +6,10 @@ import Data.IORef
 import Control.Monad.Reader
 
 import GameTypes
+
+import Entity.Body
+import Entity.Species
+
 import AI.Binding
 
 aiByEID :: EID -> Game AI
