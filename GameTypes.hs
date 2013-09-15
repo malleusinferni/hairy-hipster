@@ -7,7 +7,6 @@ module GameTypes
   , Material(..)
   , Body(..)
   , Entity(..)
-  , Bind(..)
   , AI
   , Event(..)
   , EventReport(..)
@@ -19,12 +18,10 @@ module GameTypes
   , LevelMap
   , Responder
   , Selector
-  , TrigMap
   ) where
 
 import Data.IORef
 import qualified Data.Map as M
-import qualified Data.HashMap.Strict as HM
 import Control.Monad.Reader
 
 import Entity.Core
@@ -35,6 +32,7 @@ import Entity.Body
 import AI.Trigger
 import AI.Action
 import AI.Event
+import AI.Binding
 
 import Coords
 import Describe
@@ -68,12 +66,6 @@ instance Effable Entity where
           whatspecies = species e
           inFeet = round (toRational s / 12)
           s = size (body e)
-
-data Bind k v = Bind
-  { methods :: HM.HashMap k v
-  , ifMissing :: v
-  , super :: Maybe (Bind k v)
-  } deriving (Show)
 
 type AI = Bind Trigger Responder
 
@@ -113,11 +105,6 @@ type LevelMap = (M.Map Coords Room, M.Map Coords [Corridor])
 type Selector a = World -> IORef a
 
 type Responder = Trigger -> Game Action
-
-instance Show Responder where
-  show _ = "<responder function>"
-
-type TrigMap = HM.HashMap Trigger Responder
 
 data Room = Room
   { onGrid :: Coords

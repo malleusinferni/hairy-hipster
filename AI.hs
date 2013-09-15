@@ -18,6 +18,7 @@ import Coords
 import AI.Trigger
 import AI.Action
 import AI.Event
+import AI.Binding
 
 tick :: EID -> Game EventReport
 tick eid = do

@@ -3,11 +3,10 @@ module Entity where
 
 import Data.List (find)
 import Data.IORef
-import qualified Data.HashMap.Strict as HM
 import Control.Monad.Reader
 
 import GameTypes
-import AI.Trigger
+import AI.Binding
 
 aiByEID :: EID -> Game AI
 aiByEID eid = do
@@ -26,11 +25,8 @@ bodyByEID eid = do
 
 respondTo :: EID -> Responder
 respondTo eid t = do
-  Bind{..} <- aiByEID eid
-  HM.lookupDefault ifMissing t methods t
-
-makeMethodMap :: [(Trigger, Responder)] -> TrigMap
-makeMethodMap = HM.fromList
+  ai <- aiByEID eid
+  getMethod ai t t
 
 -- Size in inches
 sizeRangeFor :: Species -> (Int, Int)
