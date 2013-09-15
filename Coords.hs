@@ -33,6 +33,7 @@ quadrant (Vec3I x y _)
 quadrant (Vec3I _ _ z)
   | z > 0 = Up
   | z < 0 = Down
+quadrant _ = error "Cardinal can't represent lack of movement"
 
 quantize :: Coords -> Coords
 quantize (Vec3I x y z)
