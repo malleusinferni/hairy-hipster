@@ -31,6 +31,7 @@ import Control.Concurrent (forkIO)
 import Control.Concurrent.MVar
 
 import GameTypes
+import World.Location
 import AI.Event
 import Entity.Core
 import Support.Rand

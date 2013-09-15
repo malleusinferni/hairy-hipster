@@ -8,6 +8,7 @@ import Support.Coords
 
 import Entity.Core
 import AI.Event
+import World.Location
 
 instance Effable Corridor where
   describe c = "the " ++ doorName c

@@ -5,27 +5,24 @@ module GameTypes
   , EventReport(..)
   , EvArg(..)
   , World(..)
-  , Room(..)
-  , Corridor(..)
   , Game
-  , LevelMap
   , Responder
   , Selector
   ) where
 
 import Data.IORef
-import qualified Data.Map as M
 import qualified Data.IntMap.Strict as IM
 import Control.Monad.Reader
 
 import Entity.Core
 import Entity.Species
-import Entity.Material
 
 import AI.Trigger
 import AI.Action
 import AI.Event
 import AI.Binding
+
+import World.Location
 
 import Support.Coords
 
@@ -63,21 +60,6 @@ data World = World
 
 type Game a = ReaderT World IO a
 
-type LevelMap = (M.Map Coords Room, M.Map Coords [Corridor])
-
 type Selector a = World -> IORef a
 
 type Responder = Trigger -> Game Action
-
-data Room = Room
-  { onGrid :: Coords
-  , roomName :: String
-  , description :: String
-  , walls :: Material
-  , floors :: Material
-  } deriving (Eq, Show)
-
-data Corridor = Corridor
-  { endpoints :: (Coords, Coords)
-  , doorName :: String
-  } deriving (Eq, Show)

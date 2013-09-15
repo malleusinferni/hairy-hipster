@@ -16,6 +16,8 @@ import Entity.Material
 import Entity.Body
 import Entity.Species
 
+import World.Location
+
 playerSurvives :: Game Bool
 playerSurvives = do
   players <- getEntitiesWhere (liftM2 (&&) isAlive isPlayer)
