@@ -2,10 +2,11 @@
 module Action where
 
 import GameTypes
-import ActionTypes
 import Describe
 import Entity ()
 import Coords
+
+import AI.Event
 
 instance Effable Corridor where
   describe c = "the " ++ doorName c

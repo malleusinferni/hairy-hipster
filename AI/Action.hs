@@ -1,4 +1,4 @@
-module ActionTypes where
+module AI.Action where
 
 import Coords
 
@@ -13,27 +13,4 @@ data Action = Attack -- Damage another entity
             | Rest -- Remain still and recuperate
             | DoNothing -- Really do nothing
             | Look -- NOTE: Looking around doesn't consume a turn!
-  deriving (Eq, Show)
-
--- Prompts to which an AI may (or may not) respond
-data Trigger = Tick
-             | Impacted Int
-             | Pierced Int
-             | Slashed Int
-             | Burned Int
-             | Seen
-  deriving (Eq, Show)
-
--- Effect of the action on the patient (IMPORTANT!)
-data Outcome = NothingHappens
-             | TakeDamage
-             | NearDeath
-             | Heal
-             | Stand
-             | Walk
-             | See
-             | Die
-             | Win
-             | Lose
-             | Fail
   deriving (Eq, Show)

@@ -7,7 +7,7 @@ import qualified Data.IntMap as IM
 import Control.Monad.Reader
 
 import GameTypes
-import ActionTypes
+import AI.Trigger
 
 -- TODO Find a less obnoxious way to accomplish this
 triggerCode :: Trigger -> Int

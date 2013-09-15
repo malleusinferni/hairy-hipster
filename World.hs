@@ -28,7 +28,7 @@ import Control.Concurrent (forkIO)
 import Control.Concurrent.MVar
 
 import GameTypes
-import ActionTypes
+import AI.Event
 import Entity ()
 import Rand
 import Describe

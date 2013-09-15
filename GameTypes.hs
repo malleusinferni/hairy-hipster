@@ -31,8 +31,11 @@ import Entity.Species
 import Entity.Material
 import Entity.Body
 
+import AI.Trigger
+import AI.Action
+import AI.Event
+
 import Coords
-import ActionTypes
 import Describe
 
 -- An object in the game, usually with a physical body

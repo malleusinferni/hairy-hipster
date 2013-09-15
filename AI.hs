@@ -7,7 +7,6 @@ module AI
 import Control.Applicative ((<*>))
 
 import GameTypes
-import ActionTypes
 import World
 import Entity
 import UI
@@ -15,6 +14,10 @@ import Rand
 import Describe
 import Action()
 import Coords
+
+import AI.Trigger
+import AI.Action
+import AI.Event
 
 tick :: EID -> Game EventReport
 tick eid = do
