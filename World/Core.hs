@@ -4,6 +4,8 @@ module World.Core
   , Game
   , Responder
   , Selector
+  , ($=)
+  , (%=)
   ) where
 
 import Data.IORef
@@ -35,3 +37,13 @@ type Selector a = World -> IORef a
 type AI = Bind Trigger (Game Action)
 
 type Responder = Trigger -> Game Action
+
+(%=) :: Selector a -> (a -> a) -> Game ()
+sel %= action = do
+  ref <- asks sel
+  liftIO $ modifyIORef' ref action
+
+($=) :: Selector a -> a -> Game ()
+sel $= value = do
+  ref <- asks sel
+  liftIO $ writeIORef ref value

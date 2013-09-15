@@ -1,12 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 module World
-  ( (%=)
-  , ($=)
-  , storeEntity
-  , updateEntity
-  , putAI
-  , getAI
-  , makeWorld
+  ( makeWorld
   , nextEID
   , anyRoom
   , roomByLocation
@@ -22,7 +16,7 @@ module World
   , runReaderT
   ) where
 
-import Data.List (find, delete)
+import Data.List (find)
 import qualified Data.Map.Lazy as M
 import qualified Data.IntMap.Strict as IM
 import Data.IORef
@@ -31,7 +25,9 @@ import Control.Concurrent (forkIO)
 import Control.Concurrent.MVar
 
 import World.Core
+import World.Entity
 import World.Location
+
 import AI.Event
 import Event.Action
 import Entity.Core
@@ -79,32 +75,6 @@ makeMap = return (roomMap, corMap)
 
 findExits loc = filter test
   where test (Corridor { endpoints = (s, e) }) = s == loc || e == loc
-
-(%=) :: Selector a -> (a -> a) -> Game ()
-sel %= action = do
-  ref <- asks sel
-  liftIO $ modifyIORef' ref action
-
-($=) :: Selector a -> a -> Game ()
-sel $= value = do
-  ref <- asks sel
-  liftIO $ writeIORef ref value
-
-storeEntity, updateEntity :: Entity -> Game ()
-storeEntity e = entities %= (e:)
-updateEntity e = entities %= ((e :) . delete e)
-
-putAI :: EID -> AI -> Game ()
-putAI eid ai = bindings %= IM.insert eid ai
-
-getAI :: EID -> Game AI
-getAI eid = do
-  ref <- asks bindings
-  ais <- liftIO $ readIORef ref
-  let err = error (unlines [e1, e2])
-      e1 = "Tried to look up AI for missing EID: " ++ show eid
-      e2 = "Map contents were: " ++ show ais
-  maybe err return $ IM.lookup eid ais
 
 anyRoom :: Game Room
 anyRoom = do

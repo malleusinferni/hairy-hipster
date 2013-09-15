@@ -73,12 +73,6 @@ makeMob species isPlayer = do
   storeEntity Entity{..}
   return eid
 
-randomSpecies :: Game Species
-randomSpecies = do
-  species <- asks speciesData
-  Just soSueMe <- anyOf species
-  return soSueMe
-
 newGame :: IO ()
 newGame = makeWorld >>= runReaderT playGame
 
