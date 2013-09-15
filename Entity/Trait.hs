@@ -10,7 +10,8 @@ get :: Key -> Map -> Value
 get = M.findWithDefault Nil
 
 put :: Key -> Value -> Map -> Map
-put = M.insert
+put k Nil = M.delete k
+put k v = M.insert k v
 
 make :: [(Key, Value)] -> Map
 make list
