@@ -34,6 +34,7 @@ import Entity.Body
 import Coords
 import Table
 import ActionTypes
+import Describe
 
 -- An object in the game, usually with a physical body
 data Entity = Entity
@@ -52,6 +53,18 @@ instance Eq Entity where
 
 instance Ord Entity where
   compare (Entity { eid = lhs }) (Entity { eid = rhs }) = compare lhs rhs
+
+instance Nominable Entity where
+  name a | isPlayer a = noun You
+  name (Entity { species = s })= noun (The s)
+
+instance Effable Entity where
+  describe e = nominative $ noun subj
+    where subj = An $ Adj howtall whatspecies
+          howtall = unwords [numWord $ inFeet, "foot tall"]
+          whatspecies = species e
+          inFeet = round (toRational s / 12)
+          s = size (body e)
 
 data AI = AI
   { methods :: TrigMap

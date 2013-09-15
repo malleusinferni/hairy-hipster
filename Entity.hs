@@ -8,17 +8,6 @@ import Control.Monad.Reader
 
 import GameTypes
 import ActionTypes
-import Describe
-
-instance Nominable Entity where
-  name a | isPlayer a = noun You
-  name (Entity { species = s })= noun (The s)
-
-instance Effable Entity where
-  describe e = nominative $ noun subj
-    where subj = An $ Adj howtall whatspecies
-          howtall = unwords [numWord $ inFeet e, "foot tall"]
-          whatspecies = species e
 
 -- TODO Find a less obnoxious way to accomplish this
 triggerCode :: Trigger -> Int
