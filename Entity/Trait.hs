@@ -13,7 +13,11 @@ put :: Key -> Value -> Map -> Map
 put = M.insert
 
 make :: [(Key, Value)] -> Map
-make = M.fromList
+make list
+  | length (M.keys m) < numTraits = error msg
+  | otherwise = m
+  where m = M.fromList list
+        msg = "Uninitialized fields in " ++ show list
 
 replace :: Key -> Value -> Map -> Map -> Map
 replace k v m e
