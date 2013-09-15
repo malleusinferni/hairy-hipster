@@ -71,11 +71,11 @@ makeMob species isPlayer = do
       location
         | isPlayer = zyx 0 0 0
         | otherwise = aRoom
-      traits = K.make [ (K.Location, V.L location)
-                      , (K.Strength, V.I power)
-                      , (K.HitPoints, V.I hp)
-                      , (K.Species, V.S species)
-                      , (K.IsPlayer, V.B isPlayer)
+      traits = K.make [ K.Location ~> location
+                      , K.Strength ~> power
+                      , K.HitPoints ~> hp
+                      , K.Species ~> species
+                      , K.IsPlayer ~> isPlayer
                       ]
   eid `putAI` makeAI isPlayer eid
   storeEntity Entity{..}

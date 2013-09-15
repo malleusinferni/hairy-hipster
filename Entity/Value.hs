@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
 module Entity.Value where
 
 import Support.Coords
@@ -9,6 +10,17 @@ data Value = I { intValue :: Int }
            | L { coordsValue :: Coords }
            | Nil
   deriving (Eq, Show)
+
+class Valuable v where
+  dyn :: v -> Value
+
+instance Valuable Int where dyn = I
+instance Valuable Bool where dyn = B
+instance Valuable Coords where dyn = L
+instance Valuable Species where dyn = S
+
+(~>) :: (Valuable v) => k -> v -> (k, Value)
+k ~> v = (k, dyn v)
 
 typeCheck :: Value -> Value -> Bool
 typeCheck = go
