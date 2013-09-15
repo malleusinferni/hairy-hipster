@@ -1,36 +1,48 @@
+{-# LANGUAGE RecordWildCards #-}
 module Entity.Core where
+
+import Data.Function (on)
 
 import Describe
 
-import Support.Coords
 import Support.Measure
 
+import Entity.Trait (get, replace, Map)
+import qualified Entity.Trait as K
+import Entity.Value
 import Entity.Body
-import Entity.Species
 
 -- An object in the game, usually with a physical body
 data Entity = Entity
   { eid :: EID
-  , hp :: Int
   , body :: Body
-  , isPlayer :: Bool
-  , location :: Coords
-  , species :: Species
-  , power :: Int
+  , traits :: Map
   } deriving (Show)
+
+location (Entity{..}) = coordsValue (get K.Location traits)
+species (Entity{..}) = speciesValue (get K.Species traits)
+isPlayer (Entity{..}) = boolValue (get K.IsPlayer traits)
+hp (Entity{..}) = intValue (get K.HitPoints traits)
+power (Entity{..}) = intValue (get K.Strength traits)
+
+(self, k) #= v = return $ self { traits = new }
+  where err = error msg
+        msg = unwords ["Type mismatch:", show v, "vs", show (get k old)]
+        old = traits self
+        new = replace k v old err
 
 -- Entities are indexed by their unique IDs
 type EID = Int
 
 instance Eq Entity where
-  Entity { eid = lhs } == Entity { eid = rhs } = lhs == rhs
+  (==) = (==) `on` eid
 
 instance Ord Entity where
-  compare (Entity { eid = lhs }) (Entity { eid = rhs }) = compare lhs rhs
+  compare = compare `on` eid
 
 instance Nominable Entity where
   name a | isPlayer a = noun You
-  name (Entity { species = s })= noun (The s)
+  name a = noun (The (species a))
 
 instance Effable Entity where
   describe e = nominative $ noun subj

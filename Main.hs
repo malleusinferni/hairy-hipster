@@ -16,6 +16,8 @@ import Entity.Core
 import Entity.Material
 import Entity.Body
 import Entity.Species
+import Entity.Value as V
+import qualified Entity.Trait as K
 
 import World.Location
 
@@ -69,6 +71,12 @@ makeMob species isPlayer = do
       location
         | isPlayer = zyx 0 0 0
         | otherwise = aRoom
+      traits = K.make [ (K.Location, V.L location)
+                      , (K.Strength, V.I power)
+                      , (K.HitPoints, V.I hp)
+                      , (K.Species, V.S species)
+                      , (K.IsPlayer, V.B isPlayer)
+                      ]
   eid `putAI` makeAI isPlayer eid
   storeEntity Entity{..}
   return eid

@@ -28,9 +28,12 @@ import World.Core
 import World.Entity
 import World.Location
 
+import Entity.Core
+import Entity.Value
+import qualified Entity.Trait as T
+
 import AI.Event
 import Event.Action
-import Entity.Core
 import Support.Rand
 import Support.Coords
 import Describe
@@ -121,5 +124,5 @@ traverseExit self door = do
   (rooms, _) <- asks locations
   let (_, there) = whereTo (location self) door
       Just r = M.lookup there rooms
-  updateEntity (self { location = there })
+  updateEntity self T.Location (goto there)
   return r

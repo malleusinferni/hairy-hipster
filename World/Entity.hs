@@ -13,10 +13,18 @@ import World.Core
 import Entity.Core
 import Entity.Body
 import Entity.Species
+import Entity.Value
+import qualified Entity.Trait as T
 
-storeEntity, updateEntity :: Entity -> Game ()
+storeEntity :: Entity -> Game ()
 storeEntity e = entities %= (e:)
-updateEntity e = entities %= ((e :) . delete e)
+
+updateEntity :: Entity -> T.Key -> (Value -> Value) -> Game ()
+updateEntity e k f = do
+  let vo = T.get k (traits e)
+      vn = f vo
+  e <- (e, k) #= vn
+  e `seq` entities %= ((e :) . delete e)
 
 putAI :: EID -> AI -> Game ()
 putAI eid ai = bindings %= IM.insert eid ai
@@ -31,9 +39,7 @@ getAI eid = do
   maybe err return $ IM.lookup eid ais
 
 hpByEID :: EID -> Game Int
-hpByEID eid = do
-  Entity{..} <- getByEID eid
-  return hp
+hpByEID eid = hp `fmap` getByEID eid
 
 bodyByEID :: EID -> Game Body
 bodyByEID eid = do
@@ -53,8 +59,9 @@ getEntitiesWhere :: (Entity -> Bool) -> Game [Entity]
 getEntitiesWhere test = filter test `fmap` getEntities
 
 getEntitiesNear :: Entity -> Game [Entity]
-getEntitiesNear (Entity { location = here }) =
-  getEntitiesWhere ((== here) . location)
+getEntitiesNear e =
+  let here = location e in
+    getEntitiesWhere ((== here) . location)
 
 getByEID :: EID -> Game Entity
 getByEID anid = do

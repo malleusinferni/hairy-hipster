@@ -5,6 +5,7 @@ module AI
   ) where
 
 import Control.Applicative ((<*>))
+import Control.Monad (when)
 
 import UI
 import Describe
@@ -13,6 +14,8 @@ import Support.Coords
 import Support.Rand
 
 import Entity.Core
+import Entity.Value as V
+import qualified Entity.Trait as K
 
 import World
 import World.Core
@@ -55,8 +58,8 @@ runAI self (Go dir) = do
       comments <- viewRoom self
       return $ (Walk :& [Patient self, WhichWay dir, Via door]) : comments
 runAI self Rest = do
-  rec <- fuzz 5
-  updateEntity $ self { hp = hp self + rec }
+  amount <- fuzz 5
+  updateEntity self K.HitPoints (increase amount)
   return [Heal :& [Patient self]]
 runAI _ _ = return [] -- [NothingHappens :& []]
 
@@ -140,10 +143,8 @@ objectMM = inertMM
 
 inertMM _ _ = return DoNothing
 
-makeCorpse :: Entity -> Game Entity
-makeCorpse e@(Entity{..}) = do
-  eid `putAI` inertAI eid
-  return e
+makeCorpse :: Entity -> Game ()
+makeCorpse e = eid e `putAI` inertAI (eid e)
 
 attackPower :: Entity -> Game Int
 attackPower = fuzz . power
@@ -151,15 +152,15 @@ attackPower = fuzz . power
 dealDamage :: Entity -> Entity -> Game [Event]
 dealDamage attacker defender = do
   amount <- attackPower attacker
-  let injured = defender { hp = hp defender - amount }
-      d = TakeDamage :& [Agent attacker, Patient injured, ByAmount amount]
+  updateEntity defender K.HitPoints (reduce amount)
+  injured <- getByEID (eid defender)
+  let d = TakeDamage :& [Agent attacker, Patient injured, ByAmount amount]
       n = NearDeath :& [Patient injured]
       x = Die :& [Patient injured]
       events
         | isDead injured = [d, x]
         | isNearDeath injured = [d, n]
         | otherwise = [d]
-  if isDead injured
-     then makeCorpse injured >>= updateEntity
-     else updateEntity injured
+  when (isDead injured) $
+    makeCorpse injured
   return events
