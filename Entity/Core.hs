@@ -1,4 +1,4 @@
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE RecordWildCards, BangPatterns #-}
 module Entity.Core where
 
 import Data.Function (on)
@@ -16,9 +16,9 @@ import Entity.Species
 
 -- An object in the game, usually with a physical body
 data Entity = Entity
-  { eid :: EID
-  , body :: Body
-  , traits :: Map
+  { eid :: !EID
+  , body :: !Body
+  , traits :: !Map
   } deriving (Show)
 
 location :: Entity -> Coords

@@ -1,13 +1,13 @@
-{-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
+{-# LANGUAGE FlexibleInstances, TypeSynonymInstances, BangPatterns #-}
 module Entity.Value where
 
 import Support.Coords
 import Entity.Species
 
-data Value = I { intValue :: Int }
-           | B { boolValue :: Bool }
-           | S { speciesValue :: Species }
-           | L { coordsValue :: Coords }
+data Value = I { intValue :: !Int }
+           | B { boolValue :: !Bool }
+           | S { speciesValue :: !Species }
+           | L { coordsValue :: !Coords }
            | Nil
   deriving (Eq, Show)
 
