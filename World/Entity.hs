@@ -2,6 +2,7 @@
 module World.Entity where
 
 import Data.List (find, delete)
+import Data.Maybe (fromJust)
 import Data.IORef
 import qualified Data.IntMap.Strict as IM
 import Control.Monad.Reader
@@ -20,11 +21,11 @@ storeEntity :: Entity -> Game ()
 storeEntity e = entities %= (e:)
 
 updateEntity :: Entity -> T.Key -> (Value -> Value) -> Game ()
-updateEntity e k f = do
-  let vo = T.get k (traits e)
+updateEntity eo k f = do
+  let vo = T.get k (traits eo)
       vn = f vo
-  e <- (e, k) #= vn
-  e `seq` entities %= ((e :) . delete e)
+  en <- (eo, k) #= vn
+  en `seq` entities %= ((en :) . delete eo)
 
 putAI :: EID -> AI -> Game ()
 putAI eid ai = bindings %= IM.insert eid ai
@@ -42,15 +43,10 @@ hpByEID :: EID -> Game Int
 hpByEID eid = hp `fmap` getByEID eid
 
 bodyByEID :: EID -> Game Body
-bodyByEID eid = do
-  Entity{..} <- getByEID eid
-  return body
+bodyByEID eid = body `fmap` getByEID eid
 
 randomSpecies :: Game Species
-randomSpecies = do
-  species <- asks speciesData
-  Just soSueMe <- anyOf species
-  return soSueMe
+randomSpecies = fromJust `fmap` (anyOf =<< asks speciesData)
 
 getEntities :: Game [Entity]
 getEntities = asks entities >>= liftIO . readIORef
@@ -64,6 +60,4 @@ getEntitiesNear e =
     getEntitiesWhere ((== here) . location)
 
 getByEID :: EID -> Game Entity
-getByEID anid = do
-  Just self <- find ((== anid) . eid) `fmap` getEntities
-  return self
+getByEID anid = fromJust `fmap` find ((== anid) . eid) `fmap` getEntities

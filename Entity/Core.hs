@@ -55,8 +55,8 @@ instance Nominable Entity where
   name a = noun (The (species a))
 
 instance Effable Entity where
-  describe e = nominative $ noun subj
-    where subj = An $ Adj howtall whatspecies
+  describe e = nominative $ noun s
+    where s = An $ Adj howtall whatspecies
           howtall = unwords [numWord inFeet, "foot tall"]
           whatspecies = species e
           inFeet = size (body e) `rdiv` 12

@@ -45,7 +45,7 @@ verb v =
          case words text of
           [inf, sing, past, ger] -> Verb inf sing inf past past ger Nothing
           _ -> error ("WRONG VERB FORMAT: " ++ text)
-        defaultVerb v = unwords [v, v ++ "s", v ++ "d", v ++ "ing"]
+        defaultVerb d = unwords [d, d ++ "s", d ++ "d", d ++ "ing"]
 
 noun :: Dependent -> Noun
 noun n =
@@ -59,10 +59,10 @@ noun n =
     It -> reg "it" "its" False
     The w -> nmap the w
     An w -> nmap an w
-    Adj a w -> let n = unwords [a, describe w] in reg n (n ++ "'s") False
+    Adj a w -> let m = unwords [a, describe w] in reg m (m ++ "'s") False
   where reg nom gen = Noun nom gen nom
-        nmap f w = let (Noun n g a p) = name w in
-                       Noun (f n) (f g) (f a) p
+        nmap f w = let (Noun nom g a p) = name w in
+                       Noun (f nom) (f g) (f a) p
         the w = "the " ++ w
         an w@(c:_)
           | isVowel c = "an " ++ w

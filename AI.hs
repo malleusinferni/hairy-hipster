@@ -54,9 +54,9 @@ runAI self (Go dir) = do
       return []
     Just door -> do
       _ <- self `traverseExit` door
-      self <- getByEID (eid self)
-      comments <- viewRoom self
-      return $ (Walk :& [Patient self, WhichWay dir, Via door]) : comments
+      traveler <- getByEID (eid self)
+      comments <- viewRoom traveler
+      return $ (Walk :& [Patient traveler, WhichWay dir, Via door]) : comments
 runAI self Rest = do
   amount <- fuzz 5
   updateEntity self K.HitPoints (increase amount)
