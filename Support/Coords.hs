@@ -2,6 +2,8 @@ module Support.Coords where
 
 import Data.Vec.Packed
 
+import Describe
+
 type Coords = Vec3I
 
 data Location = OnMap Coords
@@ -13,6 +15,9 @@ data Cardinal = North | Northeast
               | West  | Northwest
               | Up | Down
   deriving (Eq, Show, Ord, Enum)
+
+instance Effable Cardinal where
+  describe = downcase . show
 
 zyx :: Int -> Int -> Int -> Coords
 zyx z y x = Vec3I x y z

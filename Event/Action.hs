@@ -33,9 +33,6 @@ data EventReport = Trigger :=> [Event]
 infixr 1 :=>
 infixr 2 :&
 
-instance Effable Cardinal where
-  describe = downcase . show
-
 -- TODO Rewrite all of this to use randomness, vocabulary, etc.
 instance Effable Event where
   describe (Walk :& (Agent a : WhichWay Up : _)) =
