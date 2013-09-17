@@ -4,7 +4,7 @@ module AI
   , makeAI
   ) where
 
-import Control.Applicative ((<*>))
+import Control.Applicative ((<$>), (<*>))
 import Control.Monad (when)
 
 import UI
@@ -31,7 +31,7 @@ import Event.Action
 tick :: EID -> Game EventReport
 tick eid = do
   self <- getByEID eid
-  fmap (Tick :=>) $ do
+  (Tick :=>) <$> do
     action <- eid `respondTo` Tick
     self `runAI` action
 
@@ -96,8 +96,8 @@ objectAI = objectMM `inherit` Just inertAI
 inertAI = inertMM `inherit` Nothing
 
 makeAI :: Bool -> EID -> AI
-makeAI True entity = playerAI entity
-makeAI False entity = actorAI entity
+makeAI True = playerAI
+makeAI False = actorAI
 
 inherit :: (EID -> Responder) -> Maybe (EID -> AI) -> EID -> AI
 inherit resp super' entity = Bind{..}

@@ -16,28 +16,30 @@ module World
   , runReaderT
   ) where
 
+import Data.IORef
 import Data.List (find)
 import qualified Data.Map.Lazy as M
 import qualified Data.IntMap.Strict as IM
-import Data.IORef
 import Control.Monad.Reader
 import Control.Concurrent (forkIO)
 import Control.Concurrent.MVar
 
-import World.Core
-import World.Entity
-import World.Location
+import Describe
+import Table
+
+import AI.Event
+import Event.Action
 
 import Entity.Core
 import Entity.Value
 import qualified Entity.Trait as T
 
-import AI.Event
-import Event.Action
+import World.Core
+import World.Entity
+import World.Location
+
 import Support.Rand
 import Support.Coords
-import Describe
-import Table
 
 import AlphaDungeon
 

@@ -1,6 +1,5 @@
 {-# LANGUAGE RecordWildCards #-}
 import Control.Monad (replicateM_, when, liftM2)
-import Data.Function (on)
 import Data.List (sortBy)
 
 import AI
@@ -51,13 +50,13 @@ doTick (x : xs) z = do
 
 makePlayer :: Game EID
 makePlayer = do
-  (species:_) <- asks speciesData
-  makeMob species True
+  (playerSpecies:_) <- asks speciesData
+  makeMob playerSpecies True
 
 makeEnemy :: Game EID
 makeEnemy = do
-  species <- randomSpecies
-  makeMob species False
+  anySpecies <- randomSpecies
+  makeMob anySpecies False
 
 makeBody :: Species -> Game Body
 makeBody species = do
@@ -70,18 +69,14 @@ makeMob species isPlayer = do
   eid <- nextEID
   body <- makeBody species
   aRoom <- onGrid `fmap` anyRoom
-  let hp = maxHPFor body
-      power = strengthFor body
-      speed = dexterityFor body species
-      location
-        | isPlayer = zyx 0 0 0
-        | otherwise = aRoom
-      traits = K.make [ K.Location ~> location
-                      , K.Strength ~> power
-                      , K.Dexterity ~> speed
-                      , K.HitPoints ~> hp
-                      , K.Species ~> species
+  let traits = K.make [ K.Species ~> species
                       , K.IsPlayer ~> isPlayer
+                      , K.Strength ~> strengthFor body
+                      , K.HitPoints ~> maxHPFor body
+                      , K.Dexterity ~> dexterityFor body species
+                      , K.Location ~> if isPlayer
+                                         then zyx 0 0 0
+                                         else aRoom
                       ]
   eid `putAI` makeAI isPlayer eid
   storeEntity Entity{..}
