@@ -76,6 +76,7 @@ makeMap = return (roomMap, corMap)
         roomMap = M.fromList $ map byCoords rooms
         corMap = M.fromList $ map (byExit . onGrid) rooms
 
+findExits :: Coords -> [Corridor] -> [Corridor]
 findExits loc = filter test
   where test (Corridor { endpoints = (s, e) }) = s == loc || e == loc
 
@@ -85,6 +86,7 @@ anyRoom = do
   Just r <- anyOf $ filter ((/= 0) . xy . onGrid) (M.elems rooms)
   return r
 
+roomByLocation :: Coords -> Game (Maybe Room)
 roomByLocation loc = do
   (rooms, _) <- asks locations
   return $ M.lookup loc rooms
@@ -94,6 +96,7 @@ getExits here = do
   (_, exits) <- asks locations
   return $ M.findWithDefault [] here exits
 
+whereTo :: Coords -> Corridor -> (Coords, Coords)
 whereTo from via = (near, far)
   where (n, f) = endpoints via
         (near, far)

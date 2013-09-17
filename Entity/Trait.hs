@@ -32,4 +32,5 @@ data Key = Location
          | IsPlayer
   deriving (Eq, Ord, Read, Show, Bounded, Enum)
 
+numTraits :: Int
 numTraits = fromEnum (maxBound :: Key) + 1

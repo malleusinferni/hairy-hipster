@@ -6,11 +6,13 @@ import Data.Function (on)
 import Describe
 
 import Support.Measure
+import Support.Coords
 
 import Entity.Trait (get, replace, Map)
 import qualified Entity.Trait as K
 import Entity.Value
 import Entity.Body
+import Entity.Species
 
 -- An object in the game, usually with a physical body
 data Entity = Entity
@@ -19,12 +21,20 @@ data Entity = Entity
   , traits :: Map
   } deriving (Show)
 
+location :: Entity -> Coords
 location (Entity{..}) = coordsValue (get K.Location traits)
+
+species :: Entity -> Species
 species (Entity{..}) = speciesValue (get K.Species traits)
+
+isPlayer :: Entity -> Bool
 isPlayer (Entity{..}) = boolValue (get K.IsPlayer traits)
+
+hp, power :: Entity -> Int
 hp (Entity{..}) = intValue (get K.HitPoints traits)
 power (Entity{..}) = intValue (get K.Strength traits)
 
+(#=) :: (Monad m) => (Entity, K.Key) -> Value -> m Entity
 (self, k) #= v = return $ self { traits = new }
   where err = error msg
         msg = unwords ["Type mismatch:", show v, "vs", show (get k old)]

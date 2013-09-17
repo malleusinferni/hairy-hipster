@@ -60,4 +60,5 @@ radials = map dirToCoords [North .. Northwest]
 neighbors :: Coords -> [Coords]
 neighbors o = map (o +) radials
 
+aboveGround :: Coords -> Bool
 aboveGround (Vec3I _ _ z) = z > 0
