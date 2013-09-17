@@ -5,26 +5,43 @@ import Control.Monad.IO.Class
 import Control.Monad (replicateM, liftM)
 import Data.List (sort)
 
+-- Random selection from a list
+-- Uniform distribution
 anyOf :: (MonadIO m) => [a] -> m (Maybe a)
 anyOf [] = return Nothing
 anyOf xs = do
   idx <- anyIn (0, length xs - 1)
   return $ Just (xs !! idx)
 
+-- Random value in arbitrary range
+-- Uniform distribution
 anyIn :: (MonadIO m, Random a) => (a, a) -> m a
 anyIn = liftIO . randomRIO
 
-fuzz :: (MonadIO m, Integral a) => a -> m a
-fuzz n = fix `liftM` roll 2
-  where split = 2.0 * fromIntegral n
-        fix n = round $ n * split
+-- Random value in range (0, n + n)
+-- Normal distribution
+fuzz :: (MonadIO m, Integral a, Random a) => a -> m a
+fuzz n = n +/- n
 
+-- Random value in range (n - k, n + k)
+-- Normal distribution
+(+/-) :: (MonadIO m, Num a, Random a) => a -> a -> m a
+n +/- k = do
+  ks <- rollR 2 (n, k)
+  return $ (n - k) + sum ks
+
+-- Mean value of a list
 avg :: (Fractional a) => [a] -> a
-avg [] = 0
-avg xs = sum xs / fromIntegral (length xs)
+avg [] = error "Mean value of empty list is undefined"
+avg xs = sum xs / realToFrac (length xs)
 
-rolls :: (Random n, MonadIO m) => Int -> m [n]
-rolls n = replicateM n $ liftIO randomIO
+-- N random values in arbitrary range
+-- Uniform distribution
+rollR :: (MonadIO m, Random a) => Int -> (a, a) -> m [a]
+rollR n = replicateM n . anyIn
+
+rolls :: (Random n, Num n, MonadIO m) => Int -> m [n]
+rolls n = rollR n (0, 1)
 
 roll :: (MonadIO m) => Int -> m Float
 roll n
