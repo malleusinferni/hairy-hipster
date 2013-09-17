@@ -30,9 +30,10 @@ species (Entity{..}) = speciesValue (get K.Species traits)
 isPlayer :: Entity -> Bool
 isPlayer (Entity{..}) = boolValue (get K.IsPlayer traits)
 
-hp, power :: Entity -> Int
+hp, power, speed :: Entity -> Int
 hp (Entity{..}) = intValue (get K.HitPoints traits)
 power (Entity{..}) = intValue (get K.Strength traits)
+speed (Entity{..}) = intValue (get K.Dexterity traits)
 
 (#=) :: (Monad m) => (Entity, K.Key) -> Value -> m Entity
 (self, k) #= v = return $ self { traits = new }

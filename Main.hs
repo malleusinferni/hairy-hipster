@@ -1,5 +1,7 @@
 {-# LANGUAGE RecordWildCards #-}
 import Control.Monad (replicateM_, when, liftM2)
+import Data.Function (on)
+import Data.List (sortBy)
 
 import AI
 import UI
@@ -31,11 +33,13 @@ playTurn = do
   [player] <- getEntitiesWhere isPlayer
   survivors <- getEntitiesWhere isAlive
   localEntities <- getEntitiesNear player
+  let fastEntities = sortBy faster localEntities
+      faster x y = speed y `compare` speed x
   if aboveGround (location player)
      then say $ if length survivors > 1
                    then "You escape with your life..."
                    else "You emerge victorious."
-     else doTick (map eid localEntities) playTurn
+     else doTick (map eid fastEntities) playTurn
 
 doTick :: [EID] -> Game () -> Game ()
 doTick [] z = z
@@ -68,11 +72,13 @@ makeMob species isPlayer = do
   aRoom <- onGrid `fmap` anyRoom
   let hp = maxHPFor body
       power = strengthFor body
+      speed = dexterityFor body species
       location
         | isPlayer = zyx 0 0 0
         | otherwise = aRoom
       traits = K.make [ K.Location ~> location
                       , K.Strength ~> power
+                      , K.Dexterity ~> speed
                       , K.HitPoints ~> hp
                       , K.Species ~> species
                       , K.IsPlayer ~> isPlayer

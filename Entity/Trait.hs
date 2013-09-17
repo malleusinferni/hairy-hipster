@@ -28,6 +28,7 @@ replace k v m e
 data Key = Location
          | Species
          | HitPoints
+         | Dexterity
          | Strength
          | IsPlayer
   deriving (Eq, Ord, Read, Show, Bounded, Enum)
