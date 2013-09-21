@@ -1,4 +1,4 @@
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE RecordWildCards, OverloadedStrings #-}
 import Control.Monad (replicateM_, when, liftM2)
 import Data.List (sortBy)
 
@@ -44,7 +44,7 @@ doTick :: [EID] -> Game () -> Game ()
 doTick [] z = z
 doTick (x : xs) z = do
   report <- tick x
-  say $ describe report
+  announce report
   check <- playerSurvives
   when check $ doTick xs z
 

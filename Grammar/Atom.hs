@@ -6,6 +6,7 @@ module Grammar.Atom
   , unleaves
   , capital
   , commas
+  , fromString
   ) where
 
 import Data.Char (toUpper)
@@ -35,6 +36,7 @@ sentence = (Begin :) . (++ [Punct "."])
 unleaves :: [Leaf] -> Text
 unleaves = T.concat . pre
   where pre (Begin : Word x : xs) = capital x : pre xs
+        pre (Punct p : xs@(Begin : _)) = T.snoc p ' ' : pre xs
         pre (Begin : xs) = pre xs
         pre (Punct p : xs) = p : pre xs
         pre (Word t : xs) = T.cons ' ' t : pre xs

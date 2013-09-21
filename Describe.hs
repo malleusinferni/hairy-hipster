@@ -1,105 +1,17 @@
-{-# LANGUAGE ExistentialQuantification #-}
-{-# LANGUAGE Rank2Types #-}
-{-# LANGUAGE FlexibleInstances #-}
-
+{-# LANGUAGE OverloadedStrings #-}
 module Describe where
 
-import Data.Char (toUpper, toLower)
-import Data.List (intercalate)
+import Data.Text (Text)
+import qualified Data.Text as T (unwords, pack)
 
-data Verb = Verb
-  { infinitive :: String
-  , presentSingular :: String
-  , presentPlural :: String
-  , pastSingular :: String
-  , pastPlural :: String
-  , gerund :: String
-  , danglingPreposition :: Maybe String
-  } deriving (Eq, Show)
+import Grammar.Atom
 
-data Noun = Noun
-  { nominative :: String
-  , genitive :: String
-  , accusative :: String
-  , plural :: Bool
-  } deriving (Eq, Show)
+the :: [Leaf] -> [Leaf]
+the = (Word "the" :)
 
-data Dependent = I | You | He | She | It | They
-               | forall n. Nominable n => The n
-               | forall n. Nominable n => An n
-               | forall n. Effable n => Adj String n
+word = Word . T.pack
 
-verb :: String -> Verb
-verb v =
-  case v of
-    "be" -> Verb "be" "is" "are" "was" "were" "being" Nothing
-    "hit" -> reg "hit hits hit hitting"
-    "collapse" -> reg "collapse collapses collapsed collapsing"
-    "perish" -> reg "perish perishes perished perishing"
-    "wound" -> reg "wound wounds wounded wounding"
-    "emerge" -> reg "emerge emerges emerged emerging"
-    "lurk" -> reg "lurk lurks lurked lurking"
-    "die" -> reg "die dies died dying"
-    _ -> reg $ defaultVerb v
-  where reg text =
-         case words text of
-          [inf, sing, past, ger] -> Verb inf sing inf past past ger Nothing
-          _ -> error ("WRONG VERB FORMAT: " ++ text)
-        defaultVerb d = unwords [d, d ++ "s", d ++ "d", d ++ "ing"]
-
-noun :: Dependent -> Noun
-noun n =
-  case n of
-    I -> Noun "I" "my" "me" False
-    He -> Noun "he" "his" "him" False
-    She -> Noun "she" "her" "her" False
-    They -> Noun "they" "their" "them" True
-
-    You -> reg "you" "your" True
-    It -> reg "it" "its" False
-    The w -> nmap the w
-    An w -> nmap an w
-    Adj a w -> let m = unwords [a, describe w] in reg m (m ++ "'s") False
-  where reg nom gen = Noun nom gen nom
-        nmap f w = let (Noun nom g a p) = name w in
-                       Noun (f nom) (f g) (f a) p
-        the w = "the " ++ w
-        an w@(c:_)
-          | isVowel c = "an " ++ w
-          | otherwise = "a " ++ w
-        an [] = "something"
-        isVowel c = c `elem` "aeiouAEIOU"
-
-conj :: Nominable n => n -> Verb -> String
-conj n
-  | plural (name n) = presentPlural
-  | otherwise = presentSingular
-
-sentence :: Effable d => d -> String -> String
-sentence d end = upcase (describe d) ++ end
-
-unsentence :: Effable d => [d] -> String
-unsentence = intercalate "\n" . map (`sentence` ".")
-
-upcase, downcase :: String -> String
-upcase (c:cs) = toUpper c : cs
-upcase [] = []
-
-downcase (c:cs) = toLower c : cs
-downcase [] = []
-
-subj, obj, poss :: (Nominable a) => a -> String
-subj = nominative . name
-obj = accusative . name
-poss = genitive . name
-
-cverb :: (Nominable a) => a -> String -> String
-cverb a = conj a . verb
-
-aeverb :: (Nominable a, Show b) => a -> b -> String
-aeverb a = cverb a . downcase . show
-
-numWord :: Int -> String
+numWord :: Int -> Atom
 numWord 1 = "one"
 numWord 2 = "two"
 numWord 3 = "three"
@@ -122,17 +34,8 @@ numWord 19 = "nineteen"
 numWord 20 = "twenty"
 numWord _ = undefined
 
-class Nominable a where
-  name :: a -> Noun
-
-instance Nominable Noun where
-  name = id
-
-instance Nominable Dependent where
-  name = noun
-
 class Effable a where
-  describe :: a -> String
+  describe :: a -> [Leaf]
 
-instance Effable [String] where
-  describe = unwords
+paragraph :: Effable d => [d] -> [Leaf]
+paragraph = concat . map (sentence . describe)

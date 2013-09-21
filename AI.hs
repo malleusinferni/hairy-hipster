@@ -1,4 +1,4 @@
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE RecordWildCards, OverloadedStrings #-}
 module AI
   ( tick
   , makeAI
@@ -9,6 +9,7 @@ import Control.Monad (when)
 
 import UI
 import Describe
+import Grammar.Atom
 
 import Support.Coords
 import Support.Rand
@@ -49,9 +50,7 @@ runAI self Attack = do
 runAI self (Go dir) = do
   exit <- findExitFrom (location self) dir
   case exit of
-    Nothing -> do
-      announce [subj self, "can't go", describe dir]
-      return []
+    Nothing -> return [Fail :& [Tried (Go dir), Agent self]]
     Just door -> do
       _ <- self `traverseExit` door
       traveler <- getByEID (eid self)
@@ -119,7 +118,8 @@ playerMM eid (Tick) = do
       announce (Seen :=> observations)
       playerMM eid Tick -- Don't lose a turn
     _ -> do
-      saywords ["You don't know how to", move ++ "!"]
+      say . unleaves . sentence $
+        "you don't know how to" ++ [word (show move)]
       playerMM eid Tick
 playerMM eid t = actorMM eid t
 

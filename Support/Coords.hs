@@ -17,7 +17,7 @@ data Cardinal = North | Northeast
   deriving (Eq, Show, Ord, Enum)
 
 instance Effable Cardinal where
-  describe = downcase . show
+  describe = (:[]) . word . show
 
 zyx :: Int -> Int -> Int -> Coords
 zyx z y x = Vec3I x y z

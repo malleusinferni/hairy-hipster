@@ -4,6 +4,7 @@ module Entity.Core where
 import Data.Function (on)
 
 import Describe
+import Grammar.Atom
 
 import Support.Measure
 import Support.Coords
@@ -51,16 +52,11 @@ instance Eq Entity where
 instance Ord Entity where
   compare = compare `on` eid
 
-instance Nominable Entity where
-  name a | isPlayer a = noun You
-  name a = noun (The (species a))
-
 instance Effable Entity where
-  describe e = nominative $ noun s
-    where s = An $ Adj howtall whatspecies
-          howtall = unwords [numWord inFeet, "foot tall"]
-          whatspecies = species e
-          inFeet = size (body e) `rdiv` 12
+  describe = the . whatkind
+    where whatkind e
+            | isPlayer e = [word "player"]
+            | otherwise = describe (species e)
 
 isNearDeath, isDead, isAlive :: Entity -> Bool
 isNearDeath e = hp e <= maxHPFor (body e) `rdiv` 5

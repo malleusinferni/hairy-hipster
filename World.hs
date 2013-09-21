@@ -16,6 +16,9 @@ module World
   , runReaderT
   ) where
 
+import qualified Data.Text as T
+import qualified Data.Text.IO as T
+
 import Data.IORef
 import Data.List (find)
 import qualified Data.Map.Lazy as M
@@ -25,6 +28,7 @@ import Control.Concurrent (forkIO)
 import Control.Concurrent.MVar
 
 import Describe
+import Grammar.Atom
 import Table
 
 import AI.Event
@@ -43,14 +47,14 @@ import Support.Coords
 
 import AlphaDungeon
 
-say :: String -> Game ()
-say = liftIO . putStrLn
+say :: T.Text -> Game ()
+say = liftIO . T.putStrLn
 
-saywords :: [String] -> Game ()
-saywords = say . unwords
+saywords :: [T.Text] -> Game ()
+saywords = say . T.unwords
 
 announce :: (Effable a) => a -> Game ()
-announce d = say (sentence d ".")
+announce = say . unleaves . sentence . describe
 
 streamIDs :: Int -> IO (IO Int)
 streamIDs n = do

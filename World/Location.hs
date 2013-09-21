@@ -2,8 +2,10 @@
 module World.Location where
 
 import qualified Data.Map as M
+import Data.Text (pack)
 
 import Describe
+import Grammar.Atom
 
 import Support.Coords
 
@@ -25,4 +27,4 @@ data Corridor = Corridor
   } deriving (Eq, Show)
 
 instance Effable Corridor where
-  describe c = "the " ++ doorName c
+  describe c = the [Word . pack $ doorName c]

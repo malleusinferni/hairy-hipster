@@ -1,6 +1,8 @@
 {-# LANGUAGE RecordWildCards #-}
 module Entity.Species where
 
+import Grammar.Atom
+
 import Table
 import Describe
 
@@ -17,11 +19,8 @@ instance Tabular Species where
     maxHeight <- readField "Max height"
     return Species{..}
 
-instance Nominable Species where
-  name s = Noun (describe s) (describe s ++ "'s") (describe s) False
-
 instance Effable Species where
-  describe = speciesName
+  describe = fromString . speciesName
 
 -- Size in inches
 sizeRangeFor :: Species -> (Int, Int)
