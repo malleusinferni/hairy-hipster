@@ -68,7 +68,7 @@ instance Effable Event where
       concat [describe p, "climbs", describe u, describe d]
     | otherwise =
       describe p ++ "goes through" ++ describe d
-  describe (Walk :& Patient _ : Into d : _) = [word (description d)]
+  describe (Walk :& Patient _ : Into d : _) = description d
   describe (v :& Agent a : Patient p : _) =
     concat [describe a, [word (show v)], describe p]
   describe (v :& Agent a : _ ) = describe a ++ [word (show v)]

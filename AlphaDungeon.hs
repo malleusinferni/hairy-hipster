@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module AlphaDungeon where
 
 import Support.Coords
@@ -10,84 +11,84 @@ alphaDungeon = (rooms, corridors)
           [ Room
             { onGrid = zyx 1 0 0
             , roomName = "outside"
-            , description = "The grass turns to ash under your feet."
+            , description = "the grass turns to ash under your feet"
             , walls = Air
             , floors = Grass
             }
           , Room
             { onGrid = zyx 0 0 0
             , roomName = "well bottom"
-            , description = "Moonlight spills through the well mouth above."
+            , description = "moonlight spills through the well mouth above"
             , walls = Masonry
             , floors = Stone
             }
           , Room
             { onGrid = zyx 0 (-1) 0
             , roomName = "hideout"
-            , description = "A dying fire flickers on the dirt floor."
+            , description = "a dying fire flickers on the dirt floor"
             , walls = Stone
             , floors = Dirt
             }
           , Room
             { onGrid = zyx 0 (-1) 1
             , roomName = "cavern"
-            , description = "The roof of the cavern recedes into the darkness."
+            , description = "the roof of the cavern recedes into the darkness"
             , walls = Stone
             , floors = Stone
             }
           , Room
             { onGrid = zyx 0 (-2) 1
             , roomName = "lair"
-            , description = "The walls are covered in blood."
+            , description = "the walls are covered in blood"
             , walls = Stone
             , floors = Stone
             }
           , Room
             { onGrid = zyx 0 1 0
             , roomName = "grotto"
-            , description = "Luminescent fungus dangles from the ceiling."
+            , description = "luminescent fungus dangles from the ceiling"
             , walls = Stone
             , floors = Stone
             }
           , Room
             { onGrid = zyx 0 0 (-1)
             , roomName = "library"
-            , description = "Leathery tomes are stacked against the walls."
+            , description = "leathery tomes are stacked against the walls"
             , walls = Masonry
             , floors = Masonry
             }
           , Room
             { onGrid = zyx 0 1 (-1)
             , roomName = "sepulchre"
-            , description = "Torches illuminate the entrance to the tomb."
+            , description = "torches illuminate the entrance to the tomb"
             , walls = Sandstone
             , floors = Sand
             }
           , Room
             { onGrid = zyx 0 1 (-2)
             , roomName = "tomb"
-            , description = "The stone casket has been opened recently."
+            , description = "the stone casket has been opened recently"
             , walls = Dirt
             , floors = Dirt
             }
           , Room
             { onGrid = zyx 0 (-1) (-2)
             , roomName = "pit"
-            , description = "A yawning chasm opens to the west."
+            , description = "a yawning chasm opens to the west"
             , walls = Stone
             , floors = Stone
             }
           , Room 
             { onGrid = zyx 0 (-2) (-1)
             , roomName = "pantry"
-            , description = "The shelves are stuffed with stores of food."
+            , description = "the shelves are stuffed with stores of food"
             , walls = Wood
             , floors = Masonry
             }
           , Room
             { onGrid = zyx 0 (-3) (-2)
             , roomName = "chapel"
-            , description = "It is very bright here."
+            , description = "it is very bright here"
             , walls = Wood
             , floors = Wood
             }

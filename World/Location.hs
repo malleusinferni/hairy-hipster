@@ -16,7 +16,7 @@ type LevelMap = (M.Map Coords Room, M.Map Coords [Corridor])
 data Room = Room
   { onGrid :: !Coords
   , roomName :: !String
-  , description :: !String
+  , description :: [Leaf]
   , walls :: !Material
   , floors :: !Material
   } deriving (Eq, Show)
