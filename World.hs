@@ -50,11 +50,11 @@ import AlphaDungeon
 say :: T.Text -> Game ()
 say = liftIO . T.putStrLn
 
-saywords :: [T.Text] -> Game ()
-saywords = say . T.unwords
+saywords :: [Leaf] -> Game ()
+saywords = say . unleaves . sentence
 
-announce :: (Effable a) => a -> Game ()
-announce = say . unleaves . sentence . describe
+announce :: EventReport -> Game ()
+announce = say . unleaves . report
 
 streamIDs :: Int -> IO (IO Int)
 streamIDs n = do

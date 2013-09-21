@@ -76,7 +76,7 @@ instance Effable Event where
   describe (_ :& []) = "nothing happens"
   describe _ = "UNIMPLEMENTED"
 
-instance Effable EventReport where
-  describe (_ :=> [o1, NothingHappens :& (Agent _ : Patient _ : _)]) =
-    describe o1 ++ "to no effect"
-  describe (_ :=> outcomes) = paragraph outcomes
+report :: EventReport -> [Leaf]
+report (_ :=> [cause, NothingHappens :& (Agent _ : Patient _ : _)]) =
+  sentence (describe cause ++ "to no effect")
+report (_ :=> outcomes) = paragraph outcomes

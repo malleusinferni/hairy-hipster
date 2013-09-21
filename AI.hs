@@ -115,11 +115,10 @@ playerMM eid (Tick) = do
     Rest -> return r
     Look -> do
       observations <- viewRoom self
-      announce (Seen :=> observations)
+      announce $ Seen :=> observations
       playerMM eid Tick -- Don't lose a turn
     _ -> do
-      say . unleaves . sentence $
-        "you don't know how to" ++ [word (show move)]
+      saywords $ "you don't know how to" ++ [word move]
       playerMM eid Tick
 playerMM eid t = actorMM eid t
 
