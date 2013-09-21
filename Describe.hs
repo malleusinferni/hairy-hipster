@@ -2,7 +2,7 @@
 module Describe where
 
 import Data.Text (Text)
-import qualified Data.Text as T (unwords, pack, toLower)
+import qualified Data.Text as T
 
 import Grammar.Atom
 
@@ -39,3 +39,14 @@ class Effable a where
 
 paragraph :: Effable d => [d] -> [Leaf]
 paragraph = concat . map (sentence . describe)
+
+fillWords :: Int -> [Leaf] -> Text
+fillWords width = wrap [] . T.words . unleaves
+  where wrap acc [] = T.intercalate "\n" $ reverse acc
+        wrap acc@(l:ls) (w:ws) =
+          -- TODO Make this less terrible
+          let greedy = T.unwords [l, w] in
+            if T.length greedy < width
+               then wrap (greedy:ls) ws
+               else wrap (w:acc) ws
+        wrap acc (w:ws) = wrap (w:acc) ws

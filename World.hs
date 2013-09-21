@@ -51,10 +51,10 @@ say :: T.Text -> Game ()
 say = liftIO . T.putStrLn
 
 saywords :: [Leaf] -> Game ()
-saywords = say . unleaves . sentence
+saywords = say . fillWords 80 . sentence
 
 announce :: EventReport -> Game ()
-announce = say . unleaves . report
+announce = say . fillWords 80 . report
 
 streamIDs :: Int -> IO (IO Int)
 streamIDs n = do
