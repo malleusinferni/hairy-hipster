@@ -2,14 +2,14 @@
 module Describe where
 
 import Data.Text (Text)
-import qualified Data.Text as T (unwords, pack)
+import qualified Data.Text as T (unwords, pack, toLower)
 
 import Grammar.Atom
 
 the :: [Leaf] -> [Leaf]
 the = (Word "the" :)
 
-word = Word . T.pack
+word = Word . T.toLower . T.pack
 
 numWord :: Int -> Atom
 numWord 1 = "one"
