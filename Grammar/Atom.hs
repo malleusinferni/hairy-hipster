@@ -10,7 +10,7 @@ module Grammar.Atom
   ) where
 
 import Data.Char (toUpper)
-import Data.Text (Text(..))
+import Data.Text (Text)
 import qualified Data.Text as T
 
 import GHC.Exts (IsString(..))

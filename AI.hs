@@ -9,7 +9,6 @@ import Control.Monad (when)
 
 import UI
 import Describe
-import Grammar.Atom
 
 import Support.Coords
 import Support.Rand

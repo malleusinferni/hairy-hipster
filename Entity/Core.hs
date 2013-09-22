@@ -4,7 +4,6 @@ module Entity.Core where
 import Data.Function (on)
 
 import Describe
-import Grammar.Atom
 
 import Support.Measure
 import Support.Coords

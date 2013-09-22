@@ -4,8 +4,6 @@ import Data.List (sortBy)
 
 import AI
 import UI
-import Describe
-import Grammar.Atom
 
 import Support.Coords
 import Support.Rand
@@ -20,8 +18,6 @@ import Entity.Body
 import Entity.Species
 import Entity.Value as V
 import qualified Entity.Trait as K
-
-import Event.Action
 
 import World.Location
 
